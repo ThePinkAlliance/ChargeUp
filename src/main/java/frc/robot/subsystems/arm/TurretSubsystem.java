@@ -6,10 +6,10 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -54,5 +54,15 @@ public class TurretSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    double kP = SmartDashboard.getNumber("turret-kP", 0);
+    double kI = SmartDashboard.getNumber("turret-kI", 0);
+    double kD = SmartDashboard.getNumber("turret-kD", 0);
+
+    if (kP != controller.getP() || kI != controller.getI() || kD != controller.getD()) {
+      controller.setP(kP);
+      controller.setI(kI);
+      controller.setD(kD);
+    }
   }
 }

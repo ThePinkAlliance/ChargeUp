@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ArmSubsystem extends SubsystemBase {
@@ -102,5 +103,15 @@ public class ArmSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    double kP = SmartDashboard.getNumber("pivot-kP", 0);
+    double kI = SmartDashboard.getNumber("pivot-kI", 0);
+    double kD = SmartDashboard.getNumber("pivot-kD", 0);
+
+    if (kP != pivotController.getP() || kI != pivotController.getI() || kD != pivotController.getD()) {
+      pivotController.setP(kP);
+      pivotController.setI(kI);
+      pivotController.setD(kD);
+    }
   }
 }
