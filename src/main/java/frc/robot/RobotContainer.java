@@ -23,10 +23,12 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Navigate;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.Zero;
-import frc.robot.commands.arm.CommandExtendPivot;
-import frc.robot.commands.arm.CommandTurret;
+import frc.robot.commands.primitives.arm.CommandExtendPivot;
+import frc.robot.commands.primitives.manipulator.CommandManipulator;
+import frc.robot.commands.primitives.turret.CommandTurret;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
 
 public class RobotContainer {
@@ -44,27 +46,14 @@ public class RobotContainer {
                         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
 
         // Tower
-        private final TurretSubsystem turretSubsystem = new TurretSubsystem(0, new Constraints(0, 0));
-        private final ArmSubsystem armSubsystem = new ArmSubsystem(0, 0, 0, 0, new Constraints(0, 0));
+        private final TurretSubsystem turretSubsystem = new TurretSubsystem(0, 0.3, new Constraints(0, 0));
+        private final ArmSubsystem armSubsystem = new ArmSubsystem(0, 0, 0, 0, 0.2, 0.2, new Constraints(0, 0));
+        private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(0, 0);
 
         public RobotContainer() {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                                swerveSubsystem,
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
-                                () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
-                                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
-
-                armSubsystem.setDefaultCommand(new CommandExtendPivot(armSubsystem, () -> towerJoytick.getRawAxis(1),
-                                () -> towerJoytick.getRawAxis(0)));
-                turretSubsystem.setDefaultCommand(new CommandTurret(turretSubsystem, () -> towerJoytick.getRawAxis(3)));
-
-                new JoystickButton(towerJoytick, 3)
-                                .onTrue(new ArmCoordinator(new Translation3d(1, 1, 1), armSubsystem, turretSubsystem));
-
-                configureButtonBindings();
+                configureControllerBindings();
 
                 SmartDashboard.putData("Auto Chooser", autoSendable);
 
@@ -90,12 +79,31 @@ public class RobotContainer {
                 SmartDashboard.putNumber("distance", 2);
         }
 
-        private void configureButtonBindings() {
+        private void configureControllerBindings() {
+                // Base
+                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
+                                swerveSubsystem,
+                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
+                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                                () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
+                                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
                 new JoystickButton(driverJoytick, 4).onTrue(
                                 new Navigate(swerveSubsystem, new SwerveModulePosition(getDistance(), new Rotation2d()),
                                                 1));
                 new JoystickButton(driverJoytick, 3).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
                 new JoystickButton(driverJoytick, 2).onTrue(new Zero(swerveSubsystem));
+
+                // Tower
+                new JoystickButton(towerJoytick, 3)
+                                .onTrue(new ArmCoordinator(new Translation3d(1, 1, 1), armSubsystem, turretSubsystem));
+
+                armSubsystem.setDefaultCommand(new CommandExtendPivot(armSubsystem, () -> towerJoytick.getRawAxis(1),
+                                () -> towerJoytick.getRawAxis(0)));
+                turretSubsystem.setDefaultCommand(new CommandTurret(turretSubsystem, () -> towerJoytick.getRawAxis(3)));
+                manipulatorSubsystem.setDefaultCommand(
+                                new CommandManipulator(manipulatorSubsystem, () -> towerJoytick.getRawAxis(5),
+                                                () -> towerJoytick.getRawAxis(4)));
+
         }
 
         private double getDistance() {
@@ -103,7 +111,6 @@ public class RobotContainer {
         }
 
         public Command getAutonomousCommand() {
-                // return new AprilTagMoverCommand(swerveSubsystem, cameraSubsystem);
                 Trajectory trajectory = autoSendable.getSelected();
 
                 // Reset the swerve subsystem pose to the inital pose of the trajectory.

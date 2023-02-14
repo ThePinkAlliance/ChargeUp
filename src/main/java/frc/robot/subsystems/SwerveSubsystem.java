@@ -67,6 +67,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     backLeft.getPosition(),
                     backRight.getPosition()
             }, new Pose2d());
+    private Pose2d currentPose2d = new Pose2d();
 
     public SwerveSubsystem() {
         new Thread(() -> {
@@ -100,7 +101,7 @@ public class SwerveSubsystem extends SubsystemBase {
      * SwerveControllerCommand
      */
     public Pose2d getPose() {
-        return estimator.getEstimatedPosition();
+        return currentPose2d;
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -142,7 +143,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        estimator.update(getRotation2d(),
+        currentPose2d = estimator.update(getRotation2d(),
                 new SwerveModulePosition[] { frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(),
                         backRight.getPosition() });
 

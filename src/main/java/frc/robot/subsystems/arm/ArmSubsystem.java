@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +23,10 @@ public class ArmSubsystem extends SubsystemBase {
   RelativeEncoder extendEncoder;
   CANCoder canCoder;
   ProfiledPIDController pivotController;
+  ArmFeedforward pivotFeedforward;
 
+  private double powerLimitPivot;
+  private double powerLimitExtend;
   private double maxRotations = 0;
   private double maxDistanceMeters = 0;
   private double maxPivotAngle = 270;
@@ -31,15 +35,19 @@ public class ArmSubsystem extends SubsystemBase {
   private double desiredRotations = 0;
 
   /** Creates a new ArmSubsystem. */
-  public ArmSubsystem(int pivotMotorId, int extendMotorId, int canCoderId, double pivotOffset,
+  public ArmSubsystem(int pivotMotorId, int extendMotorId, int canCoderId, double pivotOffset, double powerLimitPivot,
+      double powerLimitExtend,
       Constraints constraints) {
     this.pivotMotor = new TalonFX(pivotMotorId);
     this.extendMotor = new CANSparkMax(extendMotorId, MotorType.kBrushless);
     this.canCoder = new CANCoder(canCoderId);
     this.pivotController = new ProfiledPIDController(0, 0, 0, constraints);
+    this.pivotFeedforward = new ArmFeedforward(0, 0, 0);
 
     this.extendEncoder = extendMotor.getEncoder();
     this.pivotOffset = pivotOffset;
+    this.powerLimitPivot = powerLimitPivot;
+    this.powerLimitExtend = powerLimitExtend;
   }
 
   public double calculatePivotInput(double angle) {
@@ -49,7 +57,13 @@ public class ArmSubsystem extends SubsystemBase {
       angle = minPivotAngle;
     }
 
-    return pivotController.calculate(getPivotAngle(), angle);
+    double plantInput = pivotController.calculate(getPivotAngle(), angle);
+    double ff = this.pivotFeedforward.calculate(angle * (180 / Math.PI), canCoder.getVelocity() * (180 / Math.PI));
+
+    SmartDashboard.putNumber(getName() + " Plant Input", plantInput);
+    SmartDashboard.putNumber(getName() + " Feedforward", ff);
+
+    return plantInput + ff;
   }
 
   public void setExtenionDistance(double distance) {
@@ -82,10 +96,22 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void commandExtend(double input) {
+    input = input * powerLimitExtend;
+
     this.extendMotor.set(input);
   }
 
   public void commandPivot(double input) {
+    input = input * powerLimitPivot;
+
+    this.pivotMotor.set(ControlMode.PercentOutput, input);
+  }
+
+  public void commandExtendUnsafe(double input) {
+    this.extendMotor.set(input);
+  }
+
+  public void commandPivotUnsafe(double input) {
     this.pivotMotor.set(ControlMode.PercentOutput, input);
   }
 

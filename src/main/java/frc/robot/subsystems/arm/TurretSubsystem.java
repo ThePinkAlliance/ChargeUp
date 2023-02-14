@@ -18,11 +18,13 @@ public class TurretSubsystem extends SubsystemBase {
   ProfiledPIDController controller;
 
   private double maxRotations = 0;
+  private double powerLimit;
 
   /** Creates a new TurretSubsystem. */
-  public TurretSubsystem(int rotateMotorId, Constraints constraints) {
+  public TurretSubsystem(int rotateMotorId, double powerLimit, Constraints constraints) {
     this.rotateMotor = new CANSparkMax(rotateMotorId, MotorType.kBrushless);
     this.rotateEncoder = this.rotateMotor.getEncoder();
+    this.powerLimit = powerLimit;
 
     this.controller = new ProfiledPIDController(0, 0, 0, constraints);
   }
@@ -44,6 +46,12 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void commandTurret(double input) {
+    input = input * powerLimit;
+
+    commandTurretUnsafe(input);
+  }
+
+  public void commandTurretUnsafe(double input) {
     this.rotateMotor.set(input);
   }
 
