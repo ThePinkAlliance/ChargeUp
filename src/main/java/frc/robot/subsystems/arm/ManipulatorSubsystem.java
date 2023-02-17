@@ -9,8 +9,10 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ManipulatorSubsystem extends SubsystemBase {
-  CANSparkMax leftMotor;
-  CANSparkMax rightMotor;
+  private CANSparkMax leftMotor;
+  private CANSparkMax rightMotor;
+
+  private double powerLimit;
 
   /** Creates a new Mnipulator. */
   public ManipulatorSubsystem(int leftMotorId, int rightMotorId) {
@@ -19,6 +21,16 @@ public class ManipulatorSubsystem extends SubsystemBase {
 
     this.leftMotor.setSmartCurrentLimit(20);
     this.rightMotor.setSmartCurrentLimit(20);
+
+    this.powerLimit = 0.2;
+  }
+
+  public void setLeftPower(double input) {
+    setLeftPowerUnsafe(input * powerLimit);
+  }
+
+  public void setRightPower(double input) {
+    setRightPowerUnsafe(input * powerLimit);
   }
 
   public void setLeftPowerUnsafe(double input) {

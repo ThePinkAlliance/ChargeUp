@@ -9,17 +9,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.SwerveController;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -60,6 +59,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private final Field2d field2d = new Field2d();
     private final SwerveDrivePoseEstimator estimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             getRotation2d(), new SwerveModulePosition[] {
                     frontLeft.getPosition(),
@@ -77,6 +77,8 @@ public class SwerveSubsystem extends SubsystemBase {
             } catch (Exception e) {
             }
         }).start();
+
+        SmartDashboard.putData(field2d);
     }
 
     public void zeroHeading() {
@@ -106,13 +108,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         estimator.resetPosition(getRotation2d(),
-                new SwerveModulePosition[] { frontLeft
-                        .getPosition(),
-                        frontRight
-                                .getPosition(),
+                new SwerveModulePosition[] {
+                        frontLeft.getPosition(),
+                        frontRight.getPosition(),
                         backLeft.getPosition(),
-                        backRight
-                                .getPosition() },
+                        backRight.getPosition()
+                },
                 pose);
     }
 
@@ -150,6 +151,8 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Robot Heading", getHeading());
         SmartDashboard.putNumber("Robot Location X", getPose().getTranslation().getX());
         SmartDashboard.putNumber("Robot Location Y", getPose().getTranslation().getY());
+
+        field2d.setRobotPose(currentPose2d);
 
         frontLeft.printDebug();
         frontRight.printDebug();
