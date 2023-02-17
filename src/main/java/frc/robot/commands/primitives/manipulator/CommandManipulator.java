@@ -41,8 +41,8 @@ public class CommandManipulator extends CommandBase {
     SmartDashboard.putNumber(this.getName() + " leftCurrent", leftCurrent);
     SmartDashboard.putNumber(this.getName() + " rightCurrent", rightCurrent);
 
-    manipulator.setLeftPowerUnsafe(leftSupplier.get());
-    manipulator.setRightPowerUnsafe(rightSupplier.get());
+    manipulator.setLeftPower(leftSupplier.get());
+    manipulator.setRightPower(rightSupplier.get());
   }
 
   // Called once the command ends or is interrupted.
