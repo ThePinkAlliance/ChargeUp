@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.math.SphericalCoordinates;
 import frc.robot.subsystems.arm.ArmSubsystem;
-import frc.robot.subsystems.arm.TurretSubsystem;
-
 /**
  * The purpose of this command is to allow us to input a desired location in 3d
  * space and command to said position.
@@ -19,15 +17,14 @@ public class ArmCoordinator extends CommandBase {
   SphericalCoordinates desiredLocationSpherical;
 
   ArmSubsystem armSubsystem;
-  TurretSubsystem turretSubsystem;
 
   /** Creates a new ArmCoordinator. */
-  public ArmCoordinator(Translation3d desiredLocation, ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem) {
+  public ArmCoordinator(Translation3d desiredLocation, ArmSubsystem armSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.desiredLocationSpherical = SphericalCoordinates.fromCartesian(desiredLocation);
 
-    addRequirements(armSubsystem, turretSubsystem);
+    addRequirements(armSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -41,14 +38,12 @@ public class ArmCoordinator extends CommandBase {
     SphericalCoordinates sphericalDifference = desiredLocationSpherical.subtract(getCurrentCoordinates());
 
     double pivotPower = armSubsystem.calculatePivotInput(sphericalDifference.getPhi());
-    double turretPower = turretSubsystem.calculateTurretInput(sphericalDifference.getTheta());
 
     SmartDashboard.putNumber("Current Pivot", getCurrentCoordinates().getPhi());
     SmartDashboard.putNumber("Current Turret", getCurrentCoordinates().getTheta());
     SmartDashboard.putNumber("Current Radius", getCurrentCoordinates().getR());
 
     SmartDashboard.putNumber("Desired PivotPower", pivotPower);
-    SmartDashboard.putNumber("Desired TurretPower", turretPower);
     SmartDashboard.putNumber("Desired Radius", sphericalDifference.getR());
 
     // turretSubsystem.commandTurret(turretPower);
@@ -58,7 +53,7 @@ public class ArmCoordinator extends CommandBase {
   }
 
   private SphericalCoordinates getCurrentCoordinates() {
-    return new SphericalCoordinates(armSubsystem.getExtensionDistance(), turretSubsystem.getTurretAngle(),
+    return new SphericalCoordinates(armSubsystem.getExtensionDistance(), 0,
         armSubsystem.getPivotAngle());
   }
 
@@ -70,6 +65,6 @@ public class ArmCoordinator extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return armSubsystem.atExtensionSetpoint() && armSubsystem.atPivotSetpoint() && turretSubsystem.atTurretSetpoint();
+    return armSubsystem.atExtensionSetpoint() && armSubsystem.atPivotSetpoint();
   }
 }

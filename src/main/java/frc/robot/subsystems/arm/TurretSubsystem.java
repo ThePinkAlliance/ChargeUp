@@ -5,72 +5,26 @@
 package frc.robot.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase {
-  CANSparkMax rotateMotor;
-  RelativeEncoder rotateEncoder;
-  ProfiledPIDController controller;
-
-  private double maxRotations = 0;
-  private double powerLimit;
+  private CANSparkMax turretController;
 
   /** Creates a new TurretSubsystem. */
-  public TurretSubsystem(int rotateMotorId, double powerLimit, Constraints constraints) {
-    this.rotateMotor = new CANSparkMax(rotateMotorId, MotorType.kBrushless);
-    this.rotateEncoder = this.rotateMotor.getEncoder();
-    this.powerLimit = powerLimit;
-
-    this.controller = new ProfiledPIDController(0, 0, 0, constraints);
+  public TurretSubsystem(int motorID) {
+    this.turretController = new CANSparkMax(motorID, MotorType.kBrushless);
+    this.turretController.setSmartCurrentLimit(20);
   }
 
-  public double calculateTurretInput(double desiredAngle) {
-    double desiredRotations = desiredAngle * ((maxRotations / 2) / 180);
-
-    if (desiredRotations > maxRotations) {
-      desiredRotations = maxRotations;
-    } else if (desiredRotations < 0) {
-      desiredRotations = 0;
-    }
-
-    return this.controller.calculate(getTurretAngle(), desiredAngle);
-  }
-
-  public boolean atTurretSetpoint() {
-    return controller.atSetpoint();
-  }
-
-  public void commandTurret(double input) {
-    input = input * powerLimit;
-
-    commandTurretUnsafe(input);
-  }
-
-  public void commandTurretUnsafe(double input) {
-    this.rotateMotor.set(input);
-  }
-
-  public double getTurretAngle() {
-    return this.rotateEncoder.getPosition() * (180 / (maxRotations / 2));
-  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    double kP = SmartDashboard.getNumber("turret-kP", 0);
-    double kI = SmartDashboard.getNumber("turret-kI", 0);
-    double kD = SmartDashboard.getNumber("turret-kD", 0);
-
-    if (kP != controller.getP() || kI != controller.getI() || kD != controller.getD()) {
-      controller.setP(kP);
-      controller.setI(kI);
-      controller.setD(kD);
-    }
   }
+
+  public void powerTurret(double input) {}
+
+
 }

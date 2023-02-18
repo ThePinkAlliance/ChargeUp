@@ -25,11 +25,10 @@ import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.Zero;
 import frc.robot.commands.primitives.arm.CommandExtendPivot;
 import frc.robot.commands.primitives.manipulator.CommandManipulator;
-import frc.robot.commands.primitives.turret.CommandTurret;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
-import frc.robot.subsystems.arm.TurretSubsystem;
+
 
 public class RobotContainer {
 
@@ -45,8 +44,7 @@ public class RobotContainer {
         public static ProfiledPIDController thetaController = new ProfiledPIDController(
                         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
 
-        // Tower
-        private final TurretSubsystem turretSubsystem = new TurretSubsystem(0, 0.3, new Constraints(0, 0));
+        // Tower        
         private final ArmSubsystem armSubsystem = new ArmSubsystem(0, 0, 0, 0, 0.2, 0.2, new Constraints(0, 0));
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(0, 0);
 
@@ -95,11 +93,10 @@ public class RobotContainer {
 
                 // Tower
                 new JoystickButton(towerJoytick, 3)
-                                .onTrue(new ArmCoordinator(new Translation3d(1, 1, 1), armSubsystem, turretSubsystem));
+                                .onTrue(new ArmCoordinator(new Translation3d(1, 1, 1), armSubsystem));
 
                 armSubsystem.setDefaultCommand(new CommandExtendPivot(armSubsystem, () -> towerJoytick.getRawAxis(1),
                                 () -> towerJoytick.getRawAxis(0)));
-                turretSubsystem.setDefaultCommand(new CommandTurret(turretSubsystem, () -> towerJoytick.getRawAxis(3)));
                 manipulatorSubsystem.setDefaultCommand(
                                 new CommandManipulator(manipulatorSubsystem, () -> towerJoytick.getRawAxis(5),
                                                 () -> towerJoytick.getRawAxis(4)));
