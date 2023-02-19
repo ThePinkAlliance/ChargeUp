@@ -122,6 +122,10 @@ public class ArmSubsystem extends SubsystemBase {
     return extendEncoder.getPosition() * (maxDistanceMeters / maxRotations);
   }
 
+  public double getExtensionRotations() {
+    return extendEncoder.getPosition();
+  }
+
   public double getPivotAngle() {
     return canCoder.getPosition() + pivotOffset;
   }
