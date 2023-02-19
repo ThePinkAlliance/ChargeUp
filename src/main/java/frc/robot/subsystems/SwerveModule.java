@@ -54,7 +54,7 @@ public class SwerveModule {
 
         driveMotor.setInverted(driveMotorReversed);
 
-        turningPidController = new PIDController(0.2, 0.5, 0);
+        turningPidController = new PIDController(Constants.ModuleConstants.kPTurning, 1.5, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
         resetEncoders();
