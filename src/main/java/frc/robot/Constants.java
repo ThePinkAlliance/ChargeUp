@@ -64,10 +64,10 @@ public final class Constants {
          * These values where determined by lining up all the wheels and recording the
          * outputed positions.
          */
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.99;// -3.09;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.80;// -1.08;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 2.31;// 0.154;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -0.69;// 0.018;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad =  2.91;//-2.68;//-1.48;//-0.99;// -3.09;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.98;//-1.80;// -1.08;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 2.35; //2.31;// 0.154;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 2.41;//-0.69;// 0.018;
 
         // This is the max speed without load.
         public static final double kPhysicalMaxSpeedMetersPerSecond = 4.0;

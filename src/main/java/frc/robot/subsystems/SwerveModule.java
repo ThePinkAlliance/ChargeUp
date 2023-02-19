@@ -83,8 +83,10 @@ public class SwerveModule {
         turningMotor.configAllSettings(steerConfig);
 
         driveMotor.setInverted(driveMotorReversed);
-
-        turningPidController = new PIDController(ModuleConstants.kPTurning, 1.5, 0);
+        if (absoluteEncoderId == 2)
+           turningPidController = new PIDController(ModuleConstants.kPTurning, 1.5, 0);
+        else
+           turningPidController = new PIDController(ModuleConstants.kPTurning, 1.5, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
         resetEncoders();
@@ -171,6 +173,10 @@ public class SwerveModule {
         double rad = Math.toRadians(canCoder.getAbsolutePosition()) - absoluteEncoderOffsetRad;
 
         return rad;
+    }
+
+    public double getRawAbsoluteAngularPosition() {
+         return Math.toRadians(canCoder.getAbsolutePosition());
     }
 
     public double getDriveVelocity() {
