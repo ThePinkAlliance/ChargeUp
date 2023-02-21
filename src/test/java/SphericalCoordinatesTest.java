@@ -27,7 +27,7 @@ public class SphericalCoordinatesTest {
   }
 
   @Test
-  public void subtraction() {
+  public void sphericalDifference() {
     SphericalCoordinates desiredCoordinates = new SphericalCoordinates(1, Units.degreesToRadians(90),
         Units.degreesToRadians(180));
     SphericalCoordinates currentCoordinates = new SphericalCoordinates(0.5, Units.degreesToRadians(90),

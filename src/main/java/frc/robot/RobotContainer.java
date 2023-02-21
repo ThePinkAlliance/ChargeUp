@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -19,14 +17,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.Navigate;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.Zero;
-import frc.robot.commands.arm.turret.CommandTurret;
-import frc.robot.commands.primitives.arm.CommandExtendPivot;
+import frc.robot.commands.primitives.arm.CommandExtend;
+import frc.robot.commands.primitives.manipulator.CommandManipulator;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
-import frc.robot.subsystems.arm.TurretSubsystem;
+import frc.robot.subsystems.arm.ManipulatorSubsystem;
 
 public class RobotContainer {
 
@@ -43,11 +40,10 @@ public class RobotContainer {
                         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
 
         // Tower
-        // private final ArmSubsystem armSubsystem = new ArmSubsystem(41, 42, 0, 0, 0.2,
-        // 0.2, new Constraints(0, 0));
-        private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
-        // private final ManipulatorSubsystem manipulatorSubsystem = new
-        // ManipulatorSubsystem(0, 0);
+        private final ArmSubsystem armSubsystem = new ArmSubsystem(41, 42, 9, 0, 0.2,
+                        0.5, new Constraints(0, 0));
+        // private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
+        private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
 
         public RobotContainer() {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -80,30 +76,22 @@ public class RobotContainer {
 
         private void configureControllerBindings() {
                 // Base
-                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                                swerveSubsystem,
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
-                                () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
-                                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                // swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
+                // swerveSubsystem,
+                // () -> driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
+                // () -> driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                // () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
+                // () ->
+                // !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
-                // Leave disabled for now
-                // turretSubsystem.setDefaultCommand(new CommandTurret(turretSubsystem, () ->
-                // towerJoytick.getRawAxis(4)));
-                // armSubsystem.setDefaultCommand(new CommandExtendPivot(armSubsystem, () ->
-                // towerJoytick.getRawAxis(1),
-                // () -> towerJoytick.getRawAxis(0)));
-                // new JoystickButton(driverJoytick, 4).onTrue(
-                // new Navigate(swerveSubsystem, new SwerveModulePosition(getDistance(), new
-                // Rotation2d()),
-                // 1));
-                // new JoystickButton(driverJoytick, 3).onTrue(new InstantCommand(() ->
-                // swerveSubsystem.zeroHeading()));
-                // new JoystickButton(driverJoytick, 2).onTrue(new Zero(swerveSubsystem));
-        }
+                manipulatorSubsystem.setDefaultCommand(
+                                new CommandManipulator(manipulatorSubsystem, () -> towerJoytick.getRawAxis(0),
+                                                () -> towerJoytick.getRawAxis(4)));
 
-        private double getDistance() {
-                return SmartDashboard.getNumber("distance", 2);
+                armSubsystem.setDefaultCommand(
+                                new CommandExtend(armSubsystem, () -> towerJoytick.getRawAxis(1), () -> 0.0));
+
+                new JoystickButton(driverJoytick, 1).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
         }
 
         public Command getAutonomousCommand() {

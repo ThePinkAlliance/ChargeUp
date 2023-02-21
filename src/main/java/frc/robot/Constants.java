@@ -45,10 +45,10 @@ public final class Constants {
         public static final boolean kFrontRightTurningReversed = false;
         public static final boolean kBackRightTurningReversed = false;
 
-        public static final boolean kFrontLeftDriveEncoderReversed = false;
-        public static final boolean kBackLeftDriveEncoderReversed = false;
-        public static final boolean kFrontRightDriveEncoderReversed = false;
-        public static final boolean kBackRightDriveEncoderReversed = false;
+        public static final boolean kFrontLeftDriveEncoderReversed = true;
+        public static final boolean kBackLeftDriveEncoderReversed = true;
+        public static final boolean kFrontRightDriveEncoderReversed = true;
+        public static final boolean kBackRightDriveEncoderReversed = true;
 
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 2;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 6;
@@ -64,10 +64,10 @@ public final class Constants {
          * These values where determined by lining up all the wheels and recording the
          * outputed positions.
          */
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.99;// -3.09;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.80;// -1.08;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 2.31;// 0.154;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -0.69;// 0.018;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 2.93;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.20;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.57;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.47;
 
         // This is the max speed without load.
         public static final double kPhysicalMaxSpeedMetersPerSecond = 4.0;
@@ -76,7 +76,7 @@ public final class Constants {
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.75;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond
                 / 3;
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 2;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
     }
 

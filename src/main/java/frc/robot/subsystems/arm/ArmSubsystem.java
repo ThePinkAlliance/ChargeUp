@@ -10,10 +10,12 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -24,6 +26,7 @@ public class ArmSubsystem extends SubsystemBase {
   CANCoder canCoder;
   ProfiledPIDController pivotController;
   ArmFeedforward pivotFeedforward;
+  Spark ledController;
 
   private double powerLimitPivot;
   private double powerLimitExtend;
@@ -43,11 +46,17 @@ public class ArmSubsystem extends SubsystemBase {
     this.canCoder = new CANCoder(canCoderId);
     this.pivotController = new ProfiledPIDController(0, 0, 0, constraints);
     this.pivotFeedforward = new ArmFeedforward(0, 0, 0);
+    this.ledController = new Spark(0);
+
+    this.ledController.set(0.03);
 
     this.extendEncoder = extendMotor.getEncoder();
     this.pivotOffset = pivotOffset;
     this.powerLimitPivot = powerLimitPivot;
     this.powerLimitExtend = powerLimitExtend;
+
+    extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
+    extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
   }
 
   public double calculatePivotInput(double angle) {
@@ -64,6 +73,30 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber(getName() + " Feedforward", ff);
 
     return plantInput + ff;
+  }
+
+  public void setPid(double p) {
+    setPid(p, this.pivotController.getI(), this.pivotController.getD());
+  }
+
+  public void setPid(double p, double i) {
+    setPid(p, i, this.pivotController.getD());
+  }
+
+  public void setPid(double p, double i, double d) {
+    this.pivotController.setPID(p, i, d);
+  }
+
+  public double getKp() {
+    return this.pivotController.getP();
+  }
+
+  public double getKi() {
+    return this.pivotController.getI();
+  }
+
+  public double getKd() {
+    return this.pivotController.getD();
   }
 
   public void setExtenionDistance(double distance) {
@@ -113,6 +146,10 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void commandPivotUnsafe(double input) {
     this.pivotMotor.set(ControlMode.PercentOutput, input);
+  }
+
+  public double getExtendCurrent() {
+    return this.extendMotor.getOutputCurrent();
   }
 
   /**

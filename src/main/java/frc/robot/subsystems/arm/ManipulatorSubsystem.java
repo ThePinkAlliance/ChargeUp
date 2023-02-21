@@ -22,7 +22,13 @@ public class ManipulatorSubsystem extends SubsystemBase {
     this.leftMotor.setSmartCurrentLimit(20);
     this.rightMotor.setSmartCurrentLimit(20);
 
-    this.powerLimit = 0.2;
+    this.leftMotor.getEncoder().setPosition(0);
+    this.rightMotor.getEncoder().setPosition(0);
+
+    this.leftMotor.setInverted(true);
+    this.rightMotor.setInverted(true);
+
+    this.powerLimit = 0.5;
   }
 
   public void setLeftPower(double input) {

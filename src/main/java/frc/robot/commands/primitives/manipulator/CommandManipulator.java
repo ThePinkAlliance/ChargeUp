@@ -38,11 +38,26 @@ public class CommandManipulator extends CommandBase {
     double leftCurrent = manipulator.getLeftCurrent();
     double rightCurrent = manipulator.getRightCurrent();
 
+    double leftPosition = manipulator.getLeftPosition();
+    double rightPosition = manipulator.getRightPosition();
+
     SmartDashboard.putNumber(this.getName() + " leftCurrent", leftCurrent);
     SmartDashboard.putNumber(this.getName() + " rightCurrent", rightCurrent);
 
-    manipulator.setLeftPower(leftSupplier.get());
+    SmartDashboard.putNumber(this.getName() + " leftPosition", leftPosition);
+    SmartDashboard.putNumber(this.getName() + " rightPosition", rightPosition);
+
+    // if (leftPosition > 0) {
+    // manipulator.setLeftPower(leftSupplier.get());
+    // } else if (leftPosition == 0 && Math.signum(leftSupplier.get()) == 1) {
+    // manipulator.setLeftPower(leftSupplier.get());
+    // } else {
+    // manipulator.setLeftPower(0);
+    // }
+
     manipulator.setRightPower(rightSupplier.get());
+    manipulator.setLeftPower(leftSupplier.get());
+
   }
 
   // Called once the command ends or is interrupted.
