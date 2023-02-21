@@ -10,13 +10,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 
-public class CommandManipulator extends CommandBase {
+public class JoystickManipulator extends CommandBase {
   ManipulatorSubsystem manipulator;
   Supplier<Double> leftSupplier;
   Supplier<Double> rightSupplier;
 
   /** Creates a new CommandManipulator. */
-  public CommandManipulator(ManipulatorSubsystem manipulator, Supplier<Double> leftSupplier,
+  public JoystickManipulator(ManipulatorSubsystem manipulator, Supplier<Double> leftSupplier,
       Supplier<Double> rightSupplier) {
     // Use addRequirements() here to declare subsystem dependencies.
 
@@ -47,17 +47,8 @@ public class CommandManipulator extends CommandBase {
     SmartDashboard.putNumber(this.getName() + " leftPosition", leftPosition);
     SmartDashboard.putNumber(this.getName() + " rightPosition", rightPosition);
 
-    // if (leftPosition > 0) {
-    // manipulator.setLeftPower(leftSupplier.get());
-    // } else if (leftPosition == 0 && Math.signum(leftSupplier.get()) == 1) {
-    // manipulator.setLeftPower(leftSupplier.get());
-    // } else {
-    // manipulator.setLeftPower(0);
-    // }
-
     manipulator.setRightPower(rightSupplier.get());
     manipulator.setLeftPower(leftSupplier.get());
-
   }
 
   // Called once the command ends or is interrupted.

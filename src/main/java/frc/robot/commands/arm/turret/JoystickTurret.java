@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.TurretSubsystem;
 
-public class CommandTurret extends CommandBase {
+public class JoystickTurret extends CommandBase {
   private TurretSubsystem turretSubsystem;
   private Supplier<Double> inputSupplier;
 
   /** Creates a new CommandTurret. */
-  public CommandTurret(TurretSubsystem turretSubsystem, Supplier<Double> inputSupplier) {
+  public JoystickTurret(TurretSubsystem turretSubsystem, Supplier<Double> inputSupplier) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
     this.inputSupplier = inputSupplier;

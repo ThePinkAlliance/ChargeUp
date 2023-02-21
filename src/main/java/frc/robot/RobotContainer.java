@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.primitives.arm.CommandExtend;
-import frc.robot.commands.primitives.manipulator.CommandManipulator;
+import frc.robot.commands.primitives.arm.JoystickExtend;
+import frc.robot.commands.primitives.manipulator.JoystickManipulator;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
@@ -83,11 +83,11 @@ public class RobotContainer {
                 // !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 manipulatorSubsystem.setDefaultCommand(
-                                new CommandManipulator(manipulatorSubsystem, () -> towerJoytick.getRawAxis(0),
+                                new JoystickManipulator(manipulatorSubsystem, () -> towerJoytick.getRawAxis(0),
                                                 () -> towerJoytick.getRawAxis(4)));
 
                 armSubsystem.setDefaultCommand(
-                                new CommandExtend(armSubsystem, () -> towerJoytick.getRawAxis(1), () -> 0.0));
+                                new JoystickExtend(armSubsystem, () -> towerJoytick.getRawAxis(1), () -> 0.0));
 
                 new JoystickButton(driverJoytick, 1).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
         }
