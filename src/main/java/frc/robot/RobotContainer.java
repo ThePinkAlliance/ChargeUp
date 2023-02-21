@@ -17,8 +17,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.commands.Zero;
 import frc.robot.commands.primitives.arm.CommandExtend;
 import frc.robot.commands.primitives.manipulator.CommandManipulator;
 import frc.robot.subsystems.SwerveSubsystem;

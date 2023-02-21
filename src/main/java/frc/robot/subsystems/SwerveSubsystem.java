@@ -151,6 +151,10 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Robot Heading", getHeading());
         SmartDashboard.putNumber("Robot Location X", getPose().getTranslation().getX());
         SmartDashboard.putNumber("Robot Location Y", getPose().getTranslation().getY());
+        SmartDashboard.putNumber("Front Left Rotation (canID=2):", frontLeft.getRawAbsoluteAngularPosition());
+        SmartDashboard.putNumber("Front Right Rotation (canID=4):", frontRight.getRawAbsoluteAngularPosition());
+        SmartDashboard.putNumber("Back Left Rotation (canID=6):", backLeft.getRawAbsoluteAngularPosition());
+        SmartDashboard.putNumber("Back Right Rotation (canID=8):", backRight.getRawAbsoluteAngularPosition());
 
         field2d.setRobotPose(currentPose2d);
 

@@ -83,7 +83,6 @@ public class SwerveModule {
         turningMotor.configAllSettings(steerConfig);
 
         driveMotor.setInverted(driveMotorReversed);
-
         turningPidController = new PIDController(ModuleConstants.kPTurning, 1.5, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -173,6 +172,10 @@ public class SwerveModule {
         return rad;
     }
 
+    public double getRawAbsoluteAngularPosition() {
+        return Math.toRadians(canCoder.getAbsolutePosition());
+    }
+
     public double getDriveVelocity() {
         /*
          * It might be necessary to change the constant because it does not take into
@@ -232,11 +235,7 @@ public class SwerveModule {
                 state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
 
         double output = turningPidController.calculate(getTurningPosition(), state.angle.getRadians());
-        turningMotor.set(ControlMode.PercentOutput,
-                output);
-
-        SmartDashboard.putNumber("Swerve[" + canCoder.getDeviceID() + "] Controller out", output);
-        SmartDashboard.putNumber("Swerve[" + canCoder.getDeviceID() + "] Desired Angle", state.angle.getRadians());
+        turningMotor.set(ControlMode.PercentOutput, output);
     }
 
     public void printDebug() {
