@@ -17,11 +17,14 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.arm.PIDTunerPivot;
 import frc.robot.commands.primitives.arm.JoystickExtend;
 import frc.robot.commands.primitives.manipulator.JoystickManipulator;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
+import frc.robot.subsystems.arm.TurretSubsystem;
 
 public class RobotContainer {
 
@@ -38,9 +41,10 @@ public class RobotContainer {
                         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
 
         // Tower
-        private final ArmSubsystem armSubsystem = new ArmSubsystem(41, 42, 9, 0, 0.2,
+        private final ArmSubsystem armSubsystem = new ArmSubsystem(41, 42, 9,
+                        79.453125, 1,
                         0.5, new Constraints(0, 0));
-        // private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
+        private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
 
         public RobotContainer() {
@@ -68,26 +72,24 @@ public class RobotContainer {
                 } catch (Exception err) {
                         err.printStackTrace();
                 }
-
-                SmartDashboard.putNumber("distance", 2);
         }
 
         private void configureControllerBindings() {
                 // Base
-                // swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                // swerveSubsystem,
-                // () -> driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
-                // () -> driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
-                // () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
-                // () ->
-                // !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
+                                swerveSubsystem,
+                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
+                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                                () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
+                                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 manipulatorSubsystem.setDefaultCommand(
                                 new JoystickManipulator(manipulatorSubsystem, () -> towerJoytick.getRawAxis(0),
                                                 () -> towerJoytick.getRawAxis(4)));
 
                 armSubsystem.setDefaultCommand(
-                                new JoystickExtend(armSubsystem, () -> towerJoytick.getRawAxis(1), () -> 0.0));
+                                new JoystickExtend(armSubsystem, () -> towerJoytick.getRawAxis(1),
+                                                () -> towerJoytick.getRawAxis(5)));
 
                 new JoystickButton(driverJoytick, 1).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
         }

@@ -5,6 +5,7 @@
 package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
@@ -45,18 +46,22 @@ public class ArmSubsystem extends SubsystemBase {
     this.extendMotor = new CANSparkMax(extendMotorId, MotorType.kBrushless);
     this.canCoder = new CANCoder(canCoderId);
     this.pivotController = new ProfiledPIDController(0, 0, 0, constraints);
-    this.pivotFeedforward = new ArmFeedforward(0, 0, 0);
+    this.pivotFeedforward = new ArmFeedforward(0.01, 0, 0);
     this.ledController = new Spark(0);
-
-    this.ledController.set(0.03);
 
     this.extendEncoder = extendMotor.getEncoder();
     this.pivotOffset = pivotOffset;
     this.powerLimitPivot = powerLimitPivot;
     this.powerLimitExtend = powerLimitExtend;
 
+    canCoder.setPosition(0);
+
+    extendMotor.setInverted(true);
     extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
     extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
+
+    pivotMotor.setNeutralMode(NeutralMode.Brake);
+    pivotMotor.setInverted(true);
   }
 
   public double calculatePivotInput(double angle) {
@@ -67,7 +72,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     double plantInput = pivotController.calculate(getPivotAngle(), angle);
-    double ff = this.pivotFeedforward.calculate(angle * (180 / Math.PI), canCoder.getVelocity() * (180 / Math.PI));
+    double ff = this.pivotFeedforward.calculate(angle / (180 / Math.PI), canCoder.getVelocity() / (180 / Math.PI));
 
     SmartDashboard.putNumber(getName() + " Plant Input", plantInput);
     SmartDashboard.putNumber(getName() + " Feedforward", ff);
@@ -112,6 +117,10 @@ public class ArmSubsystem extends SubsystemBase {
     this.desiredRotations = desiredRotations;
 
     extendMotor.getPIDController().setReference(desiredRotations, ControlType.kPosition);
+  }
+
+  public void configureLED() {
+    this.ledController.set(0.03);
   }
 
   public boolean atExtensionSetpoint() {
@@ -163,8 +172,16 @@ public class ArmSubsystem extends SubsystemBase {
     return extendEncoder.getPosition();
   }
 
+  public double getPivotVoltage() {
+    return pivotMotor.getMotorOutputVoltage();
+  }
+
   public double getPivotAngle() {
     return canCoder.getPosition() + pivotOffset;
+  }
+
+  public double getPivotVelocity() {
+    return canCoder.getVelocity();
   }
 
   @Override

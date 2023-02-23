@@ -4,6 +4,7 @@
 
 package frc.robot.commands.arm;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
@@ -27,6 +28,10 @@ public class PIDTunerPivot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double controlEffort = this.armSubsystem.calculatePivotInput(180);
+
+    SmartDashboard.putNumber("pivot Angle", armSubsystem.getPivotAngle());
+    SmartDashboard.putNumber("control effort", controlEffort);
   }
 
   // Called once the command ends or is interrupted.
