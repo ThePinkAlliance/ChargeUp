@@ -215,8 +215,6 @@ public class SwerveModule {
      * Returns the current state of the swerve module using position.
      */
     public SwerveModulePosition getPosition() {
-        SmartDashboard.putNumber("Swerve[" + canCoder.getDeviceID() + "] position", getDrivePosition());
-
         return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getTurningPosition()));
     }
 

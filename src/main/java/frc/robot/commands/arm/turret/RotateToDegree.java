@@ -5,6 +5,7 @@
 package frc.robot.commands.arm.turret;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.TurretSubsystem;
 
@@ -12,12 +13,14 @@ public class RotateToDegree extends CommandBase {
   private TurretSubsystem turretSubsystem;
   private boolean isFinished = false;
   private double desiredAngle;
+  private Watchdog watchdog;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, double desiredAngle) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
     this.desiredAngle = desiredAngle;
+    this.watchdog = new Watchdog(3, () -> System.out.println("Watchdog terminated RotateToDegree"));
 
     addRequirements(turretSubsystem);
   }
@@ -25,6 +28,7 @@ public class RotateToDegree extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    watchdog.enable();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -46,11 +50,12 @@ public class RotateToDegree extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     this.turretSubsystem.powerTurret(0);
+    watchdog.disable();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return isFinished;
+    return isFinished || watchdog.isExpired();
   }
 }

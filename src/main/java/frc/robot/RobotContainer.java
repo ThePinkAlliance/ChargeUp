@@ -18,8 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.commands.arm.PIDTunerPivot;
-import frc.robot.commands.primitives.arm.JoystickExtend;
+import frc.robot.commands.primitives.arm.JoystickArm;
 import frc.robot.commands.primitives.manipulator.JoystickManipulator;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -88,7 +87,7 @@ public class RobotContainer {
                                                 () -> towerJoytick.getRawAxis(4)));
 
                 armSubsystem.setDefaultCommand(
-                                new JoystickExtend(armSubsystem, () -> towerJoytick.getRawAxis(1),
+                                new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
                                                 () -> towerJoytick.getRawAxis(5)));
 
                 new JoystickButton(driverJoytick, 1).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));

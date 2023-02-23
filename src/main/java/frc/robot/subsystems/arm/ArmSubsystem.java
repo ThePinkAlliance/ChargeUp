@@ -11,6 +11,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -55,15 +56,20 @@ public class ArmSubsystem extends SubsystemBase {
     this.powerLimitExtend = powerLimitExtend;
 
     canCoder.setPosition(0);
-
     extendMotor.setInverted(true);
     extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
     extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
+    extendMotor.setIdleMode(IdleMode.kBrake);
 
     pivotMotor.setNeutralMode(NeutralMode.Brake);
     pivotMotor.setInverted(true);
+
+    SmartDashboard.putNumber("pivot-kP", 0);
+    SmartDashboard.putNumber("pivot-kI", 0);
+    SmartDashboard.putNumber("pivot-kD", 0);
   }
 
+  @Deprecated
   public double calculatePivotInput(double angle) {
     if (angle > maxPivotAngle) {
       angle = maxPivotAngle;
@@ -155,6 +161,10 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void commandPivotUnsafe(double input) {
     this.pivotMotor.set(ControlMode.PercentOutput, input);
+  }
+
+  public double getPivotDemandedPower() {
+    return this.pivotMotor.getMotorOutputPercent();
   }
 
   public double getExtendCurrent() {
