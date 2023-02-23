@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.primitives.arm.JoystickArm;
 import frc.robot.commands.primitives.manipulator.JoystickManipulator;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -82,13 +83,16 @@ public class RobotContainer {
                                 () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
                                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
-                manipulatorSubsystem.setDefaultCommand(
-                                new JoystickManipulator(manipulatorSubsystem, () -> towerJoytick.getRawAxis(0),
-                                                () -> towerJoytick.getRawAxis(4)));
+                // manipulatorSubsystem.setDefaultCommand(
+                // new JoystickManipulator(manipulatorSubsystem, () ->
+                // towerJoytick.getRawAxis(0),
+                // () -> towerJoytick.getRawAxis(4)));
 
-                armSubsystem.setDefaultCommand(
-                                new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
-                                                () -> towerJoytick.getRawAxis(5)));
+                // armSubsystem.setDefaultCommand(
+                // new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
+                // () -> towerJoytick.getRawAxis(5)));
+
+                new JoystickButton(driverJoytick, 2).onTrue(new RotateToDegree(turretSubsystem, 100));
 
                 new JoystickButton(driverJoytick, 1).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
         }

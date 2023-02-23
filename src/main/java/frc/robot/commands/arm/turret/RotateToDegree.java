@@ -4,8 +4,11 @@
 
 package frc.robot.commands.arm.turret;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Watchdog;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.TurretSubsystem;
 
@@ -39,11 +42,16 @@ public class RotateToDegree extends CommandBase {
     double angleDifference = currentAngle - achieveableAngle;
     double powerSign = Math.signum(angleDifference);
 
-    if (Math.abs(angleDifference) <= 5) {
-      isFinished = true;
-    } else {
-      this.turretSubsystem.powerTurret(powerSign);
-    }
+    // if (Math.abs(angleDifference) <= 5) {
+    // isFinished = true;
+    // } else {
+    this.turretSubsystem.powerTurret(powerSign);
+    // }
+
+    SmartDashboard.putNumber("currentAngle", currentAngle);
+    SmartDashboard.putNumber("angleDiff", angleDifference);
+    SmartDashboard.putNumber("powerSign", powerSign);
+    SmartDashboard.putNumber("achieveableAngle", achieveableAngle);
   }
 
   // Called once the command ends or is interrupted.

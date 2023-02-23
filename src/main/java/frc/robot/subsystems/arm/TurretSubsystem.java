@@ -7,17 +7,24 @@ package frc.robot.subsystems.arm;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RuntimeType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase {
   private CANSparkMax turretController;
   private double powerLimit;
+  private Faker neoFaker;
+  private boolean useFaker;
 
   /** Creates a new TurretSubsystem. */
   public TurretSubsystem(int motorID) {
     this.turretController = new CANSparkMax(motorID, MotorType.kBrushless);
     this.turretController.setSmartCurrentLimit(20);
     this.turretController.setIdleMode(IdleMode.kBrake);
+    this.useFaker = RobotBase.isSimulation();
+
+    this.neoFaker = new Faker();
 
     this.powerLimit = 0.1;
   }
@@ -25,6 +32,9 @@ public class TurretSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (useFaker) {
+      neoFaker.update();
+    }
   }
 
   public void powerTurret(double input) {
@@ -32,13 +42,50 @@ public class TurretSubsystem extends SubsystemBase {
   }
 
   public void powerTurretUnsafe(double input) {
-    this.turretController.set(input);
+    if (useFaker) {
+      neoFaker.setPower(input);
+    } else {
+      this.turretController.set(input);
+    }
   }
 
   public double getTurretAngle() {
-    double rotations = this.turretController.getEncoder().getPosition();
+    double rotations = 0;
+
+    if (useFaker) {
+      rotations = neoFaker.getPosition();
+    } else {
+      rotations = this.turretController.getEncoder().getPosition();
+    }
+
     double unRangedAngle = (rotations * (1 / 5)) * 360;
 
     return Math.IEEEremainder(unRangedAngle, 360);
+  }
+}
+
+class Faker {
+  private double currentPosition = 0;
+  private double currentPower = 0;
+  private double rotPerSec = 366 / 60;
+  private double powerLimit = 1;
+
+  public void setPower(double p) {
+    if (p > Math.copySign(powerLimit, 1)) {
+      p = Math.copySign(powerLimit, 1);
+    } else if (p < Math.copySign(powerLimit, -1)) {
+      p = Math.copySign(powerLimit, -1);
+    }
+
+    this.currentPower = p;
+  }
+
+  public double getPosition() {
+    return currentPosition;
+  }
+
+  public void update() {
+    currentPosition += rotPerSec * currentPower;
+    System.out.println(currentPosition);
   }
 }
