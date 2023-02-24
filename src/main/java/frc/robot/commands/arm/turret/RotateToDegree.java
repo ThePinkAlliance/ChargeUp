@@ -4,9 +4,11 @@
 
 package frc.robot.commands.arm.turret;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -14,16 +16,21 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 
 public class RotateToDegree extends CommandBase {
   private TurretSubsystem turretSubsystem;
-  private boolean isFinished = false;
+  private boolean isFinished;
   private double desiredAngle;
-  private Watchdog watchdog;
+  private double lastAngle;
+  private double startingAngle;
+  private Timer timer;
+  private Timer epoch;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, double desiredAngle) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
     this.desiredAngle = desiredAngle;
-    this.watchdog = new Watchdog(3, () -> System.out.println("Watchdog terminated RotateToDegree"));
+    this.lastAngle = 1;
+    this.timer = new Timer();
+    this.epoch = new Timer();
 
     addRequirements(turretSubsystem);
   }
@@ -31,7 +38,14 @@ public class RotateToDegree extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    watchdog.enable();
+    timer.start();
+    timer.reset();
+
+    epoch.start();
+    epoch.reset();
+
+    isFinished = false;
+    startingAngle = turretSubsystem.getTurretAngle();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,31 +53,50 @@ public class RotateToDegree extends CommandBase {
   public void execute() {
     double currentAngle = this.turretSubsystem.getTurretAngle();
     double achieveableAngle = MathUtil.clamp(desiredAngle, -180, 180);
-    double angleDifference = currentAngle - achieveableAngle;
+    double angleDifference = achieveableAngle - currentAngle;
     double powerSign = Math.signum(angleDifference);
+    double vel = (Math.abs(currentAngle) - Math.abs(startingAngle)) / timer.get();
 
-    // if (Math.abs(angleDifference) <= 5) {
+    TrapezoidProfile.State currentState = new State(currentAngle, vel);
+    TrapezoidProfile.State goalState = new State(desiredAngle, 0);
+
+    TrapezoidProfile profile = new TrapezoidProfile(new Constraints(30, 15), goalState, currentState);
+    TrapezoidProfile.State t = profile.calculate(timer.get());
+    double power = t.velocity * (1 / 36.6);
+
+    // if (profile.isFinished(timer.get())) {
     // isFinished = true;
-    // } else {
-    this.turretSubsystem.powerTurret(powerSign);
     // }
 
+    if (angleDifference < 5) {
+      isFinished = true;
+    }
+
+    SmartDashboard.putNumber("profile pos", t.position);
+    SmartDashboard.putNumber("profile vel", t.velocity);
+    this.turretSubsystem.powerTurretUnsafe(powerSign);
+
+    SmartDashboard.putNumber("vel", vel);
+    SmartDashboard.putNumber("time", Math.abs(currentAngle) - Math.abs(startingAngle));
     SmartDashboard.putNumber("currentAngle", currentAngle);
     SmartDashboard.putNumber("angleDiff", angleDifference);
-    SmartDashboard.putNumber("powerSign", powerSign);
+    SmartDashboard.putNumber("power", power);
     SmartDashboard.putNumber("achieveableAngle", achieveableAngle);
+
+    lastAngle = currentAngle;
+    epoch.reset();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     this.turretSubsystem.powerTurret(0);
-    watchdog.disable();
+    timer.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return isFinished || watchdog.isExpired();
+    return isFinished;
   }
 }

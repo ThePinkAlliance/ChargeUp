@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RuntimeType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -58,9 +57,7 @@ public class TurretSubsystem extends SubsystemBase {
       rotations = this.turretController.getEncoder().getPosition();
     }
 
-    double unRangedAngle = (rotations * (1 / 5)) * 360;
-
-    return Math.IEEEremainder(unRangedAngle, 360);
+    return Math.IEEEremainder((rotations / 366) * 360, 360);
   }
 }
 
@@ -86,6 +83,5 @@ class Faker {
 
   public void update() {
     currentPosition += rotPerSec * currentPower;
-    System.out.println(currentPosition);
   }
 }
