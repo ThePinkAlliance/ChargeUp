@@ -55,32 +55,33 @@ public class RotateToDegree extends CommandBase {
     double achieveableAngle = MathUtil.clamp(desiredAngle, -180, 180);
     double angleDifference = achieveableAngle - currentAngle;
     double powerSign = Math.signum(angleDifference);
-    double vel = (Math.abs(currentAngle) - Math.abs(startingAngle)) / timer.get();
+    // double vel = (Math.abs(currentAngle) - Math.abs(st)) / epoch.get();
 
-    TrapezoidProfile.State currentState = new State(currentAngle, vel);
-    TrapezoidProfile.State goalState = new State(desiredAngle, 0);
+    // TrapezoidProfile.State currentState = new State(currentAngle, vel);
+    // TrapezoidProfile.State goalState = new State(desiredAngle, 0);
 
-    TrapezoidProfile profile = new TrapezoidProfile(new Constraints(30, 15), goalState, currentState);
-    TrapezoidProfile.State t = profile.calculate(timer.get());
-    double power = t.velocity * (1 / 36.6);
+    // TrapezoidProfile profile = new TrapezoidProfile(new Constraints(30, 15),
+    // goalState, currentState);
+    // TrapezoidProfile.State t = profile.calculate(timer.get());
+    // double power = t.velocity * (1 / 36.6);
 
     // if (profile.isFinished(timer.get())) {
     // isFinished = true;
     // }
 
-    if (angleDifference < 5) {
+    // SmartDashboard.putNumber("profile pos", t.position);
+    // SmartDashboard.putNumber("profile vel", t.velocity);
+    // this.turretSubsystem.powerTurretUnsafe(power);
+
+    if (Math.abs(angleDifference) < 1) {
       isFinished = true;
     }
+    this.turretSubsystem.powerTurret(powerSign);
 
-    SmartDashboard.putNumber("profile pos", t.position);
-    SmartDashboard.putNumber("profile vel", t.velocity);
-    this.turretSubsystem.powerTurretUnsafe(powerSign);
-
-    SmartDashboard.putNumber("vel", vel);
-    SmartDashboard.putNumber("time", Math.abs(currentAngle) - Math.abs(startingAngle));
+    // SmartDashboard.putNumber("vel", vel);
     SmartDashboard.putNumber("currentAngle", currentAngle);
     SmartDashboard.putNumber("angleDiff", angleDifference);
-    SmartDashboard.putNumber("power", power);
+    // SmartDashboard.putNumber("power", power);
     SmartDashboard.putNumber("achieveableAngle", achieveableAngle);
 
     lastAngle = currentAngle;
