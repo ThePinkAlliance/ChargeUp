@@ -77,21 +77,22 @@ public class RobotContainer {
 
         private void configureControllerBindings() {
                 // Base
-                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                                swerveSubsystem,
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
-                                () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
-                                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                // swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
+                // swerveSubsystem,
+                // () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
+                // () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                // () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
+                // () ->
+                // !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 // manipulatorSubsystem.setDefaultCommand(
                 // new JoystickManipulator(manipulatorSubsystem, () ->
                 // towerJoytick.getRawAxis(0),
                 // () -> towerJoytick.getRawAxis(4)));
 
-                // armSubsystem.setDefaultCommand(
-                // new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
-                // () -> towerJoytick.getRawAxis(5)));
+                armSubsystem.setDefaultCommand(
+                                new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
+                                                () -> towerJoytick.getRawAxis(5) / 2));
 
                 new JoystickButton(driverJoytick, 3).onTrue(new RotateToDegree(turretSubsystem, 100));
                 new JoystickButton(driverJoytick, 2).onTrue(new RotateToDegree(turretSubsystem, -100));

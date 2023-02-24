@@ -53,8 +53,8 @@ public class JoystickArm extends CommandBase {
 
     SmartDashboard.putNumber("Pivot Demanded Power", armSubsystem.getPivotDemandedPower());
     SmartDashboard.putNumber("Pivot Power", input);
+    SmartDashboard.putNumber("Pivot Angle", pivotAngle);
 
-    // this.armSubsystem.commandExtend(extSupplier.get());
     SmartDashboard.putNumber("Extend Current", armSubsystem.getExtendCurrent());
   }
 
