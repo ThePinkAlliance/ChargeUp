@@ -56,7 +56,7 @@ public class RotateToDegree extends CommandBase {
     double angleDifference = achieveableAngle - currentAngle;
     double powerSign = Math.signum(angleDifference);
 
-    if (Math.abs(angleDifference) < 1) {
+    if (Math.abs(angleDifference) < 3) {
       isFinished = true;
     }
     this.turretSubsystem.powerTurret(powerSign);

@@ -25,7 +25,7 @@ public class TurretSubsystem extends SubsystemBase {
 
     this.neoFaker = new Faker();
 
-    this.powerLimit = 0.1;
+    this.powerLimit = 0.4;
   }
 
   @Override

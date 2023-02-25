@@ -27,7 +27,10 @@ public class JoystickArm extends CommandBase {
     this.extSupplier = extSupplier;
     this.pivotSupplier = pivotSupplier;
 
-    this.feedforwardTable = new LinearInterpolationTable(List.of(new Vector2d(0, 0)));
+    this.feedforwardTable = new LinearInterpolationTable(List.of(new Vector2d(80, 0.07), new Vector2d(86, 0.07),
+        new Vector2d(98, 0.05), new Vector2d(107, 0.0787), new Vector2d(117, 0.0708), new Vector2d(122, 0.015),
+        new Vector2d(133, 0.066), new Vector2d(140, 0.031), new Vector2d(148, 0.070), new Vector2d(157, 0.051),
+        new Vector2d(167, 0.041), new Vector2d(178, 0.051), new Vector2d(190, 0.011)));
 
     addRequirements(armSubsystem);
   }
@@ -42,14 +45,21 @@ public class JoystickArm extends CommandBase {
   public void execute() {
     double input = pivotSupplier.get();
     double pivotAngle = armSubsystem.getPivotAngle();
+    double ff = feedforwardTable.interp(pivotAngle);
+
+    if (Double.isNaN(ff) || Double.isInfinite(ff)) {
+      ff = 0;
+    }
 
     if ((Math.signum(input) == 1 || Math.signum(input) == -1) && pivotAngle >= 84) {
       this.armSubsystem.commandPivot(input);
     } else if (Math.signum(input) == 1 && pivotAngle < 84) {
       this.armSubsystem.commandPivot(input);
     } else {
-      this.armSubsystem.commandPivot(0);
+      this.armSubsystem.commandPivot(ff);
     }
+
+    this.armSubsystem.commandExtend(extSupplier.get());
 
     SmartDashboard.putNumber("Pivot Demanded Power", armSubsystem.getPivotDemandedPower());
     SmartDashboard.putNumber("Pivot Power", input);
