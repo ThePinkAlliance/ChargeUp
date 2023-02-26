@@ -55,7 +55,6 @@ public class ArmSubsystem extends SubsystemBase {
     this.powerLimitPivot = powerLimitPivot;
     this.powerLimitExtend = powerLimitExtend;
 
-    canCoder.setPosition(0);
     extendMotor.setInverted(true);
     extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
     extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);

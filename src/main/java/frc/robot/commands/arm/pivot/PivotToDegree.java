@@ -8,17 +8,17 @@ import java.util.List;
 
 import com.ThePinkAlliance.core.math.LinearInterpolationTable;
 import com.ThePinkAlliance.core.math.Vector2d;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class PivotToDegree extends CommandBase {
   ArmSubsystem armSubsystem;
   boolean isFinished;
-  LinearInterpolationTable table = new LinearInterpolationTable(List.of(new Vector2d(80, 0.07), new Vector2d(86, 0.07),
-      new Vector2d(98, 0.05), new Vector2d(107, 0.07), new Vector2d(117, 0.0708), new Vector2d(122, 0.015),
-      new Vector2d(133, 0.066), new Vector2d(140, 0.031), new Vector2d(148, 0.070), new Vector2d(157, 0.051),
-      new Vector2d(167, 0.041), new Vector2d(178, 0.051), new Vector2d(190, 0.011)));
+  LinearInterpolationTable feedforwardTable;
   double desiredAngle;
+  PIDController controller;
 
   /** Creates a new PivotToDegree. */
   public PivotToDegree(ArmSubsystem armSubsystem, double desiredAngle) {
@@ -26,6 +26,11 @@ public class PivotToDegree extends CommandBase {
     this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
     this.isFinished = false;
+    this.controller = new PIDController(0.5, 0, 0);
+
+    this.feedforwardTable = new LinearInterpolationTable(List.of(new Vector2d(71, 0.0787), new Vector2d(74, 0.055),
+        new Vector2d(77.78, 0.082), new Vector2d(94.30, 0.078),
+        new Vector2d(122, 0.074), new Vector2d(130, 0.070), new Vector2d(145, 0.062), new Vector2d(180, 0)));
 
     addRequirements(armSubsystem);
   }
@@ -34,25 +39,29 @@ public class PivotToDegree extends CommandBase {
   @Override
   public void initialize() {
     isFinished = false;
+
+    double kP = SmartDashboard.getNumber("pivot-kP", controller.getP());
+    double kI = SmartDashboard.getNumber("pivot-kI", controller.getI());
+    double kD = SmartDashboard.getNumber("pivot-kD", controller.getD());
+
+    controller.setPID(kP, kI, kD);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     double currentAngle = armSubsystem.getPivotAngle();
-    double diff = Math.abs(desiredAngle - currentAngle);
-    double ff = table.interp(currentAngle);
-    double directon = Math.signum(desiredAngle - currentAngle) * 0.5;
+    double ff = feedforwardTable.interp(currentAngle);
+    double pidOutput = controller.calculate(currentAngle * (Math.PI / 180), desiredAngle * (Math.PI / 180));
 
     if (Double.isNaN(ff) || Double.isInfinite(ff)) {
       ff = 0;
     }
 
-    if (diff < 2) {
-      isFinished = true;
-    }
+    SmartDashboard.putNumber("Pivot Position", currentAngle * (Math.PI / 180));
+    SmartDashboard.putNumber("Pivot Control Effort", pidOutput);
 
-    this.armSubsystem.commandPivotUnsafe(ff + directon);
+    this.armSubsystem.commandPivot(pidOutput + ff);
   }
 
   // Called once the command ends or is interrupted.
@@ -63,6 +72,6 @@ public class PivotToDegree extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return isFinished;
+    return controller.atSetpoint();
   }
 }

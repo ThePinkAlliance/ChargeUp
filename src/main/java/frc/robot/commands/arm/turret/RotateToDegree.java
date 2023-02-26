@@ -4,7 +4,10 @@
 
 package frc.robot.commands.arm.turret;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -20,17 +23,26 @@ public class RotateToDegree extends CommandBase {
   private double desiredAngle;
   private double lastAngle;
   private double startingAngle;
+  private Supplier<Double> pivotSupplier;
   private Timer timer;
   private Timer epoch;
+  private PIDController controller;
 
   /** Creates a new RotateToDegree. */
-  public RotateToDegree(TurretSubsystem turretSubsystem, double desiredAngle) {
+  public RotateToDegree(TurretSubsystem turretSubsystem, double desiredAngle, Supplier<Double> pivotSupplier) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
     this.desiredAngle = desiredAngle;
     this.lastAngle = 1;
+    this.pivotSupplier = pivotSupplier;
     this.timer = new Timer();
     this.epoch = new Timer();
+    this.controller = new PIDController(2.3, 0.0121, 0);
+    this.controller.disableContinuousInput();
+
+    SmartDashboard.putNumber("turret-kP", controller.getP());
+    SmartDashboard.putNumber("turret-kI", controller.getI());
+    SmartDashboard.putNumber("turret-kD", controller.getD());
 
     addRequirements(turretSubsystem);
   }
@@ -46,26 +58,27 @@ public class RotateToDegree extends CommandBase {
 
     isFinished = false;
     startingAngle = turretSubsystem.getTurretAngle();
+
+    double kP = SmartDashboard.getNumber("turret-kP", controller.getP());
+    double kI = SmartDashboard.getNumber("turret-kI", controller.getI());
+    double kD = SmartDashboard.getNumber("turret-kD", controller.getD());
+
+    controller.setPID(kP, kI, kD);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double currentAngle = this.turretSubsystem.getTurretAngle();
-    double achieveableAngle = MathUtil.clamp(desiredAngle, -180, 180);
-    double angleDifference = achieveableAngle - currentAngle;
-    double powerSign = Math.signum(angleDifference);
 
-    if (Math.abs(angleDifference) < 3) {
-      isFinished = true;
-    }
-    this.turretSubsystem.powerTurret(powerSign);
+    double currentAngle = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
+    double desiredPosRadians = desiredAngle * (Math.PI / 180);
+    double controlEffort = controller.calculate(currentAngle, desiredPosRadians);
 
-    SmartDashboard.putNumber("currentAngle", currentAngle);
-    SmartDashboard.putNumber("angleDiff", angleDifference);
-    SmartDashboard.putNumber("achieveableAngle", achieveableAngle);
+    turretSubsystem.powerTurret(controlEffort);
 
-    lastAngle = currentAngle;
+    SmartDashboard.putNumber("Turret Target", desiredPosRadians);
+    SmartDashboard.putNumber("Turret Position", currentAngle);
+
     epoch.reset();
   }
 
@@ -79,6 +92,6 @@ public class RotateToDegree extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return isFinished;
+    return controller.atSetpoint();
   }
 }

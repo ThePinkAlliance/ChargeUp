@@ -1,6 +1,6 @@
 package frc.robot.subsystems.scoring;
 
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 public class Node {
   public enum ObjectType {
@@ -15,10 +15,10 @@ public class Node {
   }
 
   ObjectType type;
-  Translation2d location;
+  Translation3d location;
   Level level;
 
-  public Node(ObjectType type, Translation2d location, Level level) {
+  public Node(ObjectType type, Level level, Translation3d location) {
     this.type = type;
     this.location = location;
     this.level = level;
@@ -32,7 +32,11 @@ public class Node {
     return type;
   }
 
-  public Translation2d getLocation() {
+  public Translation3d getLocation() {
     return location;
+  }
+
+  public double distanceTo(Node node) {
+    return this.location.getDistance(node.location);
   }
 }

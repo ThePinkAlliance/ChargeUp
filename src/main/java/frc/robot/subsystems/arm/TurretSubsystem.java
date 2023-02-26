@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase {
@@ -24,6 +25,7 @@ public class TurretSubsystem extends SubsystemBase {
     this.useFaker = RobotBase.isSimulation();
 
     this.neoFaker = new Faker();
+    // this.turretController.getEncoder().setPosition(0);
 
     this.powerLimit = 0.4;
   }
@@ -34,6 +36,8 @@ public class TurretSubsystem extends SubsystemBase {
     if (useFaker) {
       neoFaker.update();
     }
+
+    SmartDashboard.putNumber("turret rotations", turretController.getEncoder().getPosition());
   }
 
   public void powerTurret(double input) {
@@ -52,12 +56,12 @@ public class TurretSubsystem extends SubsystemBase {
     double rotations = 0;
 
     if (useFaker) {
-      rotations = neoFaker.getPosition();
+      rotations = neoFaker.getPosition() / 366;
     } else {
-      rotations = this.turretController.getEncoder().getPosition();
+      rotations = this.turretController.getEncoder().getPosition() / 348.7;
     }
 
-    return Math.IEEEremainder((rotations / 366) * 360, 360);
+    return rotations * 360;
   }
 }
 
