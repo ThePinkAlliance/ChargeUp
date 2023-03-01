@@ -78,13 +78,12 @@ public class RobotContainer {
 
         private void configureControllerBindings() {
                 // Base
-                // swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                // swerveSubsystem,
-                // () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
-                // () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
-                // () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
-                // () ->
-                // !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
+                                swerveSubsystem,
+                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
+                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                                () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
+                                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 // manipulatorSubsystem.setDefaultCommand(
                 // new JoystickManipulator(manipulatorSubsystem, () ->
@@ -108,8 +107,7 @@ public class RobotContainer {
                 // new JoystickButton(driverJoytick, 2)
                 // .onTrue(new RotateToDegree(turretSubsystem, 0, () ->
                 // armSubsystem.getPivotAngle()));
-                // new JoystickButton(driverJoytick, 1).onTrue(new InstantCommand(() ->
-                // swerveSubsystem.zeroHeading()));
+                new JoystickButton(driverJoytick, 1).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
         }
 
         public Command getAutonomousCommand() {

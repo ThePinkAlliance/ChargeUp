@@ -55,6 +55,8 @@ public class ArmSubsystem extends SubsystemBase {
     this.powerLimitPivot = powerLimitPivot;
     this.powerLimitExtend = powerLimitExtend;
 
+    this.pivotMotor.configOpenloopRamp(0.5);
+
     extendMotor.setInverted(true);
     extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
     extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
@@ -186,7 +188,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public double getPivotAngle() {
-    return canCoder.getPosition() + pivotOffset;
+    return (canCoder.getAbsolutePosition() - 134.561) + pivotOffset;
   }
 
   public double getPivotVelocity() {
@@ -197,14 +199,6 @@ public class ArmSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    double kP = SmartDashboard.getNumber("pivot-kP", 0);
-    double kI = SmartDashboard.getNumber("pivot-kI", 0);
-    double kD = SmartDashboard.getNumber("pivot-kD", 0);
-
-    if (kP != pivotController.getP() || kI != pivotController.getI() || kD != pivotController.getD()) {
-      pivotController.setP(kP);
-      pivotController.setI(kI);
-      pivotController.setD(kD);
-    }
+    SmartDashboard.putNumber("Pivot Pitch", this.getPivotAngle());
   }
 }

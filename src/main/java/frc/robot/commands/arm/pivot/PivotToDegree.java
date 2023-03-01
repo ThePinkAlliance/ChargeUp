@@ -26,11 +26,15 @@ public class PivotToDegree extends CommandBase {
     this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
     this.isFinished = false;
-    this.controller = new PIDController(0.5, 0, 0);
+    this.controller = new PIDController(0.5, 0.11, 0);
 
     this.feedforwardTable = new LinearInterpolationTable(List.of(new Vector2d(71, 0.0787), new Vector2d(74, 0.055),
         new Vector2d(77.78, 0.082), new Vector2d(94.30, 0.078),
         new Vector2d(122, 0.074), new Vector2d(130, 0.070), new Vector2d(145, 0.062), new Vector2d(180, 0)));
+
+    SmartDashboard.putNumber("pivot-kP", controller.getP());
+    SmartDashboard.putNumber("pivot-kI", controller.getI());
+    SmartDashboard.putNumber("pivot-kD", controller.getD());
 
     addRequirements(armSubsystem);
   }
@@ -43,6 +47,8 @@ public class PivotToDegree extends CommandBase {
     double kP = SmartDashboard.getNumber("pivot-kP", controller.getP());
     double kI = SmartDashboard.getNumber("pivot-kI", controller.getI());
     double kD = SmartDashboard.getNumber("pivot-kD", controller.getD());
+
+    SmartDashboard.putNumber("Pivot Target", desiredAngle * (Math.PI / 180));
 
     controller.setPID(kP, kI, kD);
   }
@@ -67,6 +73,7 @@ public class PivotToDegree extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    this.armSubsystem.commandPivot(0);
   }
 
   // Returns true when the command should end.
