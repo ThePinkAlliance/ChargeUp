@@ -70,6 +70,10 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("pivot-kD", 0);
   }
 
+  public TalonFX getPivotTalon() {
+    return this.pivotMotor;
+  }
+
   @Deprecated
   public double calculatePivotInput(double angle) {
     if (angle > maxPivotAngle) {

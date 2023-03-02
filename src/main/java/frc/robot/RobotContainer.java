@@ -19,6 +19,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.pivot.PivotToDegree;
+import frc.robot.commands.arm.pivot.PivotToDegreeProfiled;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.arm.turret.RotateToDegreeProfiled;
 import frc.robot.commands.drive.SwerveJoystickCmd;
@@ -94,8 +95,9 @@ public class RobotContainer {
                                 new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
                                                 () -> towerJoytick.getRawAxis(5) / 2));
 
-                new JoystickButton(driverJoytick, 5).onTrue(new PivotToDegree(armSubsystem,
-                                90));
+                new JoystickButton(driverJoytick, 5).onTrue(new PivotToDegreeProfiled(armSubsystem));
+                // new JoystickButton(driverJoytick, 5).onTrue(new PivotToDegree(armSubsystem,
+                // 90));
                 new JoystickButton(driverJoytick, 6).onTrue(new PivotToDegree(armSubsystem,
                                 180));
                 // new JoystickButton(driverJoytick, 4)

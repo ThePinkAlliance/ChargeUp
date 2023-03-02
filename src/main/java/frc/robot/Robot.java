@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ThePinkAlliance.core.simulation.ctre.CtrePhysicsSim;
 import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -57,6 +58,7 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+        CtrePhysicsSim.getInstance().run();
     }
 
     /** This function is called once each time the robot enters Disabled mode. */

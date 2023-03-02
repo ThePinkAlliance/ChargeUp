@@ -22,6 +22,7 @@ public class TurretSubsystem extends SubsystemBase {
     this.turretController = new CANSparkMax(motorID, MotorType.kBrushless);
     this.turretController.setSmartCurrentLimit(20);
     this.turretController.setIdleMode(IdleMode.kBrake);
+    this.turretController.setOpenLoopRampRate(0.3);
     this.useFaker = RobotBase.isSimulation();
 
     this.neoFaker = new Faker();
