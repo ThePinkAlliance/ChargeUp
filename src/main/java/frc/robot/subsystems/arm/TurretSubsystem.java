@@ -63,6 +63,10 @@ public class TurretSubsystem extends SubsystemBase {
 
     return rotations * 360;
   }
+
+  public boolean isMoving() {
+    return this.turretController.get() >= 0.1;
+  }
 }
 
 class Faker {

@@ -23,18 +23,18 @@ public class RotateToDegree extends CommandBase {
   private double desiredAngle;
   private double lastAngle;
   private double startingAngle;
-  private Supplier<Double> pivotSupplier;
+  private Supplier<Boolean> safeToContinue;
   private Timer timer;
   private Timer epoch;
   private PIDController controller;
 
   /** Creates a new RotateToDegree. */
-  public RotateToDegree(TurretSubsystem turretSubsystem, double desiredAngle, Supplier<Double> pivotSupplier) {
+  public RotateToDegree(TurretSubsystem turretSubsystem, double desiredAngle, Supplier<Boolean> safeToContinue) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
     this.desiredAngle = desiredAngle;
     this.lastAngle = 1;
-    this.pivotSupplier = pivotSupplier;
+    this.safeToContinue = safeToContinue;
     this.timer = new Timer();
     this.epoch = new Timer();
     this.controller = new PIDController(2.3, 0.0121, 0);
@@ -74,7 +74,11 @@ public class RotateToDegree extends CommandBase {
     double desiredPosRadians = desiredAngle * (Math.PI / 180);
     double controlEffort = controller.calculate(currentAngle, desiredPosRadians);
 
-    turretSubsystem.powerTurret(controlEffort);
+    if (safeToContinue.get()) {
+      turretSubsystem.powerTurret(controlEffort);
+    } else {
+      turretSubsystem.powerTurret(0);
+    }
 
     SmartDashboard.putNumber("Turret Target", desiredPosRadians);
     SmartDashboard.putNumber("Turret Position", currentAngle);

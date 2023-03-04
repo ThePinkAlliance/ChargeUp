@@ -40,6 +40,16 @@ public class ArmSubsystem extends SubsystemBase {
   private double pivotOffset;
   private double desiredRotations = 0;
 
+  private double positionToHold = 0;
+
+  public double getPositionToHold() {
+    return positionToHold;
+  }
+
+  public void setPositionToHold(double positionToHold) {
+    this.positionToHold = positionToHold;
+  }
+
   /** Creates a new ArmSubsystem. */
   public ArmSubsystem(int pivotMotorId, int extendMotorId, int canCoderId, double pivotOffset, double powerLimitPivot,
       double powerLimitExtend,
@@ -195,8 +205,13 @@ public class ArmSubsystem extends SubsystemBase {
     return pivotMotor.getMotorOutputVoltage();
   }
 
-  public double getPivotAngle() {
+  public double getArmPitch() {
     return (canCoder.getAbsolutePosition() - 134.561) + pivotOffset;
+  }
+
+  @Deprecated
+  public double getPivotAngle() {
+    return getArmPitch();
   }
 
   public double getPivotVelocity() {

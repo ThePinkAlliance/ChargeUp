@@ -5,6 +5,7 @@
 package frc.robot.commands.arm.pivot;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.ThePinkAlliance.core.math.LinearInterpolationTable;
 import com.ThePinkAlliance.core.math.Vector2d;
@@ -14,11 +15,12 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class PivotToDegreeMagic extends CommandBase {
-  private final double angleMultiplier;
+  private final double angleFactor;
 
   private int smoothingIntensity;
   private double cruiseVelocity;
@@ -31,11 +33,17 @@ public class PivotToDegreeMagic extends CommandBase {
   private int kTimeoutMs;
   private int kPIDLoopIdx;
   private LinearInterpolationTable feedforwardTable;
+  private Supplier<Boolean> safeToContinue;
+
+  private double initialAngle;
+  private boolean motorCommanded;
 
   /** Creates a new PivotToDegreeMagic. */
-  public PivotToDegreeMagic(double desiredAngle, GainsFX gains, ArmSubsystem armSubsystem) {
+  public PivotToDegreeMagic(double desiredAngle, GainsFX gains, Supplier<Boolean> safeToContinue,
+      ArmSubsystem armSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.desiredAngle = desiredAngle;
+    this.safeToContinue = safeToContinue;
     this.armSubsystem = armSubsystem;
     this.gains = gains;
     this.pivotMotor = armSubsystem.getPivotTalon();
@@ -46,26 +54,43 @@ public class PivotToDegreeMagic extends CommandBase {
     this.kSlotIdx = 0;
     this.kTimeoutMs = 10;
     this.kPIDLoopIdx = 0;
-    this.angleMultiplier = 0.00063344;
+    this.angleFactor = 36.3 / 57306;
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
+
+    this.motorCommanded = false;
+    this.initialAngle = 0;
 
     addRequirements(armSubsystem);
   }
 
   /** Creates a new PivotToDegreeMagic. */
   public PivotToDegreeMagic(double desiredAngle, double cruiseVelocity, double acceleration, GainsFX gains,
+      Supplier<Boolean> safeToContinue,
       ArmSubsystem armSubsystem) {
-    this(desiredAngle, gains, armSubsystem);
+    this(desiredAngle, gains, safeToContinue, armSubsystem);
 
     this.acceleration = acceleration;
     this.cruiseVelocity = cruiseVelocity;
   }
 
   /** Creates a new PivotToDegreeMagic. */
-  public PivotToDegreeMagic(double desiredAngle, int smoothingIntensity, GainsFX gains, ArmSubsystem armSubsystem) {
-    this(desiredAngle, gains, armSubsystem);
+  public PivotToDegreeMagic(double desiredAngle, double cruiseVelocity, double acceleration, int smoothingIntensity,
+      GainsFX gains,
+      Supplier<Boolean> safeToContinue,
+      ArmSubsystem armSubsystem) {
+    this(desiredAngle, gains, safeToContinue, armSubsystem);
+
+    this.acceleration = acceleration;
+    this.cruiseVelocity = cruiseVelocity;
+    this.smoothingIntensity = smoothingIntensity;
+  }
+
+  /** Creates a new PivotToDegreeMagic. */
+  public PivotToDegreeMagic(double desiredAngle, int smoothingIntensity, GainsFX gains,
+      Supplier<Boolean> safeToContinue, ArmSubsystem armSubsystem) {
+    this(desiredAngle, gains, safeToContinue, armSubsystem);
 
     this.smoothingIntensity = smoothingIntensity;
   }
@@ -73,6 +98,8 @@ public class PivotToDegreeMagic extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    this.motorCommanded = false;
+
     /* Factory default hardware to prevent unexpected behavior */
     pivotMotor.configFactoryDefault();
 
@@ -129,44 +156,68 @@ public class PivotToDegreeMagic extends CommandBase {
     pivotMotor.configMotionAcceleration(acceleration, kTimeoutMs);
     pivotMotor.configMotionSCurveStrength(smoothingIntensity);
 
-    /* Zero the sensor once on robot boot up */
-    pivotMotor.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
+    initialAngle = armSubsystem.getArmPitch();
 
-    /* Convert the desired angle in degrees into the required position in ticks. */
-    double desiredPosition = desiredAngle * angleMultiplier;
+    pivotMotor.setSelectedSensorPosition(0);
 
-    pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
+    System.out.println("---- Pivot Init ----");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     double currentPosition = pivotMotor.getSelectedSensorPosition();
-    double currentAngle = armSubsystem.getPivotAngle();
-    double appliedPower = pivotMotor.getMotorOutputPercent();
+    double currentPitch = ((currentPosition + .001) / 1578.6776859504) + initialAngle;
+    boolean isSafe = safeToContinue.get();
 
-    System.out.println("[Motor Position]: " + currentPosition + ", [CANCoder Angle]: " + currentAngle
-        + ", [Motor Power]: " + appliedPower);
+    if (!motorCommanded) {
+      /* Convert the desired angle in degrees into the required position in ticks. */
+      double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
+
+      pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
+
+      SmartDashboard.putNumber("desiredPos", desiredPosition);
+
+      this.motorCommanded = true;
+    }
+    // else if (motorCommanded && !isSafe) {
+    // double ff = feedforwardTable.interp(armSubsystem.getArmPitch());
+
+    // if (Double.isNaN(ff) || Double.isInfinite(ff)) {
+    // ff = 0;
+    // }
+
+    // SmartDashboard.putNumber("ff", ff);
+
+    // pivotMotor.set(ControlMode.PercentOutput, ff);
+    // this.motorCommanded = false;
+    // }
+
+    SmartDashboard.putBoolean("isSafe", isSafe);
+    SmartDashboard.putBoolean("isCommanded", motorCommanded);
+    SmartDashboard.putNumber("currentAngle", currentPitch);
+    SmartDashboard.putNumber("desiredAngle", desiredAngle);
+    SmartDashboard.putNumber("InitalAngle", initialAngle);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    double ff = feedforwardTable.interp(desiredAngle);
-
-    if (Double.isNaN(ff) || Double.isInfinite(ff)) {
-      ff = 0;
-    }
-
-    pivotMotor.set(ControlMode.PercentOutput, ff);
+    this.armSubsystem.setPositionToHold(pivotMotor.getSelectedSensorPosition());
+    System.out.println("---- Pivot Command Terminated ----");
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     double currentPosition = pivotMotor.getSelectedSensorPosition();
-    double desiredPosition = desiredAngle * angleMultiplier;
+    double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
+    double diff = Math.abs(desiredPosition - currentPosition);
 
-    return ((currentPosition <= desiredPosition + 200) && (currentPosition >= desiredPosition - 200));
+    SmartDashboard.putNumber("mDiff", diff);
+    SmartDashboard.putNumber("mCurrentPosition", currentPosition);
+    SmartDashboard.putNumber("mDesiredPosition", desiredPosition);
+
+    return (diff <= 200);
   }
 }

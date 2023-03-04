@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ThePinkAlliance.core.util.GainsFX;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -107,5 +108,9 @@ public final class Constants {
                 public static final int kDriverFieldOrientedButtonIdx = 1;
 
                 public static final double kDeadband = 0.08;
+        }
+
+        public static final class ArmConstants {
+                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.2, 0, 0, 0.2, 0, 1);
         }
 }
