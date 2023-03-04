@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.arm.JoystickArm;
-import frc.robot.commands.arm.pivot.PivotToDegree;
+import frc.robot.commands.arm.pivot.PivotToDegreeWPI;
 import frc.robot.commands.arm.pivot.PivotToDegreeProfiled;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.arm.turret.RotateToDegreeProfiled;
@@ -28,6 +28,8 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
+import frc.robot.subsystems.motion.profiles.HighProfile;
+import frc.robot.subsystems.motion.profiles.MidProfile;
 
 public class RobotContainer {
 
@@ -49,6 +51,9 @@ public class RobotContainer {
                         0.5, new Constraints(0, 0));
         private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
+
+        private final HighProfile highProfile = new HighProfile();
+        private final MidProfile midProfile = new MidProfile();
 
         public RobotContainer() {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -79,12 +84,13 @@ public class RobotContainer {
 
         private void configureControllerBindings() {
                 // Base
-                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                                swerveSubsystem,
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
-                                () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
-                                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                // swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
+                // swerveSubsystem,
+                // () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
+                // () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                // () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
+                // () ->
+                // !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 // manipulatorSubsystem.setDefaultCommand(
                 // new JoystickManipulator(manipulatorSubsystem, () ->
@@ -95,20 +101,15 @@ public class RobotContainer {
                                 new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
                                                 () -> towerJoytick.getRawAxis(5) / 2));
 
-                new JoystickButton(driverJoytick, 5).onTrue(new PivotToDegreeProfiled(armSubsystem));
-                // new JoystickButton(driverJoytick, 5).onTrue(new PivotToDegree(armSubsystem,
-                // 90));
-                new JoystickButton(driverJoytick, 6).onTrue(new PivotToDegree(armSubsystem,
-                                180));
+                new JoystickButton(driverJoytick, 5).onTrue(new PivotToDegreeProfiled(highProfile, armSubsystem));
+                new JoystickButton(driverJoytick, 6).onTrue(new PivotToDegreeProfiled(midProfile, armSubsystem));
                 // new JoystickButton(driverJoytick, 4)
                 // .onTrue(new RotateToDegree(turretSubsystem, 270, () ->
                 // armSubsystem.getPivotAngle()));
-                // new JoystickButton(driverJoytick, 3)
-                // .onTrue(new RotateToDegree(turretSubsystem, 180, () ->
-                // armSubsystem.getPivotAngle()));
-                // new JoystickButton(driverJoytick, 2)
-                // .onTrue(new RotateToDegree(turretSubsystem, 0, () ->
-                // armSubsystem.getPivotAngle()));
+                new JoystickButton(driverJoytick, 3)
+                                .onTrue(new RotateToDegree(turretSubsystem, 180, () -> armSubsystem.getPivotAngle()));
+                new JoystickButton(driverJoytick, 2)
+                                .onTrue(new RotateToDegree(turretSubsystem, 0, () -> armSubsystem.getPivotAngle()));
                 new JoystickButton(driverJoytick, 1).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
         }
 

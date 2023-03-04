@@ -26,7 +26,6 @@ public class TurretSubsystem extends SubsystemBase {
     this.useFaker = RobotBase.isSimulation();
 
     this.neoFaker = new Faker();
-    // this.turretController.getEncoder().setPosition(0);
 
     this.powerLimit = 0.4;
   }

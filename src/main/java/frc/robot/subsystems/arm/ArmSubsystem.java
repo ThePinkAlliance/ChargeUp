@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.arm;
 
+import com.ThePinkAlliance.core.simulation.ctre.CtrePhysicsSim;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -57,17 +58,20 @@ public class ArmSubsystem extends SubsystemBase {
 
     this.pivotMotor.configOpenloopRamp(0.5);
 
-    extendMotor.setInverted(true);
+    extendMotor.setInverted(false);
     extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
     extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
     extendMotor.setIdleMode(IdleMode.kBrake);
 
     pivotMotor.setNeutralMode(NeutralMode.Brake);
     pivotMotor.setInverted(true);
+    pivotMotor.setSelectedSensorPosition(0);
 
     SmartDashboard.putNumber("pivot-kP", 0);
     SmartDashboard.putNumber("pivot-kI", 0);
     SmartDashboard.putNumber("pivot-kD", 0);
+
+    CtrePhysicsSim.getInstance().addTalonFX(pivotMotor, 0.5, 5100);
   }
 
   public TalonFX getPivotTalon() {
