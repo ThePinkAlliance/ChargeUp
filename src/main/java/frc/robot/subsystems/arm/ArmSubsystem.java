@@ -61,6 +61,8 @@ public class ArmSubsystem extends SubsystemBase {
     this.pivotFeedforward = new ArmFeedforward(0.01, 0, 0);
     this.ledController = new Spark(0);
 
+    extendMotor.restoreFactoryDefaults();
+
     this.extendEncoder = extendMotor.getEncoder();
     this.pivotOffset = pivotOffset;
     this.powerLimitPivot = powerLimitPivot;
@@ -68,9 +70,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     this.pivotMotor.configOpenloopRamp(0.5);
 
-    extendMotor.setInverted(false);
-    extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
-    extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
+    extendMotor.setInverted(true);
+    // extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
+    // extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
     extendMotor.setIdleMode(IdleMode.kBrake);
 
     pivotMotor.setNeutralMode(NeutralMode.Brake);
@@ -129,20 +131,21 @@ public class ArmSubsystem extends SubsystemBase {
     return this.pivotController.getD();
   }
 
-  public void setExtenionDistance(double distance) {
-    double desiredRotations = distance * (maxRotations / maxDistanceMeters);
+  // public void setExtenionDistance(double distance) {
+  // double desiredRotations = distance * (maxRotations / maxDistanceMeters);
 
-    // This will clip the commandable rotations between 0 and maxRotations.
-    if (desiredRotations > maxRotations) {
-      desiredRotations = maxRotations;
-    } else if (desiredRotations < 0) {
-      desiredRotations = 0;
-    }
+  // // This will clip the commandable rotations between 0 and maxRotations.
+  // if (desiredRotations > maxRotations) {
+  // desiredRotations = maxRotations;
+  // } else if (desiredRotations < 0) {
+  // desiredRotations = 0;
+  // }
 
-    this.desiredRotations = desiredRotations;
+  // this.desiredRotations = desiredRotations;
 
-    extendMotor.getPIDController().setReference(desiredRotations, ControlType.kPosition);
-  }
+  // extendMotor.getPIDController().setReference(desiredRotations,
+  // ControlType.kPosition);
+  // }
 
   public void configureLED() {
     this.ledController.set(0.03);
