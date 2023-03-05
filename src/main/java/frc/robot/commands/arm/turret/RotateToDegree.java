@@ -6,6 +6,8 @@ package frc.robot.commands.arm.turret;
 
 import java.util.function.Supplier;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
@@ -27,6 +29,7 @@ public class RotateToDegree extends CommandBase {
   private Timer timer;
   private Timer epoch;
   private PIDController controller;
+  private CANSparkMax sparkMax;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, double desiredAngle, Supplier<Boolean> safeToContinue) {
@@ -37,8 +40,11 @@ public class RotateToDegree extends CommandBase {
     this.safeToContinue = safeToContinue;
     this.timer = new Timer();
     this.epoch = new Timer();
-    this.controller = new PIDController(2.3, 0.0121, 0);
+    // this.controller = new PIDController(2.3, 0.0121, 0);
+    this.controller = new PIDController(0.1, 0.0, 0);
     this.controller.disableContinuousInput();
+
+    this.sparkMax = turretSubsystem.getCanSparkMax();
 
     SmartDashboard.putNumber("turret-kP", controller.getP());
     SmartDashboard.putNumber("turret-kI", controller.getI());
@@ -64,6 +70,9 @@ public class RotateToDegree extends CommandBase {
     double kD = SmartDashboard.getNumber("turret-kD", controller.getD());
 
     controller.setPID(kP, kI, kD);
+    sparkMax.getPIDController().setP(kP);
+    sparkMax.getPIDController().setI(kI);
+    sparkMax.getPIDController().setD(kD);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -72,10 +81,10 @@ public class RotateToDegree extends CommandBase {
 
     double currentAngle = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double desiredPosRadians = desiredAngle * (Math.PI / 180);
-    double controlEffort = controller.calculate(currentAngle, desiredPosRadians);
+    double desiredRotations = desiredPosRadians * (348.7 / (2 * Math.PI));
 
     if (safeToContinue.get()) {
-      turretSubsystem.powerTurret(controlEffort);
+      sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
     } else {
       turretSubsystem.powerTurret(0);
     }

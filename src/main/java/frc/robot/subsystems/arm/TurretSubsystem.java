@@ -40,6 +40,10 @@ public class TurretSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("turret rotations", turretController.getEncoder().getPosition());
   }
 
+  public CANSparkMax getCanSparkMax() {
+    return turretController;
+  }
+
   public void powerTurret(double input) {
     powerTurretUnsafe(input * powerLimit);
   }

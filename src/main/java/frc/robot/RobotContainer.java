@@ -85,13 +85,12 @@ public class RobotContainer {
 
         private void configureControllerBindings() {
                 // Base
-                // swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-                // swerveSubsystem,
-                // () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
-                // () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
-                // () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
-                // () ->
-                // !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
+                                swerveSubsystem,
+                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
+                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                                () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
+                                () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 // manipulatorSubsystem.setDefaultCommand(
                 // new JoystickManipulator(manipulatorSubsystem, () ->
@@ -103,26 +102,29 @@ public class RobotContainer {
                                                 () -> towerJoytick.getRawAxis(5) / 2));
 
                 new JoystickButton(driverJoytick, 5).onTrue(
-                                new PivotToDegreeMagic(114,
+                                new PivotToDegreeMagic(180,
+                                                36864,
+                                                20480, 3, Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                () -> !turretSubsystem.isMoving(),
+                                                armSubsystem));
+                new JoystickButton(driverJoytick, 6).onTrue(
+                                new PivotToDegreeMagic(85,
                                                 36864,
                                                 20480, 3, Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> !turretSubsystem.isMoving(),
                                                 armSubsystem));
 
-                new JoystickButton(driverJoytick, 6).onTrue(
-                                new PivotToDegreeMagic(96.50,
-                                                36864,
-                                                20480, 3, Constants.ArmConstants.MOTIONM_GAINS_FX,
-                                                () -> !turretSubsystem.isMoving(),
-                                                armSubsystem));
                 new JoystickButton(driverJoytick, 3)
-                                .onTrue(new RotateToDegree(turretSubsystem, 96.79,
+                                .onTrue(new RotateToDegree(turretSubsystem, 180,
                                                 () -> armSubsystem.getArmPitch() > 90));
                 new JoystickButton(driverJoytick, 2)
-                                .onTrue(new RotateToDegree(turretSubsystem, 114.86,
+                                .onTrue(new RotateToDegree(turretSubsystem, 90,
                                                 () -> armSubsystem.getArmPitch() > 90));
                 new JoystickButton(driverJoytick, 1)
                                 .onTrue(new RotateToDegree(turretSubsystem, 0, () -> armSubsystem.getArmPitch() > 90));
+
+                // new JoystickButton(driverJoytick, 1)
+                // .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
         }
 
         public Command getAutonomousCommand() {
