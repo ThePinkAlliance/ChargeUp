@@ -31,6 +31,14 @@ public class ManipulatorSubsystem extends SubsystemBase {
     this.powerLimit = 0.5;
   }
 
+  public void resetLeftEncoder() {
+    this.leftMotor.getEncoder().setPosition(0);
+  }
+
+  public void resetRightEncoder() {
+    this.rightMotor.getEncoder().setPosition(0);
+  }
+
   public void setLeftPower(double input) {
     setLeftPowerUnsafe(input * powerLimit);
   }

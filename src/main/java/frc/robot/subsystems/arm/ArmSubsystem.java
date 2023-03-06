@@ -7,6 +7,7 @@ package frc.robot.subsystems.arm;
 import com.ThePinkAlliance.core.simulation.ctre.CtrePhysicsSim;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
@@ -70,6 +71,7 @@ public class ArmSubsystem extends SubsystemBase {
     this.powerLimitExtend = powerLimitExtend;
 
     this.pivotMotor.configOpenloopRamp(0.5);
+
     extendMotor.getPIDController().setP(0.1);
     extendMotor.setInverted(true);
     // extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);

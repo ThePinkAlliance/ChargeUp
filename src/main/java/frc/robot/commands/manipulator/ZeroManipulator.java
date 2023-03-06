@@ -14,6 +14,9 @@ public class ZeroManipulator extends CommandBase {
   MedianFilter rightFilter;
   double leftCurrent;
   double rightCurrent;
+  boolean isFinished;
+  boolean leftZeroed;
+  boolean rightZeroed;
 
   /** Creates a new ZeroManipulator. */
   public ZeroManipulator(ManipulatorSubsystem manipulatorSubsystem) {
@@ -22,6 +25,9 @@ public class ZeroManipulator extends CommandBase {
     this.manipulatorSubsystem = manipulatorSubsystem;
     this.leftFilter = new MedianFilter(6);
     this.rightFilter = new MedianFilter(6);
+    this.isFinished = false;
+    this.leftZeroed = false;
+    this.rightZeroed = false;
 
     addRequirements(manipulatorSubsystem);
   }
@@ -31,29 +37,40 @@ public class ZeroManipulator extends CommandBase {
   public void initialize() {
     manipulatorSubsystem.setLeftPower(-0.4);
     manipulatorSubsystem.setRightPower(-0.4);
-
-    double lC = manipulatorSubsystem.getLeftCurrent();
-    double rC = manipulatorSubsystem.getLeftCurrent();
-
-    leftCurrent = leftFilter.calculate(lC);
-    rightCurrent = rightFilter.calculate(rC);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double lC = manipulatorSubsystem.getLeftCurrent();
+    double rC = manipulatorSubsystem.getLeftCurrent();
+
+    leftCurrent = leftFilter.calculate(lC);
+    rightCurrent = rightFilter.calculate(rC);
+
+    if (leftCurrent >= 30) {
+      manipulatorSubsystem.setLeftPower(0);
+      manipulatorSubsystem.resetLeftEncoder();
+
+      this.leftZeroed = true;
+    }
+
+    if (rightCurrent >= 30) {
+      manipulatorSubsystem.setRightPower(0);
+      manipulatorSubsystem.resetRightEncoder();
+
+      this.rightZeroed = true;
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    manipulatorSubsystem.setLeftPower(0);
-    manipulatorSubsystem.setRightPower(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return leftCurrent >= 30 && rightCurrent >= 30;
+    return leftZeroed && rightZeroed;
   }
 }
