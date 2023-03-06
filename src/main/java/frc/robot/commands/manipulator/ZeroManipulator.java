@@ -12,8 +12,6 @@ public class ZeroManipulator extends CommandBase {
   ManipulatorSubsystem manipulatorSubsystem;
   MedianFilter leftFilter;
   MedianFilter rightFilter;
-  double leftCurrent;
-  double rightCurrent;
   boolean isFinished;
   boolean leftZeroed;
   boolean rightZeroed;
@@ -45,8 +43,8 @@ public class ZeroManipulator extends CommandBase {
     double lC = manipulatorSubsystem.getLeftCurrent();
     double rC = manipulatorSubsystem.getLeftCurrent();
 
-    leftCurrent = leftFilter.calculate(lC);
-    rightCurrent = rightFilter.calculate(rC);
+    double leftCurrent = leftFilter.calculate(lC);
+    double rightCurrent = rightFilter.calculate(rC);
 
     if (leftCurrent >= 30) {
       manipulatorSubsystem.setLeftPower(0);
