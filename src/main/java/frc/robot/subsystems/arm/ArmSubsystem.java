@@ -10,10 +10,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -33,13 +33,14 @@ public class ArmSubsystem extends SubsystemBase {
 
   private double powerLimitPivot;
   private double powerLimitExtend;
-  private double maxRotations = 0;
+  private double maxRotations = 71;
   private double maxDistanceMeters = 0;
   private double maxPivotAngle = 270;
   private double minPivotAngle = 27;
   private double pivotOffset;
-  private double desiredRotations = 0;
 
+  private double desiredExtendRotations = 0;
+  private double desiredRotations = 0;
   private double positionToHold = 0;
 
   public double getPositionToHold() {
@@ -69,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
     this.powerLimitExtend = powerLimitExtend;
 
     this.pivotMotor.configOpenloopRamp(0.5);
-
+    extendMotor.getPIDController().setP(0.1);
     extendMotor.setInverted(true);
     // extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
     // extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
@@ -131,34 +132,33 @@ public class ArmSubsystem extends SubsystemBase {
     return this.pivotController.getD();
   }
 
-  // public void setExtenionDistance(double distance) {
-  // double desiredRotations = distance * (maxRotations / maxDistanceMeters);
+  public void setExtenionRotations(double rotations) {
+    // This will clip the commandable rotations between 0 and maxRotations.
+    if (rotations > maxRotations) {
+      rotations = maxRotations;
+    } else if (rotations < 0) {
+      rotations = 0;
+    }
 
-  // // This will clip the commandable rotations between 0 and maxRotations.
-  // if (desiredRotations > maxRotations) {
-  // desiredRotations = maxRotations;
-  // } else if (desiredRotations < 0) {
-  // desiredRotations = 0;
-  // }
+    REVLibError err = extendMotor.getPIDController().setReference(
+        rotations,
+        ControlType.kPosition);
 
-  // this.desiredRotations = desiredRotations;
-
-  // extendMotor.getPIDController().setReference(desiredRotations,
-  // ControlType.kPosition);
-  // }
+    if (err == REVLibError.kOk) {
+      this.desiredExtendRotations = rotations;
+    } else if (err == REVLibError.kSetpointOutOfRange) {
+      System.err.println("[ARM, Extend]: Desired rotations out of range");
+    } else {
+      System.err.println("[ARM, Extend]: Error " + err.toString());
+    }
+  }
 
   public void configureLED() {
     this.ledController.set(0.03);
   }
 
   public boolean atExtensionSetpoint() {
-    double tolerence = 0.3;
-    double extensionDistance = getExtensionDistance();
-
-    if ((desiredRotations - tolerence) < extensionDistance && extensionDistance < (desiredRotations + tolerence))
-      return true;
-    else
-      return false;
+    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < 1;
   }
 
   public boolean atPivotSetpoint() {

@@ -15,22 +15,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.arm.JoystickArm;
-import frc.robot.commands.arm.pivot.PivotToDegreeWPI;
+import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
-import frc.robot.commands.arm.pivot.PivotToDegreeProfiled;
 import frc.robot.commands.arm.turret.RotateToDegree;
-import frc.robot.commands.arm.turret.RotateToDegreeProfiled;
 import frc.robot.commands.drive.SwerveJoystickCmd;
-import frc.robot.commands.manipulator.JoystickManipulator;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
-import frc.robot.subsystems.motion.profiles.HighProfile;
-import frc.robot.subsystems.motion.profiles.MidProfile;
 
 public class RobotContainer {
 
@@ -53,9 +49,6 @@ public class RobotContainer {
         private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
 
-        private final HighProfile highProfile = new HighProfile();
-        private final MidProfile midProfile = new MidProfile();
-
         public RobotContainer() {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -68,6 +61,9 @@ public class RobotContainer {
                 debugTab.add(thetaController);
 
                 try {
+                        /**
+                         * These are all testing trajectories for pathweaver.
+                         */
                         Trajectory idk = TrajectoryUtil.fromPathweaverJson(
                                         Filesystem.getDeployDirectory().toPath().resolve("output/idk.wpilib.json"));
                         Trajectory e1 = TrajectoryUtil.fromPathweaverJson(
@@ -84,7 +80,7 @@ public class RobotContainer {
         }
 
         private void configureControllerBindings() {
-                // Base
+                /* Drivetrain (Base) */
                 swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                                 swerveSubsystem,
                                 () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
@@ -92,39 +88,54 @@ public class RobotContainer {
                                 () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
                                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
-                // manipulatorSubsystem.setDefaultCommand(
-                // new JoystickManipulator(manipulatorSubsystem, () ->
-                // towerJoytick.getRawAxis(0),
-                // () -> towerJoytick.getRawAxis(4)));
-
+                /* Arm Controls (Base) */
                 armSubsystem.setDefaultCommand(
                                 new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
                                                 () -> towerJoytick.getRawAxis(5) / 2));
 
                 new JoystickButton(driverJoytick, 5).onTrue(
                                 new PivotToDegreeMagic(180,
-                                                36864,
-                                                20480, 3, Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
+                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> !turretSubsystem.isMoving(),
                                                 armSubsystem));
                 new JoystickButton(driverJoytick, 6).onTrue(
                                 new PivotToDegreeMagic(85,
-                                                36864,
-                                                20480, 3, Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
+                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> !turretSubsystem.isMoving(),
                                                 armSubsystem));
 
-                new JoystickButton(driverJoytick, 3)
-                                .onTrue(new RotateToDegree(turretSubsystem, 180,
-                                                () -> armSubsystem.getArmPitch() > 90));
-                new JoystickButton(driverJoytick, 2)
-                                .onTrue(new RotateToDegree(turretSubsystem, 90,
-                                                () -> armSubsystem.getArmPitch() > 90));
-                new JoystickButton(driverJoytick, 1)
-                                .onTrue(new RotateToDegree(turretSubsystem, 0, () -> armSubsystem.getArmPitch() > 90));
+                /* Extend Controls (Base) */
+                new JoystickButton(driverJoytick, 4)
+                                .onTrue(new ExtendTicks(70, armSubsystem));
 
-                // new JoystickButton(driverJoytick, 1)
-                // .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+                new JoystickButton(driverJoytick, 3)
+                                .onTrue(new ExtendTicks(35, armSubsystem));
+
+                new JoystickButton(driverJoytick, 2)
+                                .onTrue(new ExtendTicks(1, armSubsystem));
+
+                new JoystickButton(driverJoytick, 1)
+                                .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+
+                /* Turret Controls (Base) */
+                new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, 90,
+                                () -> armSubsystem.getArmPitch() > 100));
+
+                new POVButton(driverJoytick, 180)
+                                .onTrue(new RotateToDegree(turretSubsystem, 180,
+                                                () -> armSubsystem.getArmPitch() > 100));
+
+                new POVButton(driverJoytick, 270)
+                                .onTrue(new RotateToDegree(turretSubsystem,
+                                                270,
+                                                () -> armSubsystem.getArmPitch() > 100));
+
+                new POVButton(driverJoytick, 0)
+                                .onTrue(new RotateToDegree(turretSubsystem, 0, () -> armSubsystem.getArmPitch() > 100));
         }
 
         public Command getAutonomousCommand() {

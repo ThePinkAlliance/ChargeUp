@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.math.SphericalCoordinates;
 import frc.robot.subsystems.arm.ArmSubsystem;
+
 /**
  * The purpose of this command is to allow us to input a desired location in 3d
  * space and command to said position.
@@ -37,24 +38,11 @@ public class ArmCoordinator extends CommandBase {
   public void execute() {
     SphericalCoordinates sphericalDifference = desiredLocationSpherical.subtract(getCurrentCoordinates());
 
-    double pivotPower = armSubsystem.calculatePivotInput(sphericalDifference.getPhi());
-
-    SmartDashboard.putNumber("Current Pivot", getCurrentCoordinates().getPhi());
-    SmartDashboard.putNumber("Current Turret", getCurrentCoordinates().getTheta());
-    SmartDashboard.putNumber("Current Radius", getCurrentCoordinates().getR());
-
-    SmartDashboard.putNumber("Desired PivotPower", pivotPower);
-    SmartDashboard.putNumber("Desired Radius", sphericalDifference.getR());
-
-    // turretSubsystem.commandTurret(turretPower);
-
-    // armSubsystem.setExtenionDistance(sphericalDifference.getR());
-    // armSubsystem.commandExtend(pivotPower);
   }
 
   private SphericalCoordinates getCurrentCoordinates() {
     return new SphericalCoordinates(armSubsystem.getExtensionDistance(), 0,
-        armSubsystem.getPivotAngle());
+        armSubsystem.getArmPitch());
   }
 
   // Called once the command ends or is interrupted.

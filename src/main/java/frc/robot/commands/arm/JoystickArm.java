@@ -4,11 +4,8 @@
 
 package frc.robot.commands.arm;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-import com.ThePinkAlliance.core.math.LinearInterpolationTable;
-import com.ThePinkAlliance.core.math.Vector2d;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -18,9 +15,7 @@ public class JoystickArm extends CommandBase {
   private ArmSubsystem armSubsystem;
   private Supplier<Double> extSupplier;
   private Supplier<Double> pivotSupplier;
-  private LinearInterpolationTable feedforwardTable;
-  private double positionToHold;
-  private boolean updateHoldPosition = false;
+  private boolean updateHoldPosition;
 
   /** Creates a new CommandExtend. */
   public JoystickArm(ArmSubsystem armSubsystem, Supplier<Double> extSupplier, Supplier<Double> pivotSupplier) {
@@ -29,11 +24,7 @@ public class JoystickArm extends CommandBase {
     this.armSubsystem = armSubsystem;
     this.extSupplier = extSupplier;
     this.pivotSupplier = pivotSupplier;
-    this.positionToHold = 0;
-
-    this.feedforwardTable = new LinearInterpolationTable(List.of(new Vector2d(71, 0.0787), new Vector2d(74, 0.055),
-        new Vector2d(77.78, 0.082), new Vector2d(94.30, 0.078),
-        new Vector2d(122, 0.074), new Vector2d(130, 0.070), new Vector2d(145, 0.062), new Vector2d(180, 0)));
+    this.updateHoldPosition = false;
 
     addRequirements(armSubsystem);
   }
@@ -50,12 +41,7 @@ public class JoystickArm extends CommandBase {
   @Override
   public void execute() {
     double input = Math.abs(pivotSupplier.get()) > 0.01 ? pivotSupplier.get() : 0;
-    double pivotAngle = armSubsystem.getPivotAngle();
-    double ff = feedforwardTable.interp(pivotAngle);
-
-    if (Double.isNaN(ff) || Double.isInfinite(ff)) {
-      ff = 0;
-    }
+    double pivotAngle = armSubsystem.getArmPitch();
 
     if (input == 0) {
       if (updateHoldPosition) {
