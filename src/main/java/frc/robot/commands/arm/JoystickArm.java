@@ -35,6 +35,7 @@ public class JoystickArm extends CommandBase {
     updateHoldPosition = false;
     armSubsystem.getPivotTalon().configFactoryDefault();
     armSubsystem.getPivotTalon().config_kP(0, 0.1);
+    this.armSubsystem.setPositionToHold(this.armSubsystem.getPivotTalon().getSelectedSensorPosition());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -56,7 +57,7 @@ public class JoystickArm extends CommandBase {
       this.updateHoldPosition = true;
     }
 
-    this.armSubsystem.commandExtend(extSupplier.get());
+    this.armSubsystem.commandExtend(extSupplier.get() * -1);
 
     SmartDashboard.putNumber("Pivot Demanded Power", armSubsystem.getPivotDemandedPower());
     SmartDashboard.putNumber("Pivot Power", input);

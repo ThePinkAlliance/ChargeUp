@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
+@Deprecated
 public class PivotToDegree extends CommandBase {
   ArmSubsystem armSubsystem;
   boolean isFinished;

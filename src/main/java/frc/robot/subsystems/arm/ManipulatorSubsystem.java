@@ -5,6 +5,7 @@
 package frc.robot.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -19,16 +20,24 @@ public class ManipulatorSubsystem extends SubsystemBase {
     this.leftMotor = new CANSparkMax(leftMotorId, MotorType.kBrushless);
     this.rightMotor = new CANSparkMax(rightMotorId, MotorType.kBrushless);
 
-    this.leftMotor.setSmartCurrentLimit(20);
-    this.rightMotor.setSmartCurrentLimit(20);
+    this.leftMotor.setSmartCurrentLimit(35);
+    this.rightMotor.setSmartCurrentLimit(35);
 
-    this.leftMotor.getEncoder().setPosition(0);
-    this.rightMotor.getEncoder().setPosition(0);
-
-    this.leftMotor.setInverted(true);
+    this.leftMotor.setInverted(false);
     this.rightMotor.setInverted(true);
 
-    this.powerLimit = 0.5;
+    this.leftMotor.getPIDController().setP(.1);
+    this.rightMotor.getPIDController().setP(.1);
+
+    this.powerLimit = 0.4;
+  }
+
+  public void setPositionTargetRight(double current) {
+    this.rightMotor.getPIDController().setReference(current, ControlType.kPosition);
+  }
+
+  public void setPositionTargetLeft(double current) {
+    this.leftMotor.getPIDController().setReference(current, ControlType.kPosition);
   }
 
   public void resetLeftEncoder() {

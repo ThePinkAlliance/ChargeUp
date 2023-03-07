@@ -21,8 +21,8 @@ public class ZeroManipulator extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.manipulatorSubsystem = manipulatorSubsystem;
-    this.leftFilter = new MedianFilter(6);
-    this.rightFilter = new MedianFilter(6);
+    this.leftFilter = new MedianFilter(20);
+    this.rightFilter = new MedianFilter(20);
     this.isFinished = false;
     this.leftZeroed = false;
     this.rightZeroed = false;
@@ -33,6 +33,10 @@ public class ZeroManipulator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    this.isFinished = false;
+    this.leftZeroed = false;
+    this.rightZeroed = false;
+
     manipulatorSubsystem.setLeftPower(-0.4);
     manipulatorSubsystem.setRightPower(-0.4);
   }
@@ -46,14 +50,14 @@ public class ZeroManipulator extends CommandBase {
     double leftCurrent = leftFilter.calculate(lC);
     double rightCurrent = rightFilter.calculate(rC);
 
-    if (leftCurrent >= 30) {
+    if (leftCurrent >= 25) {
       manipulatorSubsystem.setLeftPower(0);
       manipulatorSubsystem.resetLeftEncoder();
 
       this.leftZeroed = true;
     }
 
-    if (rightCurrent >= 30) {
+    if (rightCurrent >= 25) {
       manipulatorSubsystem.setRightPower(0);
       manipulatorSubsystem.resetRightEncoder();
 

@@ -15,6 +15,7 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -63,8 +64,6 @@ public class ArmSubsystem extends SubsystemBase {
     this.pivotFeedforward = new ArmFeedforward(0.01, 0, 0);
     this.ledController = new Spark(0);
 
-    extendMotor.restoreFactoryDefaults();
-
     this.extendEncoder = extendMotor.getEncoder();
     this.pivotOffset = pivotOffset;
     this.powerLimitPivot = powerLimitPivot;
@@ -72,7 +71,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     this.pivotMotor.configOpenloopRamp(0.5);
 
-    extendMotor.getPIDController().setP(0.1);
+    extendMotor.getPIDController().setP(0.3);
+    extendMotor.getEncoder().setPosition(0);
     extendMotor.setInverted(true);
     // extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
     // extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
@@ -110,6 +110,11 @@ public class ArmSubsystem extends SubsystemBase {
     return plantInput + ff;
   }
 
+  public void resetPivotMotor() {
+    // this.pivotMotor.set(ControlMode.Disabled, 0);
+    // this.pivotMotor.setSelectedSensorPosition(0);
+  }
+
   public void setPid(double p) {
     setPid(p, this.pivotController.getI(), this.pivotController.getD());
   }
@@ -136,11 +141,11 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void setExtenionRotations(double rotations) {
     // This will clip the commandable rotations between 0 and maxRotations.
-    if (rotations > maxRotations) {
-      rotations = maxRotations;
-    } else if (rotations < 0) {
-      rotations = 0;
-    }
+    // if (rotations > maxRotations) {
+    // rotations = maxRotations;
+    // } else if (rotations < 0) {
+    // rotations = 0;
+    // }
 
     REVLibError err = extendMotor.getPIDController().setReference(
         rotations,
@@ -226,6 +231,9 @@ public class ArmSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    // System.out.println("[ARM/PERIODIC] Extend Current: " +
+    // extendMotor.getOutputCurrent());
 
     SmartDashboard.putNumber("Pivot Pitch", this.getPivotAngle());
   }
