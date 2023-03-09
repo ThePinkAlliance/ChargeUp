@@ -9,31 +9,35 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 
-public class ZeroManipulator extends CommandBase {
+public class CommandManipulator extends CommandBase {
   ManipulatorSubsystem manipulatorSubsystem;
+  double time;
+  boolean inverted;
   MedianFilter leftFilter;
   MedianFilter rightFilter;
-  boolean isFinished;
   boolean leftZeroed;
   boolean rightZeroed;
   Timer leftSustainedTime;
   Timer rightSustainedTime;
   double sustainedTime = .4;
-  double threshold = 23;
+  double currentThreshold;
+  double power;
 
-  /** Creates a new ZeroManipulator. */
-  public ZeroManipulator(ManipulatorSubsystem manipulatorSubsystem) {
+  /** Creates a new PowerUntilTime. */
+  public CommandManipulator(double sustainedTime, double currentThreshold, double power, boolean inverted,
+      ManipulatorSubsystem manipulatorSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-
+    this.inverted = inverted;
+    this.time = sustainedTime;
     this.manipulatorSubsystem = manipulatorSubsystem;
     this.leftFilter = new MedianFilter(40);
     this.rightFilter = new MedianFilter(40);
-    this.isFinished = false;
     this.leftZeroed = false;
     this.rightZeroed = false;
-
-    this.rightSustainedTime = new Timer();
+    this.power = power;
+    this.currentThreshold = currentThreshold;
     this.leftSustainedTime = new Timer();
+    this.rightSustainedTime = new Timer();
 
     addRequirements(manipulatorSubsystem);
   }
@@ -41,15 +45,14 @@ public class ZeroManipulator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.isFinished = false;
     this.leftZeroed = false;
     this.rightZeroed = false;
 
+    leftSustainedTime.stop();
+    rightSustainedTime.stop();
+
     leftSustainedTime.reset();
     rightSustainedTime.reset();
-
-    manipulatorSubsystem.setLeftPower(-0.6);
-    manipulatorSubsystem.setRightPower(-0.6);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -61,14 +64,14 @@ public class ZeroManipulator extends CommandBase {
     double leftCurrent = leftFilter.calculate(lC);
     double rightCurrent = rightFilter.calculate(rC);
 
-    if (leftCurrent >= threshold) {
+    if (leftCurrent >= currentThreshold) {
       leftSustainedTime.start();
     } else {
       leftSustainedTime.stop();
       leftSustainedTime.reset();
     }
 
-    if (rightCurrent >= threshold) {
+    if (rightCurrent >= currentThreshold) {
       rightSustainedTime.start();
     } else {
       rightSustainedTime.stop();
@@ -78,12 +81,18 @@ public class ZeroManipulator extends CommandBase {
     if (leftSustainedTime.hasElapsed(sustainedTime)) {
       this.manipulatorSubsystem.setLeftPower(0);
       this.leftZeroed = true;
+    } else {
+      manipulatorSubsystem.setLeftPower(inverted ? -power : power);
     }
 
     if (rightSustainedTime.hasElapsed(sustainedTime)) {
       this.manipulatorSubsystem.setRightPower(0);
       this.rightZeroed = true;
+    } else {
+      manipulatorSubsystem.setRightPower(inverted ? -power : power);
     }
+
+    System.out.println(leftCurrent + ", " + rightCurrent);
   }
 
   // Called once the command ends or is interrupted.

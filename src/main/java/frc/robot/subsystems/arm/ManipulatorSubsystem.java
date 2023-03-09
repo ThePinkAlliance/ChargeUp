@@ -6,7 +6,9 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ManipulatorSubsystem extends SubsystemBase {
@@ -14,30 +16,58 @@ public class ManipulatorSubsystem extends SubsystemBase {
   private CANSparkMax rightMotor;
 
   private double powerLimit;
+  private final int MAX_TEMP = 39;
 
   /** Creates a new Mnipulator. */
   public ManipulatorSubsystem(int leftMotorId, int rightMotorId) {
     this.leftMotor = new CANSparkMax(leftMotorId, MotorType.kBrushless);
     this.rightMotor = new CANSparkMax(rightMotorId, MotorType.kBrushless);
 
-    this.leftMotor.setSmartCurrentLimit(35);
-    this.rightMotor.setSmartCurrentLimit(35);
+    this.leftMotor.setIdleMode(IdleMode.kBrake);
+    this.rightMotor.setIdleMode(IdleMode.kBrake);
+
+    this.leftMotor.setSmartCurrentLimit(25);
+    this.rightMotor.setSmartCurrentLimit(25);
 
     this.leftMotor.setInverted(false);
     this.rightMotor.setInverted(true);
 
-    this.leftMotor.getPIDController().setP(.1);
-    this.rightMotor.getPIDController().setP(.1);
+    this.leftMotor.getPIDController().setP(.2);
+    this.rightMotor.getPIDController().setP(.2);
 
     this.powerLimit = 0.4;
   }
 
   public void setPositionTargetRight(double current) {
-    this.rightMotor.getPIDController().setReference(current, ControlType.kPosition);
+    setRightControl(current, ControlType.kPosition);
   }
 
   public void setPositionTargetLeft(double current) {
-    this.leftMotor.getPIDController().setReference(current, ControlType.kPosition);
+    setLeftControl(current, ControlType.kPosition);
+  }
+
+  public void setLeftControl(double input, ControlType type) {
+    boolean isSafe = leftMotor.getMotorTemperature() > MAX_TEMP;
+
+    if (isSafe) {
+      this.leftMotor.getPIDController().setReference(input, type);
+    } else {
+      this.leftMotor.disable();
+    }
+
+    SmartDashboard.putBoolean("Left Temp Kill", isSafe);
+  }
+
+  public void setRightControl(double input, ControlType type) {
+    boolean isSafe = rightMotor.getMotorTemperature() > MAX_TEMP;
+
+    if (isSafe) {
+      this.rightMotor.getPIDController().setReference(input, type);
+    } else {
+      this.rightMotor.disable();
+    }
+
+    SmartDashboard.putBoolean("Right Temp Kill", isSafe);
   }
 
   public void resetLeftEncoder() {
@@ -72,6 +102,14 @@ public class ManipulatorSubsystem extends SubsystemBase {
     return leftMotor.getOutputCurrent();
   }
 
+  public double getRightVelocity() {
+    return rightMotor.getEncoder().getVelocity();
+  }
+
+  public double getLeftVelocity() {
+    return leftMotor.getEncoder().getVelocity();
+  }
+
   /**
    * Returns the current rotations of the motor.
    */
@@ -89,5 +127,11 @@ public class ManipulatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    SmartDashboard.putNumber("Left Temp", this.leftMotor.getMotorTemperature());
+    SmartDashboard.putNumber("Right Temp", this.rightMotor.getMotorTemperature());
+
+    SmartDashboard.putNumber("Left Counts", leftMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("Right Counts", rightMotor.getEncoder().getPosition());
   }
 }

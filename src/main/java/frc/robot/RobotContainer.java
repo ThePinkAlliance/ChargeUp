@@ -24,6 +24,9 @@ import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.drive.SwerveJoystickCmd;
 import frc.robot.commands.manipulator.JoystickManipulator;
+import frc.robot.commands.manipulator.SupplyCurrentManipulator;
+import frc.robot.commands.manipulator.CommandCurrentManipulator;
+import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.commands.manipulator.ZeroManipulator;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -100,14 +103,14 @@ public class RobotContainer {
                                 () -> towerJoytick.getRawAxis(4), () -> towerJoytick.getRawAxis(0)));
 
                 new JoystickButton(driverJoytick, 5).onTrue(
-                                new PivotToDegreeMagic(180,
+                                new PivotToDegreeMagic(128,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> !turretSubsystem.isMoving(),
                                                 armSubsystem));
                 new JoystickButton(driverJoytick, 6).onTrue(
-                                new PivotToDegreeMagic(85,
+                                new PivotToDegreeMagic(75,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -115,24 +118,25 @@ public class RobotContainer {
                                                 armSubsystem));
 
                 /* Extend Controls (Base) */
+
+                new JoystickButton(driverJoytick, 4).onTrue(new CommandManipulator(.2, 14, 0.7, false,
+                                manipulatorSubsystem));
+                new JoystickButton(driverJoytick, 2).onTrue(new CommandManipulator(.3, 23, 0.7, true,
+                                manipulatorSubsystem));
+
                 new JoystickButton(towerJoytick, 4)
-                                .onTrue(new ExtendTicks(70, armSubsystem));
-
-                new JoystickButton(driverJoytick, 4).onTrue(new GoToPositionManipulator(16, manipulatorSubsystem));
-                new JoystickButton(driverJoytick, 3).onTrue(new GoToPositionManipulator(2, manipulatorSubsystem));
-                new JoystickButton(driverJoytick, 2).onTrue(new ZeroManipulator(manipulatorSubsystem));
-
+                                .onTrue(new ExtendTicks(93, armSubsystem));
                 new JoystickButton(towerJoytick, 3)
                                 .onTrue(new ExtendTicks(35, armSubsystem));
 
                 new JoystickButton(towerJoytick, 2)
-                                .onTrue(new ExtendTicks(1, armSubsystem));
+                                .onTrue(new ExtendTicks(10, armSubsystem));
 
                 new JoystickButton(driverJoytick, 1)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
                 /* Turret Controls (Base) */
-                new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, 90,
+                new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, 160,
                                 () -> armSubsystem.getArmPitch() > 90));
 
                 new POVButton(driverJoytick, 180)
@@ -141,7 +145,7 @@ public class RobotContainer {
 
                 new POVButton(driverJoytick, 270)
                                 .onTrue(new RotateToDegree(turretSubsystem,
-                                                270,
+                                                200,
                                                 () -> armSubsystem.getArmPitch() > 90));
 
                 new POVButton(driverJoytick, 0)

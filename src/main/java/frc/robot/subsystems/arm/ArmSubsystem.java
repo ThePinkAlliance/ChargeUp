@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -73,7 +74,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     extendMotor.getPIDController().setP(0.3);
     extendMotor.getEncoder().setPosition(0);
-    extendMotor.setInverted(true);
+    extendMotor.setInverted(false);
     // extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
     // extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
     extendMotor.setIdleMode(IdleMode.kBrake);
@@ -108,11 +109,6 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber(getName() + " Feedforward", ff);
 
     return plantInput + ff;
-  }
-
-  public void resetPivotMotor() {
-    // this.pivotMotor.set(ControlMode.Disabled, 0);
-    // this.pivotMotor.setSelectedSensorPosition(0);
   }
 
   public void setPid(double p) {
@@ -208,7 +204,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public double getExtensionRotations() {
-    return extendEncoder.getPosition();
+    return (extendMotor.getAbsoluteEncoder(Type.kDutyCycle).getPosition() - 0);
   }
 
   public double getPivotVoltage() {
@@ -232,8 +228,8 @@ public class ArmSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // System.out.println("[ARM/PERIODIC] Extend Current: " +
-    // extendMotor.getOutputCurrent());
+    // System.out.println("[ARM/PERIODIC] Extend Position: " +
+    // extendMotor.getEncoder().getPosition());
 
     SmartDashboard.putNumber("Pivot Pitch", this.getPivotAngle());
   }

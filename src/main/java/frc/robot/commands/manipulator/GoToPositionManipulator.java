@@ -4,18 +4,21 @@
 
 package frc.robot.commands.manipulator;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 
 public class GoToPositionManipulator extends CommandBase {
   ManipulatorSubsystem manipulatorSubsystem;
   double desiredPosition;
+  Timer timer;
 
   /** Creates a new CloseManipulator. */
   public GoToPositionManipulator(double desiredPosition, ManipulatorSubsystem manipulatorSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.desiredPosition = desiredPosition;
+    this.timer = new Timer();
     this.manipulatorSubsystem = manipulatorSubsystem;
 
     addRequirements(manipulatorSubsystem);
@@ -24,18 +27,22 @@ public class GoToPositionManipulator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.manipulatorSubsystem.setPositionTargetLeft(desiredPosition);
-    this.manipulatorSubsystem.setPositionTargetRight(desiredPosition);
+    // this.manipulatorSubsystem.setPositionTargetRight(desiredPosition);
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    this.manipulatorSubsystem.setLeftPower(0.6);
+    this.manipulatorSubsystem.setRightPower(0.6);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    this.manipulatorSubsystem.setLeftPower(0);
+    this.manipulatorSubsystem.setRightPower(0);
   }
 
   // Returns true when the command should end.
@@ -44,6 +51,6 @@ public class GoToPositionManipulator extends CommandBase {
     double diffL = Math.abs(desiredPosition - this.manipulatorSubsystem.getLeftPosition());
     double diffR = Math.abs(desiredPosition - this.manipulatorSubsystem.getRightPosition());
 
-    return ((diffL + diffR) / 2) <= 1;
+    return timer.hasElapsed(5);
   }
 }
