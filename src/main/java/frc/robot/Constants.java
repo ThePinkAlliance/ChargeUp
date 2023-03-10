@@ -102,12 +102,24 @@ public final class Constants {
                 public static final int kDriverControllerPort = 0;
                 public static final int kTowerControllerPort = 1;
 
-                public static final int kDriverYAxis = 1;
-                public static final int kDriverXAxis = 0;
+                public static final int kYAxis = 1;
+                public static final int kXAxis = 0;
                 public static final int kDriverRotAxis = 4;
+                public static final int kTowerPivotAxis = 5; 
+                public static final int kTowerExtendAxis = 1;
+                public static final int kTowerManipulatorRightAxis = 4;
+                public static final int kTowerManipulatorLeftAxis = 0;
+                
                 public static final int kDriverFieldOrientedButtonIdx = 1;
 
                 public static final double kDeadband = 0.08;
+
+                public static final int kButtonY = 4;
+                public static final int kButtonB = 2;
+                public static final int kButtonX = 3;
+                public static final int kButtonA = 1;
+                public static final int kButtonLeftBumper = 5;
+                public static final int kButtonRightBumper = 6;
         }
 
         public static final class ArmConstants {

@@ -96,7 +96,8 @@ public class LimeLightCamera implements CameraInterface {
      */
     private void getAprilTagTargets(NetworkTable camera, CameraData camTargets) {
         // TODO: How do we get multiple targets?
-        double[] camPose = camera.getEntry("targetpose_cameraspace").getDoubleArray(new double[0]);
+        //double[] camPose = camera.getEntry("targetpose_cameraspace").getDoubleArray(new double[0]);
+        double[] camPose = camera.getEntry("campose").getDoubleArray(new double[0]);
         String aa = "";
         for (int i = 0; i < camPose.length; i++)
             aa += camPose[i] + ",";

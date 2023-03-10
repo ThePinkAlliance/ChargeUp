@@ -3,6 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -16,13 +18,25 @@ public class AprilTagMoverCommand extends CommandBase {
     private final SwerveSubsystem driveSubsystem;
     private final CameraSubsystem cameraSubsystem;
     private boolean findReflectiveTarget = false;
+    private boolean reachedTarget = false;
+    Joystick joystick;
+    Timer sustainedReach;
 
-    public AprilTagMoverCommand(SwerveSubsystem driveSubsystem, CameraSubsystem cameraSubsystem) {
+    public AprilTagMoverCommand(SwerveSubsystem driveSubsystem, CameraSubsystem cameraSubsystem, Joystick joystick) {
         this.driveSubsystem = driveSubsystem;
         this.cameraSubsystem = cameraSubsystem;
+        this.joystick = joystick;
         addRequirements(driveSubsystem);
         addRequirements(cameraSubsystem);
         cameraSubsystem.setPipeline(PipelineType.APRIL_TAG);
+        sustainedReach = new Timer();
+    }
+
+    @Override
+    public void initialize() {
+        reachedTarget = false;
+        sustainedReach.stop();
+        sustainedReach.reset();
     }
 
     @Override
@@ -39,7 +53,12 @@ public class AprilTagMoverCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return false;
+        if (reachedTarget || (joystick != null && joystick.getRawButton(Constants.OIConstants.kButtonX) == false) ? true : false) {
+            System.out.println("AprilTagMoveCommand: finished");
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void driveCloserToTarget() {
@@ -60,24 +79,32 @@ public class AprilTagMoverCommand extends CommandBase {
     }
 
     private void driveCloserToTarget_NoRetro() {
+
         CameraData camResult = cameraSubsystem.getTarget();
         if (camResult.pipelineType == PipelineType.APRIL_TAG) {
             double translation = 0.0;
             double yAxisTranslation = 0.0;
             if (camResult.hasTargets()) {
                 TargetData target = camResult.getTargets().get(0);
-                if (target.targetDistance > 1)
-                    translation = -.5;
-                else if (target.targetDistance < .45)
-                    translation = 0.4;
+                //if (target.targetDistance > 1)
+                //    translation = -0.6;
+                //else if (target.targetDistance < .45)
+                if (target.targetDistance > .88) {
+                    translation = 0.5;
+                    sustainedReach.stop();
+                    sustainedReach.reset();
+                }
                 else {
                     translation = 0.0;
+                    sustainedReach.start();
+                    if (sustainedReach.hasElapsed(0.3))
+                       reachedTarget = true;
                 }
                 double x = camResult.getTargets().get(0).targetXAngle;
                 if (x > 2.0)
-                    yAxisTranslation = 0.3;
-                else if (x < -2.0)
                     yAxisTranslation = -0.3;
+                else if (x < -2.0)
+                    yAxisTranslation = 0.3;
                 else
                     yAxisTranslation = 0.0;
                 SmartDashboard.putNumber("VX = ", translation);
@@ -87,7 +114,7 @@ public class AprilTagMoverCommand extends CommandBase {
                 SmartDashboard.putNumber("Angle Offset = ", x);
             }
 
-            driveSubsystem.move(translation, yAxisTranslation, yAxisTranslation);
+            driveSubsystem.move(translation, yAxisTranslation, 0);
         }
     }
 

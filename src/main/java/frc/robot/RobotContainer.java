@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AprilTagMoverCommand;
 import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
@@ -29,7 +30,9 @@ import frc.robot.commands.manipulator.CommandCurrentManipulator;
 import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.commands.manipulator.ZeroManipulator;
+import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.CameraSubsystem.CameraType;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
@@ -54,6 +57,8 @@ public class RobotContainer {
                         1, new Constraints(0, 0));
         private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
+
+        private final CameraSubsystem cameraSubsystem = new CameraSubsystem(CameraType.LIMELIGHT);
 
         public RobotContainer() {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -89,27 +94,27 @@ public class RobotContainer {
                 /* Drivetrain (Base) */
                 swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
                                 swerveSubsystem,
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverYAxis),
-                                () -> -driverJoytick.getRawAxis(OIConstants.kDriverXAxis),
+                                () -> -driverJoytick.getRawAxis(OIConstants.kYAxis),
+                                () -> -driverJoytick.getRawAxis(OIConstants.kXAxis),
                                 () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
                                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 /* Arm Controls (Base) */
                 armSubsystem.setDefaultCommand(
-                                new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(1),
-                                                () -> towerJoytick.getRawAxis(5) / 2));
+                                new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis),
+                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerPivotAxis) / 2));
 
                 manipulatorSubsystem.setDefaultCommand(new JoystickManipulator(manipulatorSubsystem,
-                                () -> towerJoytick.getRawAxis(4), () -> towerJoytick.getRawAxis(0)));
+                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorLeftAxis), () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorRightAxis)));
 
-                new JoystickButton(driverJoytick, 5).onTrue(
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper).onTrue(
                                 new PivotToDegreeMagic(128,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> !turretSubsystem.isMoving(),
                                                 armSubsystem));
-                new JoystickButton(driverJoytick, 6).onTrue(
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
                                 new PivotToDegreeMagic(75,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
@@ -119,21 +124,24 @@ public class RobotContainer {
 
                 /* Extend Controls (Base) */
 
-                new JoystickButton(driverJoytick, 4).onTrue(new CommandManipulator(.2, 14, 0.7, false,
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY).onTrue(new CommandManipulator(.2, 14, 0.7, false,
                                 manipulatorSubsystem));
-                new JoystickButton(driverJoytick, 2).onTrue(new CommandManipulator(.3, 23, 0.7, true,
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB).onTrue(new CommandManipulator(.3, 23, 0.7, true,
                                 manipulatorSubsystem));
 
-                new JoystickButton(towerJoytick, 4)
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY)
                                 .onTrue(new ExtendTicks(93, armSubsystem));
-                new JoystickButton(towerJoytick, 3)
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonX)
                                 .onTrue(new ExtendTicks(35, armSubsystem));
 
-                new JoystickButton(towerJoytick, 2)
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB)
                                 .onTrue(new ExtendTicks(10, armSubsystem));
 
-                new JoystickButton(driverJoytick, 1)
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonA)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
+                                .whileTrue(new AprilTagMoverCommand(swerveSubsystem, cameraSubsystem, driverJoytick));
 
                 /* Turret Controls (Base) */
                 new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, 160,

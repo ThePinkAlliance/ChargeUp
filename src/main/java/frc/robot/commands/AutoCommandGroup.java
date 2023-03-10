@@ -6,7 +6,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 
 public class AutoCommandGroup extends SequentialCommandGroup {
     public AutoCommandGroup(SwerveSubsystem driveSubsystem, CameraSubsystem cameraSubsystem) {
-        addCommands(new AprilTagMoverCommand(driveSubsystem, cameraSubsystem));
+        addCommands(new AprilTagMoverCommand(driveSubsystem, cameraSubsystem, null));
         // addCommands(new MoveByDistanceCommand(driveSubsystem, 10, 0.5));
         // addCommands(new WaitCommand(2));
         // addCommands(new AutoMoveCommand(driveSubsystem, 0.5, -0.5).withTimeout(3));
