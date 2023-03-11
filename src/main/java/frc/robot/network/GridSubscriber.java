@@ -7,19 +7,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GridSubscriber {
     // the publisher is an instance variable so its lifetime matches that of the class
-  DoubleSubscriber dblSub;
+  private DoubleSubscriber dblSub;
+  private double gridTarget = 0;
+
 
   public GridSubscriber(DoubleTopic dblTopic) {
     // subscribe options may be specified using PubSubOption
     dblSub = dblTopic.subscribe(99.0, PubSubOption.keepDuplicates(true), PubSubOption.pollStorage(10));
   }
 
+  public double getGridTarget() {
+    return gridTarget;
+  }
+
   public void periodic() {
     // simple get of most recent value; if no value has been published,
     // returns the default value passed to the subscribe() function
-    double val = dblSub.get();
-    SmartDashboard.putNumber("GridPublisher CUI", val);
-    gridderUpdater();
+    gridTarget = dblSub.get();
+    
+    SmartDashboard.putNumber("GridPublisher CUI", gridTarget);
+    gridderUpdater(gridTarget);
   }
 
   // often not required in robot code, unless this class doesn't exist for
@@ -43,50 +50,46 @@ public class GridSubscriber {
     SmartDashboard.putBoolean("nine", false);
   }
 
-  public void gridderUpdater() {
-    double val = dblSub.get();
-
-    if (val == 0) {
+  public void gridderUpdater(double target) {
+    if (target == 0) {
         dashBoardGridder();
         SmartDashboard.putBoolean("zero", true);
     }
-    if (val == 1) {
+    else if (target == 1) {
         dashBoardGridder();
         SmartDashboard.putBoolean("one", true);
     }
-    if (val == 2) {
+    else if (target == 2) {
         dashBoardGridder();
         SmartDashboard.putBoolean("two", true);
     }
-    if (val == 3) {
+    else if (target == 3) {
         dashBoardGridder();
         SmartDashboard.putBoolean("three", true);
     }
-    if (val == 4) {
+    else if (target == 4) {
         dashBoardGridder();
         SmartDashboard.putBoolean("four", true);
     }
-    if (val == 5) {
+    else if (target == 5) {
         dashBoardGridder();
         SmartDashboard.putBoolean("five", true);
     }
-    if (val == 6) {
+    else if (target == 6) {
         dashBoardGridder();
         SmartDashboard.putBoolean("six", true);
     }
-    if (val == 7) {
+    else if (target == 7) {
         dashBoardGridder();
         SmartDashboard.putBoolean("seven", true);
     }
-    if (val == 8) {
+    else if (target == 8) {
         dashBoardGridder();
         SmartDashboard.putBoolean("eight", true);
     }
-    if (val == 9) {
+    else if (target == 9) {
         dashBoardGridder();
         SmartDashboard.putBoolean("nine", true);
-    }
-
-        
+    }      
   }
 }
