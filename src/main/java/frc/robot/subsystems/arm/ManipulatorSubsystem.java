@@ -16,7 +16,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
   private CANSparkMax rightMotor;
 
   private double powerLimit;
-  private final int MAX_TEMP = 39;
+  private final int MAX_TEMP = 50;
 
   /** Creates a new Mnipulator. */
   public ManipulatorSubsystem(int leftMotorId, int rightMotorId) {
@@ -35,7 +35,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
     this.leftMotor.getPIDController().setP(.2);
     this.rightMotor.getPIDController().setP(.2);
 
-    this.powerLimit = 0.4;
+    this.powerLimit = 0.8;
   }
 
   public void setPositionTargetRight(double current) {
@@ -47,7 +47,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
   }
 
   public void setLeftControl(double input, ControlType type) {
-    boolean isSafe = leftMotor.getMotorTemperature() > MAX_TEMP;
+    boolean isSafe = (leftMotor.getMotorTemperature() > MAX_TEMP) == false;
 
     if (isSafe) {
       this.leftMotor.getPIDController().setReference(input, type);
@@ -59,7 +59,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
   }
 
   public void setRightControl(double input, ControlType type) {
-    boolean isSafe = rightMotor.getMotorTemperature() > MAX_TEMP;
+    boolean isSafe = (rightMotor.getMotorTemperature() > MAX_TEMP) == false;
 
     if (isSafe) {
       this.rightMotor.getPIDController().setReference(input, type);

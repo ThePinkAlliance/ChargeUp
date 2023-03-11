@@ -75,8 +75,6 @@ public class ArmSubsystem extends SubsystemBase {
     extendMotor.getPIDController().setP(0.3);
     extendMotor.getEncoder().setPosition(0);
     extendMotor.setInverted(false);
-    // extendMotor.setSoftLimit(SoftLimitDirection.kForward, 71f);
-    // extendMotor.setSoftLimit(SoftLimitDirection.kReverse, 0.05f);
     extendMotor.setIdleMode(IdleMode.kBrake);
 
     pivotMotor.setNeutralMode(NeutralMode.Brake);

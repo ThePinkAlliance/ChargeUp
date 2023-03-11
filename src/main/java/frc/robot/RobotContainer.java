@@ -20,6 +20,8 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AprilTagMoverCommand;
 import frc.robot.commands.arm.JoystickArm;
+import frc.robot.commands.arm.KnockConeLeftStageOne;
+import frc.robot.commands.arm.KnockConeLeftStageTwo;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
 import frc.robot.commands.arm.turret.RotateToDegree;
@@ -101,11 +103,14 @@ public class RobotContainer {
 
                 /* Arm Controls (Base) */
                 armSubsystem.setDefaultCommand(
-                                new JoystickArm(armSubsystem, () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis),
-                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerPivotAxis) / 2));
+                                new JoystickArm(armSubsystem,
+                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis),
+                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerPivotAxis)
+                                                                / 2));
 
                 manipulatorSubsystem.setDefaultCommand(new JoystickManipulator(manipulatorSubsystem,
-                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorLeftAxis), () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorRightAxis)));
+                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorLeftAxis),
+                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorRightAxis)));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper).onTrue(
                                 new PivotToDegreeMagic(128,
@@ -124,10 +129,22 @@ public class RobotContainer {
 
                 /* Extend Controls (Base) */
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY).onTrue(new CommandManipulator(.2, 14, 0.7, false,
-                                manipulatorSubsystem));
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB).onTrue(new CommandManipulator(.3, 23, 0.7, true,
-                                manipulatorSubsystem));
+                // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY)
+                // .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CUBE_LEFT,
+                // Constants.ManipulatorConstants.CUBE_RIGHT, manipulatorSubsystem))
+                // .debounce(0.25)
+                // .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CONE_LEFT
+                // + 4,
+                // Constants.ManipulatorConstants.CONE_RIGHT + 4, manipulatorSubsystem));
+
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY)
+                                .onTrue(new KnockConeLeftStageOne(armSubsystem, manipulatorSubsystem, turretSubsystem))
+                                .onFalse(new KnockConeLeftStageTwo(armSubsystem, manipulatorSubsystem,
+                                                turretSubsystem));
+
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB)
+                                .onTrue(new CommandManipulator(.2, 15, 0.7, true,
+                                                manipulatorSubsystem));
 
                 new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY)
                                 .onTrue(new ExtendTicks(93, armSubsystem));

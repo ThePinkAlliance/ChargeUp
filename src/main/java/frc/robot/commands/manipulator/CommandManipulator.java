@@ -59,7 +59,7 @@ public class CommandManipulator extends CommandBase {
   @Override
   public void execute() {
     double lC = manipulatorSubsystem.getLeftCurrent();
-    double rC = manipulatorSubsystem.getLeftCurrent();
+    double rC = manipulatorSubsystem.getRightCurrent();
 
     double leftCurrent = leftFilter.calculate(lC);
     double rightCurrent = rightFilter.calculate(rC);
@@ -100,6 +100,11 @@ public class CommandManipulator extends CommandBase {
   public void end(boolean interrupted) {
     this.leftFilter.reset();
     this.rightFilter.reset();
+
+    if (inverted) {
+      this.manipulatorSubsystem.resetLeftEncoder();
+      this.manipulatorSubsystem.resetRightEncoder();
+    }
   }
 
   // Returns true when the command should end.

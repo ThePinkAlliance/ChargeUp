@@ -5,21 +5,31 @@
 package frc.robot.commands.manipulator;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 
 public class GoToPositionManipulator extends CommandBase {
   ManipulatorSubsystem manipulatorSubsystem;
-  double desiredPosition;
+  double desiredPositionL, desiredPositionR;
   Timer timer;
+  Watchdog watchdog;
+  double tolerence;
 
   /** Creates a new CloseManipulator. */
-  public GoToPositionManipulator(double desiredPosition, ManipulatorSubsystem manipulatorSubsystem) {
+  public GoToPositionManipulator(double desiredPositionL,
+      double desiredPositionR, ManipulatorSubsystem manipulatorSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
 
-    this.desiredPosition = desiredPosition;
+    this.desiredPositionR = desiredPositionR;
+    this.desiredPositionL = desiredPositionL;
     this.timer = new Timer();
+    this.tolerence = .4;
     this.manipulatorSubsystem = manipulatorSubsystem;
+    this.watchdog = new Watchdog(3, () -> {
+      this.manipulatorSubsystem.setLeftPower(0);
+      this.manipulatorSubsystem.setRightPower(0);
+    });
 
     addRequirements(manipulatorSubsystem);
   }
@@ -27,15 +37,23 @@ public class GoToPositionManipulator extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // this.manipulatorSubsystem.setPositionTargetRight(desiredPosition);
-    timer.start();
+    if (!Double.isNaN(desiredPositionL)) {
+      this.manipulatorSubsystem.setPositionTargetLeft(desiredPositionL);
+    }
+
+    if (!Double.isNaN(desiredPositionR)) {
+      System.out.println("starting pose " + desiredPositionR);
+      this.manipulatorSubsystem.setPositionTargetRight(desiredPositionR);
+    }
+
+    watchdog.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.manipulatorSubsystem.setLeftPower(0.6);
-    this.manipulatorSubsystem.setRightPower(0.6);
+    System.out.println("[MANIPULATOR/EXEC] Left: " + this.manipulatorSubsystem.getLeftPosition() + ", Right: "
+        + this.manipulatorSubsystem.getRightPosition() + ", Right Target: " + desiredPositionR);
   }
 
   // Called once the command ends or is interrupted.
@@ -48,9 +66,17 @@ public class GoToPositionManipulator extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double diffL = Math.abs(desiredPosition - this.manipulatorSubsystem.getLeftPosition());
-    double diffR = Math.abs(desiredPosition - this.manipulatorSubsystem.getRightPosition());
+    double diffL = Math.abs(desiredPositionL - this.manipulatorSubsystem.getLeftPosition());
+    double diffR = Math.abs(desiredPositionR - this.manipulatorSubsystem.getRightPosition());
 
-    return timer.hasElapsed(5);
+    if (Double.isNaN(desiredPositionL)) {
+      diffL = 0;
+    }
+
+    if (Double.isNaN(desiredPositionR)) {
+      diffR = 0;
+    }
+
+    return diffL < tolerence && diffR < tolerence || watchdog.isExpired();
   }
 }

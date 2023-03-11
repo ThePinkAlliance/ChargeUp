@@ -105,11 +105,11 @@ public final class Constants {
                 public static final int kYAxis = 1;
                 public static final int kXAxis = 0;
                 public static final int kDriverRotAxis = 4;
-                public static final int kTowerPivotAxis = 5; 
+                public static final int kTowerPivotAxis = 5;
                 public static final int kTowerExtendAxis = 1;
                 public static final int kTowerManipulatorRightAxis = 4;
                 public static final int kTowerManipulatorLeftAxis = 0;
-                
+
                 public static final int kDriverFieldOrientedButtonIdx = 1;
 
                 public static final double kDeadband = 0.08;
@@ -126,5 +126,13 @@ public final class Constants {
                 public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.2, 0, 0, 0.2, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864;
                 public static final double MAX_ACCELERATION = 20480;
+        }
+
+        public static final class ManipulatorConstants {
+                public static final double CONE_LEFT = 24.19;
+                public static final double CONE_RIGHT = 23.19;
+
+                public static final double CUBE_LEFT = 14.19;
+                public static final double CUBE_RIGHT = 14.19;
         }
 }
