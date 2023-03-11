@@ -36,6 +36,7 @@ public class PivotToDegreeMagic extends CommandBase {
   private Supplier<Boolean> safeToContinue;
 
   private double initialAngle;
+
   private boolean motorCommanded;
 
   /** Creates a new PivotToDegreeMagic. */
@@ -180,18 +181,6 @@ public class PivotToDegreeMagic extends CommandBase {
 
       this.motorCommanded = true;
     }
-    // else if (motorCommanded && !isSafe) {
-    // double ff = feedforwardTable.interp(armSubsystem.getArmPitch());
-
-    // if (Double.isNaN(ff) || Double.isInfinite(ff)) {
-    // ff = 0;
-    // }
-
-    // SmartDashboard.putNumber("ff", ff);
-
-    // pivotMotor.set(ControlMode.PercentOutput, ff);
-    // this.motorCommanded = false;
-    // }
 
     SmartDashboard.putBoolean("isSafe", isSafe);
     SmartDashboard.putBoolean("isCommanded", motorCommanded);

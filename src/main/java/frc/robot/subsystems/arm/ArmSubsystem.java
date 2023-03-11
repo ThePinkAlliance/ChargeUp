@@ -24,6 +24,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class ArmSubsystem extends SubsystemBase {
   TalonFX pivotMotor;
@@ -210,7 +211,11 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public double getArmPitch() {
-    return (canCoder.getAbsolutePosition() - 134.561) + pivotOffset;
+    /**
+     * Name Raw Degrees, Command Degrees, Valid?
+     * Full Down 134.561, 72.16,
+     */
+    return (canCoder.getAbsolutePosition() - Constants.ArmConstants.PITCH_FLOOR_ABSOLUTE) + pivotOffset;
   }
 
   @Deprecated
@@ -229,6 +234,8 @@ public class ArmSubsystem extends SubsystemBase {
     // System.out.println("[ARM/PERIODIC] Extend Position: " +
     // extendMotor.getEncoder().getPosition());
 
+    SmartDashboard.putNumber("Pitch Motor Ticks", pivotMotor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Absolute Pitch", canCoder.getAbsolutePosition());
     SmartDashboard.putNumber("Pivot Pitch", this.getPivotAngle());
   }
 }

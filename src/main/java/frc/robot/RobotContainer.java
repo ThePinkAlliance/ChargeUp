@@ -55,7 +55,7 @@ public class RobotContainer {
 
         // Tower
         private final ArmSubsystem armSubsystem = new ArmSubsystem(41, 42, 9,
-                        72.16, 1,
+                        Constants.ArmConstants.PITCH_FLOOR_OFFSET, 1,
                         1, new Constraints(0, 0));
         private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
