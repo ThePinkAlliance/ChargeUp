@@ -55,7 +55,7 @@ public class PivotToDegreeMagic extends CommandBase {
     this.kSlotIdx = 0;
     this.kTimeoutMs = 10;
     this.kPIDLoopIdx = 0;
-    this.angleFactor = 36.3 / 57306;
+    this.angleFactor = 0.000612669993242;
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
@@ -207,6 +207,6 @@ public class PivotToDegreeMagic extends CommandBase {
     SmartDashboard.putNumber("mCurrentPosition", currentPosition);
     SmartDashboard.putNumber("mDesiredPosition", desiredPosition);
 
-    return (diff <= 200);
+    return (diff <= 90);
   }
 }

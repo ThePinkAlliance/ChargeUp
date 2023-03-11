@@ -39,7 +39,7 @@
     "Plot <0>": {
       "plots": [
         {
-          "height": 438,
+          "height": 444,
           "series": [
             {
               "color": [
@@ -72,7 +72,7 @@
               "min": -3.14
             }
           ],
-          "height": 2,
+          "height": 6,
           "series": [
             {
               "color": [
@@ -101,7 +101,7 @@
               "min": -3.14
             }
           ],
-          "height": 2,
+          "height": 6,
           "series": [
             {
               "color": [
@@ -133,7 +133,7 @@
               "max": 10.0
             }
           ],
-          "height": 434,
+          "height": 440,
           "series": [
             {
               "color": [
@@ -165,7 +165,7 @@
               "autoFit": true
             }
           ],
-          "height": 436,
+          "height": 442,
           "series": [
             {
               "color": [

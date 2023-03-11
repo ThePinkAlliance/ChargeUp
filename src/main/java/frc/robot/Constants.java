@@ -123,7 +123,7 @@ public final class Constants {
         }
 
         public static final class ArmConstants {
-                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.1, 0, 0, 0.2, 0, 1);
+                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.20, 0, 0, 0.3, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864;
                 public static final double MAX_ACCELERATION = 18480;
                 public static final double PITCH_FLOOR_ABSOLUTE = 131.66;

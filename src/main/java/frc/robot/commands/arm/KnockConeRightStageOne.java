@@ -16,9 +16,9 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class KnockConeLeftStageOne extends SequentialCommandGroup {
+public class KnockConeRightStageOne extends SequentialCommandGroup {
         /** Creates a new KnockConeLeft. */
-        public KnockConeLeftStageOne(ArmSubsystem armSubsystem, ManipulatorSubsystem manipulatorSubsystem,
+        public KnockConeRightStageOne(ArmSubsystem armSubsystem, ManipulatorSubsystem manipulatorSubsystem,
                         TurretSubsystem turretSubsystem) {
                 // Add your commands in the addCommands() call, e.g.
                 // addCommands(new FooCommand(), new BarCommand());
@@ -33,8 +33,8 @@ public class KnockConeLeftStageOne extends SequentialCommandGroup {
                                                                 new CommandManipulator(.2, 15, 0.7, true,
                                                                                 manipulatorSubsystem)),
 
-                                new GoToPositionManipulator(37.97,
-                                                0,
+                                new GoToPositionManipulator(0,
+                                                38.16,
                                                 manipulatorSubsystem));
         }
 }

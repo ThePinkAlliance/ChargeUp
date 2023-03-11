@@ -26,8 +26,8 @@ public class ManipulatorSubsystem extends SubsystemBase {
     this.leftMotor.setIdleMode(IdleMode.kBrake);
     this.rightMotor.setIdleMode(IdleMode.kBrake);
 
-    this.leftMotor.setSmartCurrentLimit(25);
-    this.rightMotor.setSmartCurrentLimit(25);
+    this.leftMotor.setSmartCurrentLimit(32);
+    this.rightMotor.setSmartCurrentLimit(32);
 
     this.leftMotor.setInverted(false);
     this.rightMotor.setInverted(true);

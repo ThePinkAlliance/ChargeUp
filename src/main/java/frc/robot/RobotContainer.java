@@ -22,6 +22,8 @@ import frc.robot.commands.AprilTagMoverCommand;
 import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.KnockConeLeftStageOne;
 import frc.robot.commands.arm.KnockConeLeftStageTwo;
+import frc.robot.commands.arm.KnockConeRightStageOne;
+import frc.robot.commands.arm.KnockConeRightStageTwo;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
 import frc.robot.commands.arm.turret.RotateToDegree;
@@ -120,9 +122,9 @@ public class RobotContainer {
                                                 () -> !turretSubsystem.isMoving(),
                                                 armSubsystem));
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
-                                new PivotToDegreeMagic(75,
+                                new PivotToDegreeMagic(84,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                                                Constants.ArmConstants.MAX_ACCELERATION, 2,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> !turretSubsystem.isMoving(),
                                                 armSubsystem));
@@ -142,6 +144,11 @@ public class RobotContainer {
                                 .onFalse(new KnockConeLeftStageTwo(armSubsystem, manipulatorSubsystem,
                                                 turretSubsystem));
 
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
+                                .onTrue(new KnockConeRightStageOne(armSubsystem, manipulatorSubsystem, turretSubsystem))
+                                .onFalse(new KnockConeRightStageTwo(armSubsystem, manipulatorSubsystem,
+                                                turretSubsystem));
+
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB)
                                 .onTrue(new CommandManipulator(.2, 15, 0.7, true,
                                                 manipulatorSubsystem));
@@ -157,8 +164,9 @@ public class RobotContainer {
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonA)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
-                                .whileTrue(new AprilTagMoverCommand(swerveSubsystem, cameraSubsystem, driverJoytick));
+                // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
+                // .whileTrue(new AprilTagMoverCommand(swerveSubsystem, cameraSubsystem,
+                // driverJoytick));
 
                 /* Turret Controls (Base) */
                 new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, 160,
