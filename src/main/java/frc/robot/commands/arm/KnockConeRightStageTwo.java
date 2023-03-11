@@ -25,7 +25,7 @@ public class KnockConeRightStageTwo extends SequentialCommandGroup {
                                 new GoToPositionManipulator(Double.NaN,
                                                 0, manipulatorSubsystem),
 
-                                new GoToPositionManipulator(54, Double.NaN,
+                                new GoToPositionManipulator(58, Double.NaN,
                                                 manipulatorSubsystem),
 
                                 new PivotToDegreeMagic(128,

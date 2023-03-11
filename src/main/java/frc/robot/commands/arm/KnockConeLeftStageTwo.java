@@ -16,30 +16,30 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class KnockConeLeftStageTwo extends SequentialCommandGroup {
-    /** Creates a new KnockConeLeftStageTwo. */
-    public KnockConeLeftStageTwo(ArmSubsystem armSubsystem, ManipulatorSubsystem manipulatorSubsystem,
-            TurretSubsystem turretSubsystem) {
-        // Add your commands in the addCommands() call, e.g.
-        // addCommands(new FooCommand(), new BarCommand());
-        addCommands(
-                new GoToPositionManipulator(0,
-                        Double.NaN, manipulatorSubsystem),
+        /** Creates a new KnockConeLeftStageTwo. */
+        public KnockConeLeftStageTwo(ArmSubsystem armSubsystem, ManipulatorSubsystem manipulatorSubsystem,
+                        TurretSubsystem turretSubsystem) {
+                // Add your commands in the addCommands() call, e.g.
+                // addCommands(new FooCommand(), new BarCommand());
+                addCommands(
+                                new GoToPositionManipulator(0,
+                                                Double.NaN, manipulatorSubsystem),
 
-                new GoToPositionManipulator(Double.NaN, 54,
-                        manipulatorSubsystem),
+                                new GoToPositionManipulator(Double.NaN, 56,
+                                                manipulatorSubsystem),
 
-                new PivotToDegreeMagic(128,
-                        Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                        Constants.ArmConstants.MAX_ACCELERATION, 1,
-                        Constants.ArmConstants.MOTIONM_GAINS_FX,
-                        () -> !turretSubsystem.isMoving(),
-                        armSubsystem),
+                                new PivotToDegreeMagic(128,
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 1,
+                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                () -> !turretSubsystem.isMoving(),
+                                                armSubsystem),
 
-                new GoToPositionManipulator(
-                        Constants.ManipulatorConstants.CONE_LEFT
-                                + 4,
-                        Constants.ManipulatorConstants.CONE_RIGHT
-                                + 4,
-                        manipulatorSubsystem));
-    }
+                                new GoToPositionManipulator(
+                                                Constants.ManipulatorConstants.CONE_LEFT
+                                                                + 4,
+                                                Constants.ManipulatorConstants.CONE_RIGHT
+                                                                + 4,
+                                                manipulatorSubsystem));
+        }
 }

@@ -114,6 +114,8 @@ public final class Constants {
 
                 public static final double kDeadband = 0.08;
 
+                public static final int kButtonStart = 8;
+                public static final int kButtonBack = 7;
                 public static final int kButtonY = 4;
                 public static final int kButtonB = 2;
                 public static final int kButtonX = 3;

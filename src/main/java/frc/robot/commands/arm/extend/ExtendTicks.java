@@ -4,18 +4,24 @@
 
 package frc.robot.commands.arm.extend;
 
+import edu.wpi.first.wpilibj.Watchdog;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class ExtendTicks extends CommandBase {
   ArmSubsystem armSubsystem;
   double desiredRotations;
+  Watchdog watchdog;
 
   /** Creates a new ExtendTicks. */
   public ExtendTicks(double desiredRotations, ArmSubsystem armSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.armSubsystem = armSubsystem;
     this.desiredRotations = desiredRotations;
+    this.watchdog = new Watchdog(3, () -> {
+      this.armSubsystem.commandExtend(0);
+    });
 
     addRequirements(armSubsystem);
   }
@@ -24,12 +30,14 @@ public class ExtendTicks extends CommandBase {
   @Override
   public void initialize() {
     armSubsystem.setExtenionRotations(desiredRotations);
+    watchdog.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("[EXTEND] Position: " + armSubsystem.getExtensionRotations());
+    // SmartDashboard.putNumber("[EXTEND] Ticks",
+    // armSubsystem.getExtensionRotations());
   }
 
   // Called once the command ends or is interrupted.
@@ -40,6 +48,6 @@ public class ExtendTicks extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return armSubsystem.atExtensionSetpoint();
+    return armSubsystem.atExtensionSetpoint() || watchdog.isExpired();
   }
 }

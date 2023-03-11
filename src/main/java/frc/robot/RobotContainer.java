@@ -122,7 +122,7 @@ public class RobotContainer {
                                                 () -> !turretSubsystem.isMoving(),
                                                 armSubsystem));
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
-                                new PivotToDegreeMagic(84,
+                                new PivotToDegreeMagic(78,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -131,13 +131,13 @@ public class RobotContainer {
 
                 /* Extend Controls (Base) */
 
-                // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY)
-                // .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CUBE_LEFT,
-                // Constants.ManipulatorConstants.CUBE_RIGHT, manipulatorSubsystem))
-                // .debounce(0.25)
-                // .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CONE_LEFT
-                // + 4,
-                // Constants.ManipulatorConstants.CONE_RIGHT + 4, manipulatorSubsystem));
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonA)
+                                .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CUBE_LEFT + 3,
+                                                Constants.ManipulatorConstants.CUBE_RIGHT + 3, manipulatorSubsystem))
+                                .debounce(0.25)
+                                .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CONE_LEFT
+                                                + 5,
+                                                Constants.ManipulatorConstants.CONE_RIGHT + 5, manipulatorSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY)
                                 .onTrue(new KnockConeLeftStageOne(armSubsystem, manipulatorSubsystem, turretSubsystem))
@@ -154,14 +154,14 @@ public class RobotContainer {
                                                 manipulatorSubsystem));
 
                 new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY)
-                                .onTrue(new ExtendTicks(93, armSubsystem));
+                                .onTrue(new ExtendTicks(60, armSubsystem));
                 new JoystickButton(towerJoytick, Constants.OIConstants.kButtonX)
                                 .onTrue(new ExtendTicks(35, armSubsystem));
 
                 new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB)
-                                .onTrue(new ExtendTicks(10, armSubsystem));
+                                .onTrue(new ExtendTicks(0, armSubsystem));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonA)
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonStart)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
                 // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)

@@ -22,11 +22,12 @@ public class GoToPositionManipulator extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.desiredPositionR = desiredPositionR;
+
     this.desiredPositionL = desiredPositionL;
     this.timer = new Timer();
     this.tolerence = .4;
     this.manipulatorSubsystem = manipulatorSubsystem;
-    this.watchdog = new Watchdog(3, () -> {
+    this.watchdog = new Watchdog(1.75, () -> {
       this.manipulatorSubsystem.setLeftPower(0);
       this.manipulatorSubsystem.setRightPower(0);
     });

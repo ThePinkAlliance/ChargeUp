@@ -10,7 +10,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -18,6 +20,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -73,7 +76,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     this.pivotMotor.configOpenloopRamp(0.5);
 
-    extendMotor.getPIDController().setP(0.3);
+    extendMotor.getPIDController().setP(0.1);
+    extendMotor.getPIDController().setOutputRange(-0.7, 0.7);
+    extendMotor.setSoftLimit(SoftLimitDirection.kForward, 90);
+    extendMotor.setSoftLimit(SoftLimitDirection.kForward, 5);
     extendMotor.getEncoder().setPosition(0);
     extendMotor.setInverted(false);
     extendMotor.setIdleMode(IdleMode.kBrake);
@@ -160,7 +166,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public boolean atExtensionSetpoint() {
-    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < 1;
+    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < .2;
   }
 
   public boolean atPivotSetpoint() {
@@ -203,7 +209,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public double getExtensionRotations() {
-    return (extendMotor.getAbsoluteEncoder(Type.kDutyCycle).getPosition() - 0);
+    return extendMotor.getEncoder().getPosition();
   }
 
   public double getPivotVoltage() {
@@ -234,6 +240,7 @@ public class ArmSubsystem extends SubsystemBase {
     // System.out.println("[ARM/PERIODIC] Extend Position: " +
     // extendMotor.getEncoder().getPosition());
 
+    SmartDashboard.putNumber("[EXTEND] Ticks", getExtensionRotations());
     SmartDashboard.putNumber("Pitch Motor Ticks", pivotMotor.getSelectedSensorPosition());
     SmartDashboard.putNumber("Absolute Pitch", canCoder.getAbsolutePosition());
     SmartDashboard.putNumber("Pivot Pitch", this.getPivotAngle());

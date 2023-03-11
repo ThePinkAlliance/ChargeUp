@@ -7,6 +7,13 @@ package frc.robot.subsystems.scoring;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ScoringSubsystem extends SubsystemBase {
+  /* Extend Position | Arm Pitch | Turret Angle */
+  private double[][] positionData = {
+      {}, {}, {},
+      {}, {}, {},
+      {}, {}, {},
+  };
+
   /** Creates a new ScoringSubsystem. */
   public ScoringSubsystem() {
 
