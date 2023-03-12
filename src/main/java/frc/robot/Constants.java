@@ -127,9 +127,16 @@ public final class Constants {
         public static final class ArmConstants {
                 public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.20, 0, 0, 0.3, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864;
-                public static final double MAX_ACCELERATION = 6064; // Old Value 18480; Tune the acceleration so it can
-                                                                    // accel and
-                                                                    // decell properly.
+
+                /**
+                 * Old Value 18480; The acceleration needs to be tuned so it can accel and
+                 * decel properly.
+                 * 
+                 * The acceleration is mechanism dependent so it needs to be tuned. keep in mind
+                 * that the acceleration should be big enough for mechanism to accelerate and
+                 * decelerate without surpassing it's target setpoint.
+                 */
+                public static final double MAX_ACCELERATION = 6064;
                 public static final double PITCH_FLOOR_ABSOLUTE = 131.66;
                 public static final double PITCH_FLOOR_OFFSET = 71.11;
         }
