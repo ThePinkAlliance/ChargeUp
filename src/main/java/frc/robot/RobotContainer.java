@@ -60,8 +60,8 @@ public class RobotContainer {
 
         // Tower
         private final ArmSubsystem armSubsystem = new ArmSubsystem(41, 42, 9,
-                        Constants.ArmConstants.PITCH_FLOOR_OFFSET, 1,
-                        1, new Constraints(0, 0));
+                        Constants.ArmConstants.PITCH_FLOOR_OFFSET, Constants.ArmConstants.POWER_LIMIT_PIVOT,
+                        Constants.ArmConstants.POWER_LIMIT_EXTEND, new Constraints(0, 0));
         private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
 
@@ -125,7 +125,7 @@ public class RobotContainer {
                                                 turretSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
-                                new PivotToDegreeMagic(78,
+                                new PivotToDegreeMagic(90, //78
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -172,20 +172,17 @@ public class RobotContainer {
                 // driverJoytick));
 
                 /* Turret Controls (Base) */
-                new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, 160,
-                                () -> armSubsystem.getArmPitch() > 90));
+                new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 160));
 
                 new POVButton(driverJoytick, 180)
-                                .onTrue(new RotateToDegree(turretSubsystem, 180,
-                                                () -> armSubsystem.getArmPitch() > 90));
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 180));
 
                 new POVButton(driverJoytick, 270)
-                                .onTrue(new RotateToDegree(turretSubsystem,
-                                                200,
-                                                () -> armSubsystem.getArmPitch() > 90));
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 200));
+                                                
 
                 new POVButton(driverJoytick, 0)
-                                .onTrue(new RotateToDegree(turretSubsystem, 0, () -> armSubsystem.getArmPitch() > 100));
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 100, 0));
         }
 
         public void onDisabledInit() {

@@ -29,6 +29,6 @@ public class ScoreFromNumpad extends SequentialCommandGroup {
             Constants.ArmConstants.MOTIONM_GAINS_FX,
             () -> false,
             armSubsystem),
-        new RotateToDegree(turretSubsystem, scoringSubsystem.getPositionData_Turret(), () -> true));
+        new RotateToDegree(turretSubsystem, armSubsystem, 80, scoringSubsystem.getPositionData_Turret()));
   }
 }

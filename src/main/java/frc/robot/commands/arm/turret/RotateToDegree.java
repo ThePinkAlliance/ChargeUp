@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
 
 /**
@@ -25,21 +26,26 @@ public class RotateToDegree extends CommandBase {
   private double desiredAngle;
   private double lastAngle;
   private double startingAngle;
-  private Supplier<Boolean> safeToContinue;
+  //private Supplier<Boolean> safeToContinue;
+  double safetyPivotAngle;
   private Timer timer;
-  private Timer epoch;
+  private Timer epoch; //not sure the intention behind this timer so leaving it alone.  Added separate watchDogTimer.
   private PIDController controller;
   private CANSparkMax sparkMax;
+  private ArmSubsystem armSubsystem;
 
   /** Creates a new RotateToDegree. */
-  public RotateToDegree(TurretSubsystem turretSubsystem, double desiredAngle, Supplier<Boolean> safeToContinue) {
+  public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle, double desiredAngle) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
+    this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
     this.lastAngle = 1;
-    this.safeToContinue = safeToContinue;
+    this.safetyPivotAngle = safetyPivotAngle;
     this.timer = new Timer();
     this.epoch = new Timer();
+    
+    
     // this.controller = new PIDController(2.3, 0.0121, 0);
     this.controller = new PIDController(0.1, 0.0, 0);
     this.controller.disableContinuousInput();
@@ -49,7 +55,8 @@ public class RotateToDegree extends CommandBase {
     SmartDashboard.putNumber("turret-kP", controller.getP());
     SmartDashboard.putNumber("turret-kI", controller.getI());
     SmartDashboard.putNumber("turret-kD", controller.getD());
-
+    
+    //Do not require armSubsystem:  its only here to get information
     addRequirements(turretSubsystem);
   }
 
@@ -82,11 +89,12 @@ public class RotateToDegree extends CommandBase {
     double currentAngle = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double desiredPosRadians = desiredAngle * (Math.PI / 180);
     double desiredRotations = desiredPosRadians * (348.7 / (2 * Math.PI));
-
-    if (safeToContinue.get()) {
-      sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
+    System.out.println("armSubSystem.getArmPitch() " + armSubsystem.getArmPitch());
+    if (armSubsystem.getArmPitch() > safetyPivotAngle) {
+       sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
     } else {
       turretSubsystem.powerTurret(0);
+      isFinished = true;
     }
 
     SmartDashboard.putNumber("Turret Target", desiredPosRadians);
@@ -100,11 +108,14 @@ public class RotateToDegree extends CommandBase {
   public void end(boolean interrupted) {
     this.turretSubsystem.powerTurret(0);
     timer.stop();
+
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(sparkMax.getEncoder().getPosition()) <= 0.3;
+     
+    return Math.abs(sparkMax.getEncoder().getPosition()) <= 0.3 || isFinished;
+    
   }
 }

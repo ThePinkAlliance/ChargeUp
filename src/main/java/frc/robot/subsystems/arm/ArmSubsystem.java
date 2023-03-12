@@ -78,8 +78,11 @@ public class ArmSubsystem extends SubsystemBase {
 
     extendMotor.getPIDController().setP(0.1);
     extendMotor.getPIDController().setOutputRange(-0.7, 0.7);
-    extendMotor.setSoftLimit(SoftLimitDirection.kForward, 90);
-    extendMotor.setSoftLimit(SoftLimitDirection.kForward, 5);
+    extendMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.ArmConstants.EXTENDER_90_MAX_LIMIT);
+    extendMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.ArmConstants.EXTENDER_MIN_LIMIT);
+    extendMotor.setOpenLoopRampRate(.5);
+    extendMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     extendMotor.getEncoder().setPosition(0);
     extendMotor.setInverted(false);
     extendMotor.setIdleMode(IdleMode.kBrake);
@@ -172,7 +175,9 @@ public class ArmSubsystem extends SubsystemBase {
   public boolean atPivotSetpoint() {
     return pivotController.atSetpoint();
   }
-
+  public double getExtendedPosition() {
+    return this.extendMotor.getEncoder().getPosition();
+  }
   public void commandExtend(double input) {
     input = input * powerLimitExtend;
 

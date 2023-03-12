@@ -130,6 +130,10 @@ public final class Constants {
                 public static final double MAX_ACCELERATION = 18480;
                 public static final double PITCH_FLOOR_ABSOLUTE = 131.66;
                 public static final double PITCH_FLOOR_OFFSET = 71.11;
+                public static final double POWER_LIMIT_EXTEND = 1;
+                public static final double POWER_LIMIT_PIVOT = 1;
+                public static final float  EXTENDER_90_MAX_LIMIT = 54.0f;
+                public static final float  EXTENDER_MIN_LIMIT = 3.0f;
         }
 
         public static final class ManipulatorConstants {

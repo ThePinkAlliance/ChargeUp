@@ -57,13 +57,20 @@ public class JoystickArm extends CommandBase {
       this.updateHoldPosition = true;
     }
 
-    this.armSubsystem.commandExtend(extSupplier.get() * -1);
+    double val = extSupplier.get();
+    //Cube law on extended input
+    //val = val * Math.abs(val);
+    val = val * val * val;
+    this.armSubsystem.commandExtend(val * -1);
+    
 
     SmartDashboard.putNumber("Pivot Demanded Power", armSubsystem.getPivotDemandedPower());
     SmartDashboard.putNumber("Pivot Power", input);
     SmartDashboard.putNumber("Pivot Angle", pivotAngle);
 
     SmartDashboard.putNumber("Extend Current", armSubsystem.getExtendCurrent());
+    SmartDashboard.putNumber("Extend Position", armSubsystem.getExtendedPosition());
+    SmartDashboard.putNumber("Extend Distance", armSubsystem.getExtensionDistance());
 
   }
 
