@@ -40,7 +40,6 @@ public class RotateToDegree extends CommandBase {
     this.safeToContinue = safeToContinue;
     this.timer = new Timer();
     this.epoch = new Timer();
-    // this.controller = new PIDController(2.3, 0.0121, 0);
     this.controller = new PIDController(0.1, 0.0, 0);
     this.controller.disableContinuousInput();
 
@@ -86,7 +85,7 @@ public class RotateToDegree extends CommandBase {
     if (safeToContinue.get()) {
       sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
     } else {
-      turretSubsystem.powerTurret(0);
+      isFinished = true;
     }
 
     SmartDashboard.putNumber("Turret Target", desiredPosRadians);
@@ -105,6 +104,6 @@ public class RotateToDegree extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(sparkMax.getEncoder().getPosition()) <= 0.3;
+    return Math.abs(sparkMax.getEncoder().getPosition()) <= 0.3 || isFinished;
   }
 }
