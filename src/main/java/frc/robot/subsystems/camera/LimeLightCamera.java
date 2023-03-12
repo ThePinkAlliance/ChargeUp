@@ -32,7 +32,6 @@ public class LimeLightCamera implements CameraInterface {
      */
     private int getPipelineIndex() {
         NetworkTable cam = getCamera();
-        // System.out.println();
 
         if (isConnected()) {
             return (int) (cam.getEntry("getpipe").getDouble(0));
@@ -96,7 +95,8 @@ public class LimeLightCamera implements CameraInterface {
      */
     private void getAprilTagTargets(NetworkTable camera, CameraData camTargets) {
         // TODO: How do we get multiple targets?
-        //double[] camPose = camera.getEntry("targetpose_cameraspace").getDoubleArray(new double[0]);
+        // double[] camPose =
+        // camera.getEntry("targetpose_cameraspace").getDoubleArray(new double[0]);
         double[] camPose = camera.getEntry("campose").getDoubleArray(new double[0]);
         String aa = "";
         for (int i = 0; i < camPose.length; i++)
@@ -104,6 +104,12 @@ public class LimeLightCamera implements CameraInterface {
         System.out.println("CAMPOSE: " + aa);
         // Don't trust the flag that tells you there is a target
         if (camPose.length > 5) {
+            double x = camPose[0];
+            double y = camPose[1];
+            double theta = camPose[5];
+
+            System.out.println("X: " + x + ", Y: " + y + ", Theta: " + theta);
+
             double targetDistance = Math.abs(camPose[2]);
             double zAngle = camPose[4];
             double computedZAngle = zAngle; // Same as the reported angle.
