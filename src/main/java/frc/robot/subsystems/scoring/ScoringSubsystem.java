@@ -26,9 +26,9 @@ public class ScoringSubsystem extends SubsystemBase {
   }
 
   public double[] getPositionData(int index) {
-    // if (index > positionData.length) {
-    // return positionData[0];
-    // }
+    if (index > positionData.length || index < 0) {
+      return positionData[0];
+    }
 
     return positionData[index];
   }
