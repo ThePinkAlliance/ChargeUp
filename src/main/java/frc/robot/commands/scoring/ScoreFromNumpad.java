@@ -4,15 +4,10 @@
 
 package frc.robot.commands.scoring;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
 import frc.robot.commands.arm.turret.RotateToDegree;
-import frc.robot.network.GridSubscriber;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
 import frc.robot.subsystems.scoring.ScoringSubsystem;
@@ -22,18 +17,18 @@ import frc.robot.subsystems.scoring.ScoringSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ScoreFromNumpad extends SequentialCommandGroup {
   /** Creates a new ScoreFromNumpad. */
-  public ScoreFromNumpad(Supplier<double[]> scoringPosition, ArmSubsystem armSubsystem,
+  public ScoreFromNumpad(ScoringSubsystem scoringSubsystem, ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
 
     addCommands(
-        new PivotToDegreeMagic(scoringPosition.get()[0],
+        new PivotToDegreeMagic(scoringSubsystem.getPositionData_Pitch(),
             Constants.ArmConstants.MAX_CRUISE_VELOCITY,
             Constants.ArmConstants.MAX_ACCELERATION, 3,
             Constants.ArmConstants.MOTIONM_GAINS_FX,
             () -> false,
             armSubsystem),
-        new RotateToDegree(turretSubsystem, scoringPosition.get()[1], () -> true));
+        new RotateToDegree(turretSubsystem, scoringSubsystem.getPositionData_Turret(), () -> true));
   }
 }

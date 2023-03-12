@@ -67,12 +67,9 @@ public class RobotContainer {
 
         private final CameraSubsystem cameraSubsystem = new CameraSubsystem(CameraType.LIMELIGHT);
         private final ScoringSubsystem scoringSubsystem = new ScoringSubsystem();
-        private final GridSubscriber gridSubscriber;
 
-        public RobotContainer(GridSubscriber gridSubscriber) {
+        public RobotContainer() {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-                this.gridSubscriber = gridSubscriber;
 
                 configureControllerBindings();
 
@@ -123,9 +120,7 @@ public class RobotContainer {
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper)
                                 .onTrue(new ScoreFromNumpad(
-                                                () -> scoringSubsystem
-                                                                .getPositionData(gridSubscriber.getTargetSupplier()
-                                                                                .get()),
+                                                scoringSubsystem,
                                                 armSubsystem,
                                                 turretSubsystem));
 

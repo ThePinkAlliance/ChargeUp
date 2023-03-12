@@ -12,7 +12,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.network.GridSubscriber;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,8 +26,7 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
-    private GridSubscriber m_gridSubscriber;
-
+    
     /**
      * This function is run when the robot is first started up and should be used
      * for any
@@ -41,12 +39,8 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         CommandScheduler.getInstance().cancelAll();
 
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        // get a topic from a NetworkTableInstance
-        // the topic name in this case is the full name
-        DoubleTopic dblTopic = inst.getDoubleTopic("/datatable/CUI");
-        m_gridSubscriber = new GridSubscriber(dblTopic);
-        m_robotContainer = new RobotContainer(m_gridSubscriber);
+        
+        m_robotContainer = new RobotContainer();
     }
 
     /**
@@ -83,7 +77,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        m_gridSubscriber.periodic();
     }
 
     /**
@@ -103,7 +96,6 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        m_gridSubscriber.periodic();
     }
 
     @Override
@@ -120,7 +112,6 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        m_gridSubscriber.periodic();
     }
 
     @Override
@@ -132,6 +123,5 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {
-        m_gridSubscriber.periodic();
     }
 }
