@@ -207,6 +207,6 @@ public class PivotToDegreeMagic extends CommandBase {
     SmartDashboard.putNumber("mCurrentPosition", currentPosition);
     SmartDashboard.putNumber("mDesiredPosition", desiredPosition);
 
-    return (diff <= 90);
+    return (diff <= 130);
   }
 }

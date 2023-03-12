@@ -34,12 +34,15 @@ import frc.robot.commands.manipulator.CommandCurrentManipulator;
 import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.commands.manipulator.ZeroManipulator;
+import frc.robot.commands.scoring.ScoreFromNumpad;
+import frc.robot.network.GridSubscriber;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.CameraSubsystem.CameraType;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
+import frc.robot.subsystems.scoring.ScoringSubsystem;
 
 public class RobotContainer {
 
@@ -63,9 +66,13 @@ public class RobotContainer {
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
 
         private final CameraSubsystem cameraSubsystem = new CameraSubsystem(CameraType.LIMELIGHT);
+        private final ScoringSubsystem scoringSubsystem = new ScoringSubsystem();
+        private final GridSubscriber gridSubscriber;
 
-        public RobotContainer() {
+        public RobotContainer(GridSubscriber gridSubscriber) {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+                this.gridSubscriber = gridSubscriber;
 
                 configureControllerBindings();
 
@@ -114,13 +121,14 @@ public class RobotContainer {
                                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorLeftAxis),
                                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorRightAxis)));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper).onTrue(
-                                new PivotToDegreeMagic(128,
-                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                                                Constants.ArmConstants.MAX_ACCELERATION, 2,
-                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
-                                                () -> !turretSubsystem.isMoving(),
-                                                armSubsystem));
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper)
+                                .onTrue(new ScoreFromNumpad(
+                                                () -> scoringSubsystem
+                                                                .getPositionData(gridSubscriber.getTargetSupplier()
+                                                                                .get()),
+                                                armSubsystem,
+                                                turretSubsystem));
+
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
                                 new PivotToDegreeMagic(78,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,

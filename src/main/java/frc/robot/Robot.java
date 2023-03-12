@@ -41,12 +41,12 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         CommandScheduler.getInstance().cancelAll();
 
-        m_robotContainer = new RobotContainer();
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         // get a topic from a NetworkTableInstance
         // the topic name in this case is the full name
         DoubleTopic dblTopic = inst.getDoubleTopic("/datatable/CUI");
         m_gridSubscriber = new GridSubscriber(dblTopic);
+        m_robotContainer = new RobotContainer(m_gridSubscriber);
     }
 
     /**

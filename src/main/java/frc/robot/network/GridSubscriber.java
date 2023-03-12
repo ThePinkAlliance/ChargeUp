@@ -1,15 +1,17 @@
 package frc.robot.network;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GridSubscriber {
-    // the publisher is an instance variable so its lifetime matches that of the class
+  // the publisher is an instance variable so its lifetime matches that of the
+  // class
   private DoubleSubscriber dblSub;
   private double gridTarget = 0;
-
 
   public GridSubscriber(DoubleTopic dblTopic) {
     // subscribe options may be specified using PubSubOption
@@ -24,7 +26,7 @@ public class GridSubscriber {
     // simple get of most recent value; if no value has been published,
     // returns the default value passed to the subscribe() function
     gridTarget = dblSub.get();
-    
+
     SmartDashboard.putNumber("GridPublisher CUI", gridTarget);
     gridderUpdater(gridTarget);
   }
@@ -35,6 +37,10 @@ public class GridSubscriber {
   public void close() {
     // stop publishing
     dblSub.close();
+  }
+
+  public Supplier<Integer> getTargetSupplier() {
+    return () -> (int) gridTarget;
   }
 
   public void dashBoardGridder() {
@@ -52,44 +58,35 @@ public class GridSubscriber {
 
   public void gridderUpdater(double target) {
     if (target == 0) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("zero", true);
+      dashBoardGridder();
+      SmartDashboard.putBoolean("zero", true);
+    } else if (target == 1) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("one", true);
+    } else if (target == 2) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("two", true);
+    } else if (target == 3) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("three", true);
+    } else if (target == 4) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("four", true);
+    } else if (target == 5) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("five", true);
+    } else if (target == 6) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("six", true);
+    } else if (target == 7) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("seven", true);
+    } else if (target == 8) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("eight", true);
+    } else if (target == 9) {
+      dashBoardGridder();
+      SmartDashboard.putBoolean("nine", true);
     }
-    else if (target == 1) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("one", true);
-    }
-    else if (target == 2) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("two", true);
-    }
-    else if (target == 3) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("three", true);
-    }
-    else if (target == 4) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("four", true);
-    }
-    else if (target == 5) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("five", true);
-    }
-    else if (target == 6) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("six", true);
-    }
-    else if (target == 7) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("seven", true);
-    }
-    else if (target == 8) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("eight", true);
-    }
-    else if (target == 9) {
-        dashBoardGridder();
-        SmartDashboard.putBoolean("nine", true);
-    }      
   }
 }

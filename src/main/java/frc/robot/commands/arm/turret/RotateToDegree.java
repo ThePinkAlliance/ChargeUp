@@ -105,6 +105,6 @@ public class RotateToDegree extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return controller.atSetpoint();
+    return Math.abs(sparkMax.getEncoder().getPosition()) <= 0.3;
   }
 }

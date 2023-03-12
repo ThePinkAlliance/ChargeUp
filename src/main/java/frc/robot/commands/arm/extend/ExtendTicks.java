@@ -36,8 +36,8 @@ public class ExtendTicks extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // SmartDashboard.putNumber("[EXTEND] Ticks",
-    // armSubsystem.getExtensionRotations());
+    SmartDashboard.putNumber("[EXTEND] Ticks",
+        armSubsystem.getExtensionRotations());
   }
 
   // Called once the command ends or is interrupted.
