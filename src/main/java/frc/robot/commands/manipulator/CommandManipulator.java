@@ -13,13 +13,10 @@ public class CommandManipulator extends CommandBase {
   ManipulatorSubsystem manipulatorSubsystem;
   double time;
   boolean inverted;
-  MedianFilter leftFilter;
-  MedianFilter rightFilter;
-  boolean leftZeroed;
-  boolean rightZeroed;
-  Timer leftSustainedTime;
-  Timer rightSustainedTime;
-  double sustainedTime = .4;
+  MedianFilter leftFilter, rightFilter;
+  boolean leftZeroed, rightZeroed;
+  Timer leftSustainedTime, rightSustainedTime;
+  double sustainedTime;
   double currentThreshold;
   double power;
 
@@ -92,7 +89,6 @@ public class CommandManipulator extends CommandBase {
       manipulatorSubsystem.setRightPower(inverted ? -power : power);
     }
 
-    System.out.println(leftCurrent + ", " + rightCurrent);
   }
 
   // Called once the command ends or is interrupted.

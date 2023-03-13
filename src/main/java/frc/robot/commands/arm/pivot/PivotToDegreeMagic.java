@@ -15,8 +15,8 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Telemetry;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class PivotToDegreeMagic extends CommandBase {
@@ -177,16 +177,14 @@ public class PivotToDegreeMagic extends CommandBase {
 
       pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
 
-      SmartDashboard.putNumber("desiredPos", desiredPosition);
-
       this.motorCommanded = true;
     }
 
-    SmartDashboard.putBoolean("isSafe", isSafe);
-    SmartDashboard.putBoolean("isCommanded", motorCommanded);
-    SmartDashboard.putNumber("currentAngle", currentPitch);
-    SmartDashboard.putNumber("desiredAngle", desiredAngle);
-    SmartDashboard.putNumber("InitalAngle", initialAngle);
+    Telemetry.logData("isSafe", isSafe, PivotToDegreeMagic.class);
+    Telemetry.logData("isCommanded", motorCommanded, PivotToDegreeMagic.class);
+    Telemetry.logData("currentAngle", currentPitch, PivotToDegreeMagic.class);
+    Telemetry.logData("desiredAngle", desiredAngle, PivotToDegreeMagic.class);
+    Telemetry.logData("initalAngle", initialAngle, PivotToDegreeMagic.class);
   }
 
   // Called once the command ends or is interrupted.
@@ -203,9 +201,9 @@ public class PivotToDegreeMagic extends CommandBase {
     double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
     double diff = Math.abs(desiredPosition - currentPosition);
 
-    SmartDashboard.putNumber("mDiff", diff);
-    SmartDashboard.putNumber("mCurrentPosition", currentPosition);
-    SmartDashboard.putNumber("mDesiredPosition", desiredPosition);
+    Telemetry.logData("Pitch Difference", diff, PivotToDegreeMagic.class);
+    Telemetry.logData("Current Pitch Position", currentPosition, PivotToDegreeMagic.class);
+    Telemetry.logData("Desired Pitch Position", desiredPosition, PivotToDegreeMagic.class);
 
     return (diff <= 130);
   }

@@ -8,13 +8,14 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
+import frc.robot.Telemetry;
 
 public class GoToPositionManipulator extends CommandBase {
   ManipulatorSubsystem manipulatorSubsystem;
   double desiredPositionL, desiredPositionR;
   Timer timer;
   Watchdog watchdog;
-  double tolerence;
+  double tolerance;
 
   /** Creates a new CloseManipulator. */
   public GoToPositionManipulator(double desiredPositionL,
@@ -25,7 +26,7 @@ public class GoToPositionManipulator extends CommandBase {
 
     this.desiredPositionL = desiredPositionL;
     this.timer = new Timer();
-    this.tolerence = .4;
+    this.tolerance = .4;
     this.manipulatorSubsystem = manipulatorSubsystem;
     this.watchdog = new Watchdog(1.75, () -> {
       this.manipulatorSubsystem.setLeftPower(0);
@@ -43,7 +44,6 @@ public class GoToPositionManipulator extends CommandBase {
     }
 
     if (!Double.isNaN(desiredPositionR)) {
-      System.out.println("starting pose " + desiredPositionR);
       this.manipulatorSubsystem.setPositionTargetRight(desiredPositionR);
     }
 
@@ -53,8 +53,8 @@ public class GoToPositionManipulator extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("[MANIPULATOR/EXEC] Left: " + this.manipulatorSubsystem.getLeftPosition() + ", Right: "
-        + this.manipulatorSubsystem.getRightPosition() + ", Right Target: " + desiredPositionR);
+    Telemetry.logData("Manipulator Right", this.manipulatorSubsystem.getRightPosition(), GoToPositionManipulator.class);
+    Telemetry.logData("Manipulator Left", this.manipulatorSubsystem.getLeftPosition(), GoToPositionManipulator.class);
   }
 
   // Called once the command ends or is interrupted.
@@ -78,6 +78,6 @@ public class GoToPositionManipulator extends CommandBase {
       diffR = 0;
     }
 
-    return diffL < tolerence && diffR < tolerence || watchdog.isExpired();
+    return diffL < tolerance && diffR < tolerance || watchdog.isExpired();
   }
 }

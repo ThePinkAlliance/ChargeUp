@@ -4,17 +4,14 @@
 
 package frc.robot.commands.arm.turret;
 
-import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
+import frc.robot.Telemetry;
 
 /**
  * Rotate command for the turret. Right now its configured with a dead reckon
@@ -24,15 +21,12 @@ public class RotateToDegree extends CommandBase {
   private TurretSubsystem turretSubsystem;
   private boolean isFinished;
   private double desiredAngle;
-  private double lastAngle;
-  private double startingAngle;
-  //private Supplier<Boolean> safeToContinue;
   double safetyPivotAngle;
-  private Timer timer;
-  private Timer epoch; //not sure the intention behind this timer so leaving it alone.  Added separate watchDogTimer.
-  private PIDController controller;
+  private Timer watchDog;
   private CANSparkMax sparkMax;
   private ArmSubsystem armSubsystem;
+  private double angleTolerence;
+  private final double WATCHDOG_TIME = 5;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle, double desiredAngle) {
@@ -40,21 +34,9 @@ public class RotateToDegree extends CommandBase {
     this.turretSubsystem = turretSubsystem;
     this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
-    this.lastAngle = 1;
     this.safetyPivotAngle = safetyPivotAngle;
-    this.timer = new Timer();
-    this.epoch = new Timer();
-    
-    
-    // this.controller = new PIDController(2.3, 0.0121, 0);
-    this.controller = new PIDController(0.1, 0.0, 0);
-    this.controller.disableContinuousInput();
-
+    this.watchDog = new Timer();
     this.sparkMax = turretSubsystem.getCanSparkMax();
-
-    SmartDashboard.putNumber("turret-kP", controller.getP());
-    SmartDashboard.putNumber("turret-kI", controller.getI());
-    SmartDashboard.putNumber("turret-kD", controller.getD());
     
     //Do not require armSubsystem:  its only here to get information
     addRequirements(turretSubsystem);
@@ -63,23 +45,15 @@ public class RotateToDegree extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.start();
-    timer.reset();
 
-    epoch.start();
-    epoch.reset();
+    watchDog.start();
+    watchDog.reset();
 
     isFinished = false;
-    startingAngle = turretSubsystem.getTurretAngle();
 
-    double kP = SmartDashboard.getNumber("turret-kP", controller.getP());
-    double kI = SmartDashboard.getNumber("turret-kI", controller.getI());
-    double kD = SmartDashboard.getNumber("turret-kD", controller.getD());
-
-    controller.setPID(kP, kI, kD);
-    sparkMax.getPIDController().setP(kP);
-    sparkMax.getPIDController().setI(kI);
-    sparkMax.getPIDController().setD(kD);
+    sparkMax.getPIDController().setP(0.1);
+    sparkMax.getPIDController().setI(0);
+    sparkMax.getPIDController().setD(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -93,29 +67,25 @@ public class RotateToDegree extends CommandBase {
     if (armSubsystem.getArmPitch() > safetyPivotAngle) {
        sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
     } else {
-      turretSubsystem.powerTurret(0);
       isFinished = true;
     }
-
-    SmartDashboard.putNumber("Turret Target", desiredPosRadians);
-    SmartDashboard.putNumber("Turret Position", currentAngle);
-
-    epoch.reset();
+    Telemetry.logData("Turret Target Angle", desiredPosRadians, RotateToDegree.class);
+    Telemetry.logData("Current Turret Angle", currentAngle, RotateToDegree.class);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     this.turretSubsystem.powerTurret(0);
-    timer.stop();
+    watchDog.stop();
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-     
-    return Math.abs(sparkMax.getEncoder().getPosition()) <= 0.3 || isFinished;
-    
+    double currentDesired = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
+    double difference = Math.abs(desiredAngle - currentDesired);
+    return difference <= angleTolerence || isFinished || watchDog.hasElapsed(WATCHDOG_TIME); 
   }
 }
