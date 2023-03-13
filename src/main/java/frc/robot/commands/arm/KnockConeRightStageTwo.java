@@ -23,12 +23,12 @@ public class KnockConeRightStageTwo extends SequentialCommandGroup {
                 // addCommands(new FooCommand(), new BarCommand());
                 addCommands(
                                 new GoToPositionManipulator(Double.NaN,
-                                                0, manipulatorSubsystem),
+                                                Constants.ManipulatorConstants.COLLECT_CONE_FULLY_OPEN, manipulatorSubsystem),
 
-                                new GoToPositionManipulator(58, Double.NaN,
+                                new GoToPositionManipulator(Constants.ManipulatorConstants.COLLECT_CONE_RIGHT_LEFT_STAGE_TWO , Double.NaN,
                                                 manipulatorSubsystem),
 
-                                new PivotToDegreeMagic(128,
+                                new PivotToDegreeMagic(Constants.ArmConstants.COLLECT_STOW,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,

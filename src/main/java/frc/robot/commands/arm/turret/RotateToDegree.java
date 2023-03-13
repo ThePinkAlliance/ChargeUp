@@ -8,6 +8,7 @@ package frc.robot.commands.arm.turret;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
@@ -22,11 +23,11 @@ public class RotateToDegree extends CommandBase {
   private boolean isFinished;
   private double desiredAngle;
   double safetyPivotAngle;
-  private Timer watchDog;
   private CANSparkMax sparkMax;
   private ArmSubsystem armSubsystem;
   private double angleTolerence;
-  private final double WATCHDOG_TIME = 5;
+  Watchdog watchdog;
+  private final double WATCHDOG_TIMEOUT = 4.2;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle, double desiredAngle) {
@@ -35,7 +36,9 @@ public class RotateToDegree extends CommandBase {
     this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
     this.safetyPivotAngle = safetyPivotAngle;
-    this.watchDog = new Timer();
+    this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
+      //empty on purpose, end() will handle safing the subsystem
+    });
     this.sparkMax = turretSubsystem.getCanSparkMax();
     
     //Do not require armSubsystem:  its only here to get information
@@ -46,14 +49,16 @@ public class RotateToDegree extends CommandBase {
   @Override
   public void initialize() {
 
-    watchDog.start();
-    watchDog.reset();
+   
+    
 
     isFinished = false;
 
     sparkMax.getPIDController().setP(0.1);
     sparkMax.getPIDController().setI(0);
     sparkMax.getPIDController().setD(0);
+    watchdog.reset();
+    watchdog.enable();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -77,8 +82,6 @@ public class RotateToDegree extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     this.turretSubsystem.powerTurret(0);
-    watchDog.stop();
-
   }
 
   // Returns true when the command should end.
@@ -86,6 +89,6 @@ public class RotateToDegree extends CommandBase {
   public boolean isFinished() {
     double currentDesired = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double difference = Math.abs(desiredAngle - currentDesired);
-    return difference <= angleTolerence || isFinished || watchDog.hasElapsed(WATCHDOG_TIME); 
+    return difference <= angleTolerence || isFinished || watchdog.isExpired(); 
   }
 }

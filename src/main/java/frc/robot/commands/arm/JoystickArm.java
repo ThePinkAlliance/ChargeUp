@@ -16,6 +16,7 @@ public class JoystickArm extends CommandBase {
   private Supplier<Double> extSupplier;
   private Supplier<Double> pivotSupplier;
   private boolean updateHoldPosition;
+  private double PIVOT_DEADBAND = 0.05;
 
   /** Creates a new CommandExtend. */
   public JoystickArm(ArmSubsystem armSubsystem, Supplier<Double> extSupplier, Supplier<Double> pivotSupplier) {
@@ -41,7 +42,7 @@ public class JoystickArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double input = Math.abs(pivotSupplier.get()) > 0.01 ? pivotSupplier.get() : 0;
+    double input = Math.abs(pivotSupplier.get()) > PIVOT_DEADBAND ? pivotSupplier.get() : 0;
     double pivotAngle = armSubsystem.getArmPitch();
 
     if (input == 0) {
@@ -77,6 +78,7 @@ public class JoystickArm extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    this.armSubsystem.commandPivot(0);
   }
 
   // Returns true when the command should end.

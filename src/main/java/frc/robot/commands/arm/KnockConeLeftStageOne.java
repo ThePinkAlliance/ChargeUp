@@ -23,18 +23,19 @@ public class KnockConeLeftStageOne extends SequentialCommandGroup {
                 // Add your commands in the addCommands() call, e.g.
                 // addCommands(new FooCommand(), new BarCommand());
                 addCommands(
-                                new PivotToDegreeMagic(83.5,
-                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                new PivotToDegreeMagic(Constants.ArmConstants.COLLECT_CONE_ANGLE_STAGE_ONE,
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY, 
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> !turretSubsystem
                                                                 .isMoving(),
                                                 armSubsystem),
+                                //Zereos the Manipulator Tines
                                 new CommandManipulator(.2, 15, 0.7, true,
                                                 manipulatorSubsystem),
-
-                                new GoToPositionManipulator(37.97,
-                                                0,
+                                //Move Left to Center, Move Right to Fully Open
+                                new GoToPositionManipulator(Constants.ManipulatorConstants.COLLECT_CONE_LEFT_LEFT_STAGE_ONE,
+                                                Constants.ManipulatorConstants.COLLECT_CONE_FULLY_OPEN,
                                                 manipulatorSubsystem));
         }
 }

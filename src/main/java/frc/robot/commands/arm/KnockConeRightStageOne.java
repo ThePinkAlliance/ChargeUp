@@ -23,7 +23,7 @@ public class KnockConeRightStageOne extends SequentialCommandGroup {
                 // Add your commands in the addCommands() call, e.g.
                 // addCommands(new FooCommand(), new BarCommand());
                 addCommands(
-                                new PivotToDegreeMagic(84,
+                                new PivotToDegreeMagic(Constants.ArmConstants.COLLECT_CONE_ANGLE_STAGE_ONE,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -33,8 +33,8 @@ public class KnockConeRightStageOne extends SequentialCommandGroup {
                                                                 new CommandManipulator(.2, 15, 0.7, true,
                                                                                 manipulatorSubsystem)),
 
-                                new GoToPositionManipulator(0,
-                                                38.16,
+                                new GoToPositionManipulator(Constants.ManipulatorConstants.COLLECT_CONE_FULLY_OPEN,
+                                                Constants.ManipulatorConstants.COLLECT_CONE_RIGHT_RIGHT_STAGE_ONE,
                                                 manipulatorSubsystem));
         }
 }

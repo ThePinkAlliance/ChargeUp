@@ -6,6 +6,7 @@ package frc.robot.commands.manipulator;
 
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 
@@ -19,6 +20,8 @@ public class CommandManipulator extends CommandBase {
   double sustainedTime;
   double currentThreshold;
   double power;
+  Watchdog watchdog;
+  private final double WATCHDOG_TIMEOUT = 2.5;
 
   /** Creates a new PowerUntilTime. */
   public CommandManipulator(double sustainedTime, double currentThreshold, double power, boolean inverted,
@@ -35,6 +38,9 @@ public class CommandManipulator extends CommandBase {
     this.currentThreshold = currentThreshold;
     this.leftSustainedTime = new Timer();
     this.rightSustainedTime = new Timer();
+    this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
+      this.manipulatorSubsystem.setRightPower(0);
+    });
 
     addRequirements(manipulatorSubsystem);
   }
@@ -50,6 +56,9 @@ public class CommandManipulator extends CommandBase {
 
     leftSustainedTime.reset();
     rightSustainedTime.reset();
+
+    watchdog.reset();
+    watchdog.enable();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -106,6 +115,6 @@ public class CommandManipulator extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return leftZeroed && rightZeroed;
+    return (leftZeroed && rightZeroed) || watchdog.isExpired();
   }
 }

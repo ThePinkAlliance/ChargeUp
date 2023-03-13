@@ -10,11 +10,12 @@ import java.util.function.Supplier;
 import com.ThePinkAlliance.core.math.LinearInterpolationTable;
 import com.ThePinkAlliance.core.math.Vector2d;
 import com.ThePinkAlliance.core.util.GainsFX;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Telemetry;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -38,7 +39,8 @@ public class PivotToDegreeMagic extends CommandBase {
   private double initialAngle;
 
   private boolean motorCommanded;
-
+  private Watchdog watchdog;
+  private final double WATCHDOG_TIMEOUT = 4.5;
   /** Creates a new PivotToDegreeMagic. */
   public PivotToDegreeMagic(double desiredAngle, GainsFX gains, Supplier<Boolean> safeToContinue,
       ArmSubsystem armSubsystem) {
@@ -62,6 +64,9 @@ public class PivotToDegreeMagic extends CommandBase {
 
     this.motorCommanded = false;
     this.initialAngle = 0;
+    this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
+      //empty on purpose, end() will handle safing the subsystem
+    });
 
     addRequirements(armSubsystem);
   }
@@ -160,7 +165,8 @@ public class PivotToDegreeMagic extends CommandBase {
     initialAngle = armSubsystem.getArmPitch();
 
     pivotMotor.setSelectedSensorPosition(0);
-
+    watchdog.reset();
+    watchdog.enable();
     System.out.println("---- Pivot Init ----");
   }
 
@@ -205,6 +211,6 @@ public class PivotToDegreeMagic extends CommandBase {
     Telemetry.logData("Current Pitch Position", currentPosition, PivotToDegreeMagic.class);
     Telemetry.logData("Desired Pitch Position", desiredPosition, PivotToDegreeMagic.class);
 
-    return (diff <= 130);
+    return (diff <= 130 || watchdog.isExpired());
   }
 }

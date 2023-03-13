@@ -13,13 +13,14 @@ public class ExtendTicks extends CommandBase {
   ArmSubsystem armSubsystem;
   double desiredRotations;
   Watchdog watchdog;
+  private final double WATCHDOG_TIMEOUT = 3.0;
 
   /** Creates a new ExtendTicks. */
   public ExtendTicks(double desiredRotations, ArmSubsystem armSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.armSubsystem = armSubsystem;
     this.desiredRotations = desiredRotations;
-    this.watchdog = new Watchdog(3, () -> {
+    this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       this.armSubsystem.commandExtend(0);
     });
 
@@ -30,6 +31,7 @@ public class ExtendTicks extends CommandBase {
   @Override
   public void initialize() {
     watchdog.reset();
+    watchdog.enable();
     armSubsystem.setExtenionRotations(desiredRotations);
   }
 

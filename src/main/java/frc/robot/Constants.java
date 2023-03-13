@@ -142,6 +142,11 @@ public final class Constants {
                 public static final double POWER_LIMIT_PIVOT = 1;
                 public static final float  EXTENDER_90_MAX_LIMIT = 54.0f;
                 public static final float  EXTENDER_MIN_LIMIT = 3.0f;
+
+                public static final double COLLECT_CONE_ANGLE_STAGE_ONE = 83.5;
+                public static final double COLLECT_STOW = 180.0;
+                
+                
         }
 
         public static final class ManipulatorConstants {
@@ -150,6 +155,17 @@ public final class Constants {
 
                 public static final double CUBE_LEFT = 14.19;
                 public static final double CUBE_RIGHT = 14.19;
+
+                public static final double COLLECT_CONE_FULLY_OPEN = 0;
+
+                //KnockConeLeft
+                public static final double COLLECT_CONE_LEFT_LEFT_STAGE_ONE = 37.97;
+                public static final double COLLECT_CONE_LEFT_RIGHT_STAGE_TWO = 56.0;
+                //KnockConeRight
+                public static final double COLLECT_CONE_RIGHT_RIGHT_STAGE_ONE = 38.16;
+                public static final double COLLECT_CONE_RIGHT_LEFT_STAGE_TWO = 58.0;
+
+                
 
         }
 }
