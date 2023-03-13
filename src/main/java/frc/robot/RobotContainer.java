@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.AprilTagMoverCommand;
 import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.KnockConeLeftStageOne;
 import frc.robot.commands.arm.KnockConeLeftStageTwo;
@@ -29,11 +28,8 @@ import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.drive.SwerveJoystickCmd;
 import frc.robot.commands.manipulator.JoystickManipulator;
-import frc.robot.commands.manipulator.SupplyCurrentManipulator;
-import frc.robot.commands.manipulator.CommandCurrentManipulator;
 import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
-import frc.robot.commands.manipulator.ZeroManipulator;
 import frc.robot.commands.scoring.ScoreFromNumpad;
 import frc.robot.network.GridSubscriber;
 import frc.robot.subsystems.CameraSubsystem;
@@ -171,10 +167,6 @@ public class RobotContainer {
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonStart)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
-
-                // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
-                // .whileTrue(new AprilTagMoverCommand(swerveSubsystem, cameraSubsystem,
-                // driverJoytick));
 
                 /* Turret Controls (Base) */
                 new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, 160,

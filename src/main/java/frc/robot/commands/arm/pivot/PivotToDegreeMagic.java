@@ -17,6 +17,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Telmetery;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class PivotToDegreeMagic extends CommandBase {
@@ -177,16 +178,14 @@ public class PivotToDegreeMagic extends CommandBase {
 
       pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
 
-      SmartDashboard.putNumber("desiredPos", desiredPosition);
-
       this.motorCommanded = true;
     }
 
-    SmartDashboard.putBoolean("isSafe", isSafe);
-    SmartDashboard.putBoolean("isCommanded", motorCommanded);
-    SmartDashboard.putNumber("currentAngle", currentPitch);
-    SmartDashboard.putNumber("desiredAngle", desiredAngle);
-    SmartDashboard.putNumber("InitalAngle", initialAngle);
+    Telmetery.logData("isSafe", isSafe, PivotToDegreeMagic.class);
+    Telmetery.logData("isCommanded", motorCommanded, PivotToDegreeMagic.class);
+    Telmetery.logData("currentAngle", currentPitch, PivotToDegreeMagic.class);
+    Telmetery.logData("desiredAngle", desiredAngle, PivotToDegreeMagic.class);
+    Telmetery.logData("initalAngle", initialAngle, PivotToDegreeMagic.class);
   }
 
   // Called once the command ends or is interrupted.
@@ -203,9 +202,9 @@ public class PivotToDegreeMagic extends CommandBase {
     double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
     double diff = Math.abs(desiredPosition - currentPosition);
 
-    SmartDashboard.putNumber("mDiff", diff);
-    SmartDashboard.putNumber("mCurrentPosition", currentPosition);
-    SmartDashboard.putNumber("mDesiredPosition", desiredPosition);
+    Telmetery.logData("Pitch Difference", diff, PivotToDegreeMagic.class);
+    Telmetery.logData("Current Pitch Position", currentPosition, PivotToDegreeMagic.class);
+    Telmetery.logData("Desired Pitch Position", desiredPosition, PivotToDegreeMagic.class);
 
     return (diff <= 130);
   }

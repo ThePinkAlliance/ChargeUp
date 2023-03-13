@@ -5,8 +5,8 @@
 package frc.robot.commands.arm.extend;
 
 import edu.wpi.first.wpilibj.Watchdog;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Telmetery;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class ExtendTicks extends CommandBase {
@@ -29,15 +29,15 @@ public class ExtendTicks extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    armSubsystem.setExtenionRotations(desiredRotations);
     watchdog.reset();
+
+    armSubsystem.setExtenionRotations(desiredRotations);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("[EXTEND] Ticks",
-        armSubsystem.getExtensionRotations());
+    Telmetery.logData("Ticks", armSubsystem.getExtensionRotations(), ExtendTicks.class);
   }
 
   // Called once the command ends or is interrupted.

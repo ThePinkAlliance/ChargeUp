@@ -7,6 +7,7 @@ package frc.robot.commands.manipulator;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Telmetery;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 
 public class GoToPositionManipulator extends CommandBase {
@@ -43,7 +44,6 @@ public class GoToPositionManipulator extends CommandBase {
     }
 
     if (!Double.isNaN(desiredPositionR)) {
-      System.out.println("starting pose " + desiredPositionR);
       this.manipulatorSubsystem.setPositionTargetRight(desiredPositionR);
     }
 
@@ -53,8 +53,8 @@ public class GoToPositionManipulator extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("[MANIPULATOR/EXEC] Left: " + this.manipulatorSubsystem.getLeftPosition() + ", Right: "
-        + this.manipulatorSubsystem.getRightPosition() + ", Right Target: " + desiredPositionR);
+    Telmetery.logData("Manipulator Right", this.manipulatorSubsystem.getRightPosition(), GoToPositionManipulator.class);
+    Telmetery.logData("Manipulator Left", this.manipulatorSubsystem.getLeftPosition(), GoToPositionManipulator.class);
   }
 
   // Called once the command ends or is interrupted.
