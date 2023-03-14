@@ -139,13 +139,36 @@ public class RobotContainer {
 
                 /* Extend Controls (Base) */
 
+                /*
+                 * This setup with pivoting before and after collecting need's testing.
+                 */
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonA)
-                                .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CUBE_LEFT + 3,
-                                                Constants.ManipulatorConstants.CUBE_RIGHT + 3, manipulatorSubsystem))
+                                .onTrue(new PivotToDegreeMagic(Constants.ArmConstants.COLLECT_ANGLE,
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
+                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                () -> true,
+                                                armSubsystem)
+                                                .andThen(new GoToPositionManipulator(
+                                                                Constants.ManipulatorConstants.CUBE_LEFT + 3,
+                                                                Constants.ManipulatorConstants.CUBE_RIGHT + 3,
+                                                                manipulatorSubsystem)))
+                                .onFalse(new PivotToDegreeMagic(Constants.ArmConstants.COLLECT_STOW,
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
+                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                () -> true,
+                                                armSubsystem))
                                 .debounce(0.25)
                                 .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CONE_LEFT
                                                 + 5,
-                                                Constants.ManipulatorConstants.CONE_RIGHT + 5, manipulatorSubsystem));
+                                                Constants.ManipulatorConstants.CONE_RIGHT + 5, manipulatorSubsystem))
+                                .onFalse(new PivotToDegreeMagic(Constants.ArmConstants.COLLECT_STOW,
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
+                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                () -> true,
+                                                armSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY)
                                 .onTrue(new KnockConeLeftStageOne(armSubsystem, manipulatorSubsystem, turretSubsystem))

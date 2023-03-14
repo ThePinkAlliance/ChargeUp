@@ -238,6 +238,7 @@ public class ArmSubsystem extends SubsystemBase {
      * Name Raw Degrees, Command Degrees, Valid?
      * Full Down 134.561, 72.16,
      */
+
     return (canCoder.getAbsolutePosition() - Constants.ArmConstants.PITCH_FLOOR_ABSOLUTE) + pivotOffset;
   }
 

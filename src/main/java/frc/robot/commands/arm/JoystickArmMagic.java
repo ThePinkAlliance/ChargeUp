@@ -97,7 +97,6 @@ public class JoystickArmMagic extends CommandBase {
     pivotMotor.configMotionSCurveStrength(2, kTimeoutMs);
 
     pivotMotor.setSelectedSensorPosition(0);
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -110,6 +109,7 @@ public class JoystickArmMagic extends CommandBase {
         || this.armSubsystem.getArmPitch() > ANGLE_FLOOR && Math.signum(input) == -1)
         || (this.armSubsystem.getArmPitch() > ANGLE_CEILING && Math.signum(input) == -1
             || this.armSubsystem.getArmPitch() < ANGLE_CEILING && Math.signum(input) == 1)) {
+      // 512 is the tick multiplier.
       currentPosition = input * 512 + currentPosition;
 
       this.armSubsystem.getPivotTalon().set(ControlMode.MotionMagic, currentPosition);
