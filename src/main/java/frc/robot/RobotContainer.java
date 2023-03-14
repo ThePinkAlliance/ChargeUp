@@ -119,7 +119,7 @@ public class RobotContainer {
                 // turretSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper).onTrue(
-                                new PivotToDegreeMagic(126, // 78
+                                new PivotToDegreeMagic(126,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -127,7 +127,7 @@ public class RobotContainer {
                                                 armSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
-                                new PivotToDegreeMagic(90, // 78
+                                new PivotToDegreeMagic(90,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -197,16 +197,20 @@ public class RobotContainer {
                 // driverJoytick));
 
                 /* Turret Controls (Base) */
-                new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 160));
+                new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 160,
+                                () -> swerveSubsystem.getYaw()));
 
                 new POVButton(driverJoytick, 180)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 180));
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 180,
+                                                () -> swerveSubsystem.getYaw()));
 
                 new POVButton(driverJoytick, 270)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 200));
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 200,
+                                                () -> swerveSubsystem.getYaw()));
 
                 new POVButton(driverJoytick, 0)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 100, 0));
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 100, 0,
+                                                () -> swerveSubsystem.getYaw()));
         }
 
         public void onDisabledInit() {

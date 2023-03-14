@@ -4,6 +4,8 @@
 
 package frc.robot.commands.arm.turret;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.wpilibj.Timer;
@@ -27,15 +29,17 @@ public class RotateToDegree extends CommandBase {
   private double angleTolerence;
   Watchdog watchdog;
   private final double WATCHDOG_TIMEOUT = 4.2;
+  private Supplier<Double> currentBaseAngle;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle,
-      double desiredAngle) {
+      double desiredAngle, Supplier<Double> currentBaseAngle) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
     this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
     this.safetyPivotAngle = safetyPivotAngle;
+    this.currentBaseAngle = currentBaseAngle;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       // empty on purpose, end() will handle safing the subsystem
     });
@@ -49,6 +53,11 @@ public class RotateToDegree extends CommandBase {
   @Override
   public void initialize() {
     isFinished = false;
+
+    Telemetry.logData("yaw", currentBaseAngle.get(), RotateToDegree.class);
+    Telemetry.logData("Old Desired Angle", desiredAngle, RotateToDegree.class);
+    desiredAngle = (desiredAngle) - (currentBaseAngle.get());
+    Telemetry.logData("New Desired Angle", desiredAngle, RotateToDegree.class);
 
     sparkMax.getPIDController().setP(0.1);
     sparkMax.getPIDController().setI(0);

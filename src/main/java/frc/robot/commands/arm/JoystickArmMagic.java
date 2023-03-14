@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -104,16 +105,23 @@ public class JoystickArmMagic extends CommandBase {
   public void execute() {
     double input = Math.abs(pivotSupplier.get()) > PIVOT_DEADBAND ? pivotSupplier.get() : 0;
     double pivotAngle = armSubsystem.getArmPitch();
+    double realPositionTicks = Constants.convertDegreesToPitchTicks(pivotAngle);
 
-    if ((this.armSubsystem.getArmPitch() < ANGLE_FLOOR && Math.signum(input) == 1
-        || this.armSubsystem.getArmPitch() > ANGLE_FLOOR && Math.signum(input) == -1)
-        || (this.armSubsystem.getArmPitch() > ANGLE_CEILING && Math.signum(input) == -1
-            || this.armSubsystem.getArmPitch() < ANGLE_CEILING && Math.signum(input) == 1)) {
-      // 512 is the tick multiplier.
-      currentPosition = input * 512 + currentPosition;
+    // 512 is the tick multiplier.
+    double ticksToWantedPosition = input * 512;
 
-      this.armSubsystem.getPivotTalon().set(ControlMode.MotionMagic, currentPosition);
-    }
+    // if ((this.armSubsystem.getArmPitch() < ANGLE_FLOOR && Math.signum(input) == 1
+    // || this.armSubsystem.getArmPitch() > ANGLE_FLOOR && Math.signum(input) == -1)
+    // || (this.armSubsystem.getArmPitch() > ANGLE_CEILING && Math.signum(input) ==
+    // -1
+    // || this.armSubsystem.getArmPitch() < ANGLE_CEILING && Math.signum(input) ==
+    // 1)) {
+    currentPosition = ticksToWantedPosition + currentPosition;
+
+    this.armSubsystem.getPivotTalon().set(ControlMode.MotionMagic, currentPosition);
+    // } else {
+    // armSubsystem.commandPivot(0);
+    // }
 
     double val = extSupplier.get();
     // Cube law on extended input

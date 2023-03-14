@@ -1,7 +1,7 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "CANCoder[9]": {
+      "navX-Sensor[0]": {
         "header": {
           "open": true
         }

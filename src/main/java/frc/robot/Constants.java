@@ -147,6 +147,17 @@ public final class Constants {
                 public static final double COLLECT_CONE_ANGLE_STAGE_ONE = 83.5;
                 public static final double COLLECT_STOW = 180.0;
 
+                /**
+                 * The angle factor is responsible for converting degrees to arm ticks when
+                 * divided.
+                 */
+                public static final double ANGLE_FACTOR = 0.000612669993242;
+
+                /**
+                 * The tick factor is responsible for converting arm ticks to degrees when
+                 * divided.
+                 */
+                public static final double TICK_FACTOR = 1578.6776859504;
         }
 
         public static final class ManipulatorConstants {
@@ -165,5 +176,13 @@ public final class Constants {
                 public static final double COLLECT_CONE_RIGHT_RIGHT_STAGE_ONE = 38.16;
                 public static final double COLLECT_CONE_RIGHT_LEFT_STAGE_TWO = 58.0;
 
+        }
+
+        public static double convertDegreesToPitchTicks(double angle) {
+                return angle / ArmConstants.ANGLE_FACTOR;
+        }
+
+        public static double convertPitchTicksToDegrees(double ticks) {
+                return ticks / ArmConstants.TICK_FACTOR;
         }
 }

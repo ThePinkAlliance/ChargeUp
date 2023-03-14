@@ -18,27 +18,28 @@ import frc.robot.subsystems.scoring.ScoringSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ScoreFromNumpad extends SequentialCommandGroup {
-  /** Creates a new ScoreFromNumpad. */
-  public ScoreFromNumpad(ScoringSubsystem scoringSubsystem, ArmSubsystem armSubsystem,
-      TurretSubsystem turretSubsystem) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+    /** Creates a new ScoreFromNumpad. */
+    public ScoreFromNumpad(ScoringSubsystem scoringSubsystem, ArmSubsystem armSubsystem,
+            TurretSubsystem turretSubsystem) {
+        // Add your commands in the addCommands() call, e.g.
+        // addCommands(new FooCommand(), new BarCommand());
 
-    addCommands(
-        new PivotToDegreeMagic(scoringSubsystem.getPositionData_Pitch(),
-            Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-            Constants.ArmConstants.MAX_ACCELERATION, 3,
-            Constants.ArmConstants.MOTIONM_GAINS_FX,
-            () -> false,
-            armSubsystem),
-        new RotateToDegree(turretSubsystem, armSubsystem, 80, scoringSubsystem.getPositionData_Turret()),
-        new InstantCommand(() -> {
-          Telemetry.logData("Desired Position Turret", scoringSubsystem.getPositionData_Turret(),
-              ScoreFromNumpad.class);
-          Telemetry.logData("Desired Position Pitch", scoringSubsystem.getPositionData_Pitch(),
-              ScoreFromNumpad.class);
-          Telemetry.logData("Desired Position Extend", scoringSubsystem.getPositionData_Extend(),
-              ScoreFromNumpad.class);
-        }));
-  }
+        addCommands(
+                new PivotToDegreeMagic(scoringSubsystem.getPositionData_Pitch(),
+                        Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                        Constants.ArmConstants.MAX_ACCELERATION, 3,
+                        Constants.ArmConstants.MOTIONM_GAINS_FX,
+                        () -> false,
+                        armSubsystem),
+                new RotateToDegree(turretSubsystem, armSubsystem, 80, scoringSubsystem.getPositionData_Turret(),
+                        () -> 0.0),
+                new InstantCommand(() -> {
+                    Telemetry.logData("Desired Position Turret", scoringSubsystem.getPositionData_Turret(),
+                            ScoreFromNumpad.class);
+                    Telemetry.logData("Desired Position Pitch", scoringSubsystem.getPositionData_Pitch(),
+                            ScoreFromNumpad.class);
+                    Telemetry.logData("Desired Position Extend", scoringSubsystem.getPositionData_Extend(),
+                            ScoreFromNumpad.class);
+                }));
+    }
 }
