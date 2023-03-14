@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import com.ThePinkAlliance.core.math.LinearInterpolationTable;
 import com.ThePinkAlliance.core.math.Vector2d;
 import com.ThePinkAlliance.core.util.GainsFX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -38,9 +39,11 @@ public class PivotToDegreeMagic extends CommandBase {
 
   private double initialAngle;
 
-  private boolean motorCommanded;
+  private boolean isFinished;
   private Watchdog watchdog;
   private final double WATCHDOG_TIMEOUT = 4.5;
+  private boolean didConfigure;
+
   /** Creates a new PivotToDegreeMagic. */
   public PivotToDegreeMagic(double desiredAngle, GainsFX gains, Supplier<Boolean> safeToContinue,
       ArmSubsystem armSubsystem) {
@@ -49,6 +52,7 @@ public class PivotToDegreeMagic extends CommandBase {
     this.safeToContinue = safeToContinue;
     this.armSubsystem = armSubsystem;
     this.gains = gains;
+    this.didConfigure = false;
     this.pivotMotor = armSubsystem.getPivotTalon();
     this.feedforwardTable = new LinearInterpolationTable(List.of(new Vector2d(71, 0.0787), new Vector2d(74, 0.055),
         new Vector2d(77.78, 0.082), new Vector2d(94.30, 0.078),
@@ -62,10 +66,10 @@ public class PivotToDegreeMagic extends CommandBase {
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
 
-    this.motorCommanded = false;
+    this.isFinished = false;
     this.initialAngle = 0;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
-      //empty on purpose, end() will handle safing the subsystem
+      // empty on purpose, end() will handle safing the subsystem
     });
 
     addRequirements(armSubsystem);
@@ -104,7 +108,7 @@ public class PivotToDegreeMagic extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.motorCommanded = false;
+    this.isFinished = false;
 
     /* Factory default hardware to prevent unexpected behavior */
     pivotMotor.configFactoryDefault();
@@ -114,57 +118,64 @@ public class PivotToDegreeMagic extends CommandBase {
      * Note: we can connect the can coder and use it as the encoder for motion
      * magic.
      */
-    pivotMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, kPIDLoopIdx,
+    pivotMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+        kPIDLoopIdx,
         kTimeoutMs);
 
-    /*
-     * set deadband to super small 0.001 (0.1 %).
-     * The default deadband is 0.04 (4 %)
-     */
+    // /*
+    // * set deadband to super small 0.001 (0.1 %).
+    // * The default deadband is 0.04 (4 %)
+    // */
     pivotMotor.configNeutralDeadband(0.001, kTimeoutMs);
 
-    /**
-     * Configure Talon FX Output and Sensor direction accordingly Invert Motor to
-     * have green LEDs when driving Talon Forward / Requesting Postiive Output Phase
-     * sensor to have positive increment when driving Talon Forward (Green LED)
-     */
-    pivotMotor.setSensorPhase(false);
-    /*
-     * Talon FX does not need sensor phase set for its integrated sensor
-     * This is because it will always be correct if the selected feedback device is
-     * integrated sensor (default value)
-     * and the user calls getSelectedSensor* to get the sensor's position/velocity.
-     * 
-     * https://phoenix-documentation.readthedocs.io/en/latest/ch14_MCSensor.html#
-     * sensor-phase
-     */
-    // pivotMotor.setSensorPhase(true);
+    // /**
+    // * Configure Talon FX Output and Sensor direction accordingly Invert Motor to
+    // * have green LEDs when driving Talon Forward / Requesting Postiive Output
+    // Phase
+    // * sensor to have positive increment when driving Talon Forward (Green LED)
+    // */
+    // // pivotMotor.setSensorPhase(false);
+    // /*
+    // * Talon FX does not need sensor phase set for its integrated sensor
+    // * This is because it will always be correct if the selected feedback device
+    // is
+    // * integrated sensor (default value)
+    // * and the user calls getSelectedSensor* to get the sensor's
+    // position/velocity.
+    // *
+    // * https://phoenix-documentation.readthedocs.io/en/latest/ch14_MCSensor.html#
+    // * sensor-phase
+    // */
+    // // pivotMotor.setSensorPhase(true);
 
-    /* Set relevant frame periods to be at least as fast as periodic rate */
-    pivotMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
-    pivotMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
+    // /* Set relevant frame periods to be at least as fast as periodic rate */
+    pivotMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10,
+        kTimeoutMs);
+    pivotMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic,
+        10, kTimeoutMs);
 
-    /* Set the peak and nominal outputs */
+    // /* Set the peak and nominal outputs */
     pivotMotor.configNominalOutputForward(0, kTimeoutMs);
     pivotMotor.configNominalOutputReverse(0, kTimeoutMs);
     pivotMotor.configPeakOutputForward(1, kTimeoutMs);
     pivotMotor.configPeakOutputReverse(-1, kTimeoutMs);
 
-    /* Set Motion Magic gains in slot0 - see documentation */
+    // /* Set Motion Magic gains in slot0 - see documentation */
     pivotMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
     pivotMotor.config_kF(kSlotIdx, gains.kF, kTimeoutMs);
     pivotMotor.config_kP(kSlotIdx, gains.kP, kTimeoutMs);
     pivotMotor.config_kI(kSlotIdx, gains.kI, kTimeoutMs);
     pivotMotor.config_kD(kSlotIdx, gains.kD, kTimeoutMs);
 
-    /* Set acceleration and vcruise velocity - see documentation */
+    // /* Set acceleration and vcruise velocity - see documentation */
     pivotMotor.configMotionCruiseVelocity(cruiseVelocity, kTimeoutMs);
     pivotMotor.configMotionAcceleration(acceleration, kTimeoutMs);
-    pivotMotor.configMotionSCurveStrength(smoothingIntensity);
+    pivotMotor.configMotionSCurveStrength(smoothingIntensity, kTimeoutMs);
 
     initialAngle = armSubsystem.getArmPitch();
 
     pivotMotor.setSelectedSensorPosition(0);
+
     watchdog.reset();
     watchdog.enable();
     System.out.println("---- Pivot Init ----");
@@ -175,19 +186,14 @@ public class PivotToDegreeMagic extends CommandBase {
   public void execute() {
     double currentPosition = pivotMotor.getSelectedSensorPosition();
     double currentPitch = ((currentPosition + .001) / 1578.6776859504) + initialAngle;
+    double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
+
     boolean isSafe = safeToContinue.get();
 
-    if (!motorCommanded) {
-      /* Convert the desired angle in degrees into the required position in ticks. */
-      double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
-
-      pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
-
-      this.motorCommanded = true;
-    }
+    pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
 
     Telemetry.logData("isSafe", isSafe, PivotToDegreeMagic.class);
-    Telemetry.logData("isCommanded", motorCommanded, PivotToDegreeMagic.class);
+    Telemetry.logData("isFinished", isFinished, PivotToDegreeMagic.class);
     Telemetry.logData("currentAngle", currentPitch, PivotToDegreeMagic.class);
     Telemetry.logData("desiredAngle", desiredAngle, PivotToDegreeMagic.class);
     Telemetry.logData("initalAngle", initialAngle, PivotToDegreeMagic.class);
@@ -198,6 +204,8 @@ public class PivotToDegreeMagic extends CommandBase {
   public void end(boolean interrupted) {
     this.armSubsystem.setPositionToHold(pivotMotor.getSelectedSensorPosition());
     System.out.println("---- Pivot Command Terminated ----");
+
+    // pivotMotor.set(ControlMode.PercentOutput, 0);
   }
 
   // Returns true when the command should end.

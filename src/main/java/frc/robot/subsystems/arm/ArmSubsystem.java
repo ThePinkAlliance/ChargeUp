@@ -8,6 +8,8 @@ import com.ThePinkAlliance.core.simulation.ctre.CtrePhysicsSim;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.AbsoluteEncoder;
@@ -24,6 +26,7 @@ import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,6 +52,9 @@ public class ArmSubsystem extends SubsystemBase {
   private double desiredExtendRotations = 0;
   private double desiredRotations = 0;
   private double positionToHold = 0;
+
+  private int kTimeoutMs = 10;
+  private int kSlotIdx = 0;
 
   public double getPositionToHold() {
     return positionToHold;
@@ -95,7 +101,9 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("pivot-kI", 0);
     SmartDashboard.putNumber("pivot-kD", 0);
 
-    CtrePhysicsSim.getInstance().addTalonFX(pivotMotor, 0.5, 5100);
+    if (RobotBase.isSimulation()) {
+      CtrePhysicsSim.getInstance().addTalonFX(pivotMotor, 0.5, 5100);
+    }
   }
 
   public TalonFX getPivotTalon() {
@@ -175,9 +183,11 @@ public class ArmSubsystem extends SubsystemBase {
   public boolean atPivotSetpoint() {
     return pivotController.atSetpoint();
   }
+
   public double getExtendedPosition() {
     return this.extendMotor.getEncoder().getPosition();
   }
+
   public void commandExtend(double input) {
     input = input * powerLimitExtend;
 

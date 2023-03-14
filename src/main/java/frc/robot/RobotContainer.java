@@ -114,18 +114,26 @@ public class RobotContainer {
                                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorLeftAxis),
                                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorRightAxis)));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper)
-                                .onTrue(new ScoreFromNumpad(
-                                                scoringSubsystem,
-                                                armSubsystem,
-                                                turretSubsystem));
+                // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper)
+                // .onTrue(new ScoreFromNumpad(
+                // scoringSubsystem,
+                // armSubsystem,
+                // turretSubsystem));
+
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper).onTrue(
+                                new PivotToDegreeMagic(126, // 78
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 2,
+                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                () -> true,
+                                                armSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
-                                new PivotToDegreeMagic(90, //78
+                                new PivotToDegreeMagic(90, // 78
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
-                                                () -> !turretSubsystem.isMoving(),
+                                                () -> true,
                                                 armSubsystem));
 
                 /* Extend Controls (Base) */
@@ -175,7 +183,6 @@ public class RobotContainer {
 
                 new POVButton(driverJoytick, 270)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 200));
-                                                
 
                 new POVButton(driverJoytick, 0)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 100, 0));

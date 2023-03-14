@@ -8,6 +8,7 @@ import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Telemetry;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 
 public class CommandManipulator extends CommandBase {
@@ -28,7 +29,7 @@ public class CommandManipulator extends CommandBase {
       ManipulatorSubsystem manipulatorSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.inverted = inverted;
-    this.time = sustainedTime;
+    this.sustainedTime = sustainedTime;
     this.manipulatorSubsystem = manipulatorSubsystem;
     this.leftFilter = new MedianFilter(40);
     this.rightFilter = new MedianFilter(40);
@@ -39,7 +40,7 @@ public class CommandManipulator extends CommandBase {
     this.leftSustainedTime = new Timer();
     this.rightSustainedTime = new Timer();
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
-      this.manipulatorSubsystem.setRightPower(0);
+      // this.manipulatorSubsystem.setRightPower(0);
     });
 
     addRequirements(manipulatorSubsystem);
@@ -59,6 +60,8 @@ public class CommandManipulator extends CommandBase {
 
     watchdog.reset();
     watchdog.enable();
+
+    Telemetry.logData("Starting Command", "", CommandManipulator.class);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -97,12 +100,12 @@ public class CommandManipulator extends CommandBase {
     } else {
       manipulatorSubsystem.setRightPower(inverted ? -power : power);
     }
-
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    Telemetry.logData("End interrupted", interrupted, CommandManipulator.class);
     this.leftFilter.reset();
     this.rightFilter.reset();
 

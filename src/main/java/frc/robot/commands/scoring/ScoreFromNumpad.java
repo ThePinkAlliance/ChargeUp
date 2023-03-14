@@ -4,8 +4,10 @@
 
 package frc.robot.commands.scoring;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
+import frc.robot.Telemetry;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -29,6 +31,14 @@ public class ScoreFromNumpad extends SequentialCommandGroup {
             Constants.ArmConstants.MOTIONM_GAINS_FX,
             () -> false,
             armSubsystem),
-        new RotateToDegree(turretSubsystem, armSubsystem, 80, scoringSubsystem.getPositionData_Turret()));
+        new RotateToDegree(turretSubsystem, armSubsystem, 80, scoringSubsystem.getPositionData_Turret()),
+        new InstantCommand(() -> {
+          Telemetry.logData("Desired Position Turret", scoringSubsystem.getPositionData_Turret(),
+              ScoreFromNumpad.class);
+          Telemetry.logData("Desired Position Pitch", scoringSubsystem.getPositionData_Pitch(),
+              ScoreFromNumpad.class);
+          Telemetry.logData("Desired Position Extend", scoringSubsystem.getPositionData_Extend(),
+              ScoreFromNumpad.class);
+        }));
   }
 }

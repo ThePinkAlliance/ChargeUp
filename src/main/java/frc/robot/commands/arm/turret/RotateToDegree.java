@@ -4,7 +4,6 @@
 
 package frc.robot.commands.arm.turret;
 
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import edu.wpi.first.wpilibj.Timer;
@@ -30,28 +29,25 @@ public class RotateToDegree extends CommandBase {
   private final double WATCHDOG_TIMEOUT = 4.2;
 
   /** Creates a new RotateToDegree. */
-  public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle, double desiredAngle) {
+  public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle,
+      double desiredAngle) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
     this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
     this.safetyPivotAngle = safetyPivotAngle;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
-      //empty on purpose, end() will handle safing the subsystem
+      // empty on purpose, end() will handle safing the subsystem
     });
     this.sparkMax = turretSubsystem.getCanSparkMax();
-    
-    //Do not require armSubsystem:  its only here to get information
+
+    // Do not require armSubsystem: its only here to get information
     addRequirements(turretSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
-   
-    
-
     isFinished = false;
 
     sparkMax.getPIDController().setP(0.1);
@@ -70,7 +66,7 @@ public class RotateToDegree extends CommandBase {
     double desiredRotations = desiredPosRadians * (348.7 / (2 * Math.PI));
     System.out.println("armSubSystem.getArmPitch() " + armSubsystem.getArmPitch());
     if (armSubsystem.getArmPitch() > safetyPivotAngle) {
-       sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
+      sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
     } else {
       isFinished = true;
     }
@@ -89,6 +85,6 @@ public class RotateToDegree extends CommandBase {
   public boolean isFinished() {
     double currentDesired = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double difference = Math.abs(desiredAngle - currentDesired);
-    return difference <= angleTolerence || isFinished || watchdog.isExpired(); 
+    return difference <= angleTolerence || isFinished || watchdog.isExpired();
   }
 }
