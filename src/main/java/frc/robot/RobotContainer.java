@@ -20,6 +20,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AprilTagMoverCommand;
 import frc.robot.commands.arm.JoystickArm;
+import frc.robot.commands.arm.JoystickArmMagic;
 import frc.robot.commands.arm.KnockConeLeftStageOne;
 import frc.robot.commands.arm.KnockConeLeftStageTwo;
 import frc.robot.commands.arm.KnockConeRightStageOne;
@@ -105,7 +106,7 @@ public class RobotContainer {
 
                 /* Arm Controls (Base) */
                 armSubsystem.setDefaultCommand(
-                                new JoystickArm(armSubsystem,
+                                new JoystickArmMagic(armSubsystem,
                                                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis),
                                                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerPivotAxis)
                                                                 / 2));

@@ -11,7 +11,9 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.MotorFeedbackSensor;
@@ -33,10 +35,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ArmSubsystem extends SubsystemBase {
-  TalonFX pivotMotor;
+  WPI_TalonFX pivotMotor;
   CANSparkMax extendMotor;
   RelativeEncoder extendEncoder;
-  CANCoder canCoder;
+  WPI_CANCoder canCoder;
   ProfiledPIDController pivotController;
   ArmFeedforward pivotFeedforward;
   Spark ledController;
@@ -68,9 +70,9 @@ public class ArmSubsystem extends SubsystemBase {
   public ArmSubsystem(int pivotMotorId, int extendMotorId, int canCoderId, double pivotOffset, double powerLimitPivot,
       double powerLimitExtend,
       Constraints constraints) {
-    this.pivotMotor = new TalonFX(pivotMotorId);
+    this.pivotMotor = new WPI_TalonFX(pivotMotorId);
     this.extendMotor = new CANSparkMax(extendMotorId, MotorType.kBrushless);
-    this.canCoder = new CANCoder(canCoderId);
+    this.canCoder = new WPI_CANCoder(canCoderId);
     this.pivotController = new ProfiledPIDController(0, 0, 0, constraints);
     this.pivotFeedforward = new ArmFeedforward(0.01, 0, 0);
     this.ledController = new Spark(0);
