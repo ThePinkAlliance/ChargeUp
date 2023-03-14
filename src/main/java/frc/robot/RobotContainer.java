@@ -26,6 +26,7 @@ import frc.robot.commands.arm.KnockConeRightStageOne;
 import frc.robot.commands.arm.KnockConeRightStageTwo;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
+import frc.robot.commands.arm.pivot.PivotToDegreePosition;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.drive.SwerveJoystickCmd;
 import frc.robot.commands.manipulator.JoystickManipulator;
@@ -121,7 +122,7 @@ public class RobotContainer {
                 // turretSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper).onTrue(
-                                new PivotToDegreeMagic(126, // 78
+                                new PivotToDegreePosition(126, // 78
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -129,7 +130,7 @@ public class RobotContainer {
                                                 armSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
-                                new PivotToDegreeMagic(90, // 78
+                                new PivotToDegreePosition(90, // 78
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
