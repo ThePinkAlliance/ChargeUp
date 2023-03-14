@@ -10,8 +10,10 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class ManipulatorSubsystem extends SubsystemBase {
+public class ManipulatorSubsystem extends SubsystemBase implements Loggable {
   private CANSparkMax leftMotor;
   private CANSparkMax rightMotor;
 
@@ -94,10 +96,12 @@ public class ManipulatorSubsystem extends SubsystemBase {
     rightMotor.set(input);
   }
 
+  @Log
   public double getRightCurrent() {
     return rightMotor.getOutputCurrent();
   }
 
+  @Log
   public double getLeftCurrent() {
     return leftMotor.getOutputCurrent();
   }
@@ -113,6 +117,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
   /**
    * Returns the current rotations of the motor.
    */
+  @Log
   public double getRightPosition() {
     return rightMotor.getEncoder().getPosition();
   }
@@ -120,6 +125,7 @@ public class ManipulatorSubsystem extends SubsystemBase {
   /**
    * Returns the current rotations of the motor.
    */
+  @Log
   public double getLeftPosition() {
     return leftMotor.getEncoder().getPosition();
   }

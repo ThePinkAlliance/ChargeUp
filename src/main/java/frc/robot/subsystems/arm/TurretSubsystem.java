@@ -10,8 +10,10 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class TurretSubsystem extends SubsystemBase {
+public class TurretSubsystem extends SubsystemBase implements Loggable {
   private CANSparkMax turretController;
   private double powerLimit;
   private Faker neoFaker;
@@ -57,6 +59,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
   }
 
+  @Log
   public double getTurretAngle() {
     double rotations = 0;
 
@@ -69,6 +72,7 @@ public class TurretSubsystem extends SubsystemBase {
     return rotations * 360;
   }
 
+  @Log
   public boolean isMoving() {
     return this.turretController.get() >= 0.1;
   }

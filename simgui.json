@@ -21,7 +21,10 @@
   },
   "NetworkTables": {
     "transitory": {
-      "SmartDashboard": {
+      "Shuffleboard": {
+        "ArmSubsystem: Log": {
+          "open": true
+        },
         "open": true
       }
     }
@@ -35,7 +38,7 @@
               "autoFit": true
             }
           ],
-          "height": 219,
+          "height": 225,
           "series": [
             {
               "color": [
@@ -62,7 +65,7 @@
     "Plot <1>": {
       "plots": [
         {
-          "height": 222
+          "height": 228
         }
       ]
     }

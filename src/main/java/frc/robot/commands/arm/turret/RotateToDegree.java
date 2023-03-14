@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -22,6 +21,7 @@ import frc.robot.Telemetry;
 public class RotateToDegree extends CommandBase {
   private TurretSubsystem turretSubsystem;
   private boolean isFinished;
+
   private double desiredAngle;
   double safetyPivotAngle;
   private CANSparkMax sparkMax;
@@ -29,6 +29,7 @@ public class RotateToDegree extends CommandBase {
   private double angleTolerence;
   Watchdog watchdog;
   private final double WATCHDOG_TIMEOUT = 4.2;
+
   private Supplier<Double> currentBaseAngle;
 
   /** Creates a new RotateToDegree. */

@@ -37,6 +37,7 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
 import frc.robot.subsystems.scoring.ScoringSubsystem;
+import io.github.oblarg.oblog.Logger;
 
 public class RobotContainer {
 
@@ -63,6 +64,8 @@ public class RobotContainer {
         private final ScoringSubsystem scoringSubsystem = new ScoringSubsystem();
 
         public RobotContainer() {
+                Logger.configureLoggingAndConfig(this, true);
+
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
                 configureControllerBindings();

@@ -23,8 +23,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
-import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -33,8 +31,10 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class ArmSubsystem extends SubsystemBase {
+public class ArmSubsystem extends SubsystemBase implements Loggable {
   WPI_TalonFX pivotMotor;
   CANSparkMax extendMotor;
   RelativeEncoder extendEncoder;
@@ -49,10 +49,14 @@ public class ArmSubsystem extends SubsystemBase {
   private double maxDistanceMeters = 0;
   private double maxPivotAngle = 270;
   private double minPivotAngle = 27;
+
+  @Log
   private double pivotOffset;
 
   private double desiredExtendRotations = 0;
   private double desiredRotations = 0;
+
+  @Log
   private double positionToHold = 0;
 
   private int kTimeoutMs = 10;
