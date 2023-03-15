@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AprilTagMoverCommand;
+import frc.robot.commands.JoystickArmExtend;
 import frc.robot.commands.StowReveredExtend;
 import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.KnockConeLeftStageOne;
@@ -113,12 +114,10 @@ public class RobotContainer {
                                 () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
                                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
-                /* Arm Controls (Base) */
-                // armSubsystem.setDefaultCommand(
-                // new JoystickArm(armSubsystem,
-                // () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis),
-                // () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerPivotAxis)
-                // / 2));
+                /* Arm Controls (Base) - Extend Only */
+                 armSubsystem.setDefaultCommand(
+                 new JoystickArmExtend(towerJoytick, armSubsystem,
+                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis)));
 
                 manipulatorSubsystem.setDefaultCommand(new JoystickManipulator(manipulatorSubsystem,
                                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorLeftAxis),
@@ -159,7 +158,7 @@ public class RobotContainer {
                                 .onFalse(new GoToPositionManipulator(
                                                 Constants.ManipulatorConstants.CUBE_LEFT + 3,
                                                 Constants.ManipulatorConstants.CUBE_RIGHT + 3,
-                                                manipulatorSubsystem));
+                                                manipulatorSubsystem).andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB).onTrue(new PivotToDegreeMagic(83, // 78
                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
@@ -171,12 +170,13 @@ public class RobotContainer {
                                                 Constants.ManipulatorConstants.CONE_LEFT
                                                                 + 6,
                                                 Constants.ManipulatorConstants.CONE_RIGHT + 6,
-                                                manipulatorSubsystem));
+                                                manipulatorSubsystem).andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX).onTrue(
-                                UtilityCommands.collectHigh(armSubsystem, turretSubsystem, manipulatorSubsystem));
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY).onTrue(
+                                UtilityCommands.collectHighDeploy(armSubsystem, turretSubsystem, manipulatorSubsystem))
+                                .onFalse(UtilityCommands.collectHighStow(armSubsystem, turretSubsystem, manipulatorSubsystem));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY)
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
                                 .onTrue(new StowReveredExtend(armSubsystem, turretSubsystem));
 
                 new Trigger(() -> driverJoytick.getRawAxis(2) > 0.05)
@@ -192,6 +192,9 @@ public class RobotContainer {
                 new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB)
                                 .onTrue(new CommandManipulator(.2, 15, 0.7, true,
                                                 manipulatorSubsystem));
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY).onTrue(
+                                UtilityCommands.deliverConeHigh(armSubsystem, turretSubsystem, manipulatorSubsystem));
+                                
 
                 new POVButton(towerJoytick, 0)
                                 .onTrue(new ExtendTicks(60, armSubsystem));

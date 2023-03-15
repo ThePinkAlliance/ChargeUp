@@ -22,7 +22,7 @@ public class CommandManipulator extends CommandBase {
   double currentThreshold;
   double power;
   Watchdog watchdog;
-  private final double WATCHDOG_TIMEOUT = 2.5;
+  private final double WATCHDOG_TIMEOUT = .75;
 
   /** Creates a new PowerUntilTime. */
   public CommandManipulator(double sustainedTime, double currentThreshold, double power, boolean inverted,

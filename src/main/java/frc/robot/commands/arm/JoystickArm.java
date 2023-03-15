@@ -10,6 +10,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -24,11 +26,12 @@ public class JoystickArm extends CommandBase {
   private final double PIVOT_DEADBAND = 0.05;
   private double ANGLE_FLOOR;
   private double ANGLE_CEILING;
+  Joystick joystick;
 
   /** Creates a new CommandExtend. */
-  public JoystickArm(ArmSubsystem armSubsystem, Supplier<Double> extSupplier, Supplier<Double> pivotSupplier) {
+  public JoystickArm(Joystick joystick, ArmSubsystem armSubsystem, Supplier<Double> extSupplier, Supplier<Double> pivotSupplier) {
     // Use addRequirements() here to declare subsystem dependencies.
-
+    this.joystick = joystick;
     this.armSubsystem = armSubsystem;
     this.extSupplier = extSupplier;
     this.pivotSupplier = pivotSupplier;
@@ -84,6 +87,11 @@ public class JoystickArm extends CommandBase {
     // Cube law on extended input
     // val = val * Math.abs(val);
     val = val * val * val;
+    if (joystick.getRawButton(Constants.OIConstants.kButtonStart)) {
+      this.armSubsystem.disableExtendReverseSoftLimits();
+    } else {
+      this.armSubsystem.enableExtendReverseSoftLimits();
+    }
     this.armSubsystem.commandExtend(val * -1);
 
     SmartDashboard.putNumber("Pivot Demanded Power", armSubsystem.getPivotDemandedPower());

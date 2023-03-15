@@ -28,7 +28,7 @@ public class GoToPositionManipulator extends CommandBase {
     this.timer = new Timer();
     this.tolerance = .4;
     this.manipulatorSubsystem = manipulatorSubsystem;
-    this.watchdog = new Watchdog(1.75, () -> {
+    this.watchdog = new Watchdog(0.5, () -> {
       this.manipulatorSubsystem.setLeftPower(0);
       this.manipulatorSubsystem.setRightPower(0);
     });

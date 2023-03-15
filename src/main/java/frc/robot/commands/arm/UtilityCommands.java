@@ -13,6 +13,7 @@ import frc.robot.commands.StowReveredExtend;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
 import frc.robot.commands.manipulator.CommandManipulator;
+import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
@@ -32,19 +33,46 @@ public class UtilityCommands {
         () -> true,
         armSubsystem);
   }
-
   public static Command collectHigh(ArmSubsystem armSubsystem,
+  TurretSubsystem turretSubsystem,
+  ManipulatorSubsystem manipulatorSubsystem) {
+if (!RobotContainer.wasHighPressed.get()) {
+  RobotContainer.wasHighPressed = () -> !RobotContainer.wasHighPressed.get();
+
+  return UtilityCommands.pivotArm(127, armSubsystem).andThen(new ExtendTicks(60, armSubsystem));
+} else {
+  RobotContainer.wasHighPressed = () -> !RobotContainer.wasHighPressed.get();
+
+  return new CommandManipulator(.2, 13, 0.6, false, manipulatorSubsystem)
+      .andThen(new StowReveredExtend(armSubsystem, turretSubsystem));
+}
+  }
+
+  public static Command collectHighDeploy(ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem,
       ManipulatorSubsystem manipulatorSubsystem) {
-    if (!RobotContainer.wasHighPressed.get()) {
-      RobotContainer.wasHighPressed = () -> !RobotContainer.wasHighPressed.get();
+      return new CommandManipulator(.2, 15, 0.7, true,
+      manipulatorSubsystem).alongWith(UtilityCommands.pivotArm(127, armSubsystem).andThen(new ExtendTicks(60, armSubsystem)));
+      }
 
-      return UtilityCommands.pivotArm(127, armSubsystem).andThen(new ExtendTicks(60, armSubsystem));
-    } else {
-      RobotContainer.wasHighPressed = () -> !RobotContainer.wasHighPressed.get();
-
-      return new CommandManipulator(.2, 13, 0.6, false, manipulatorSubsystem)
+  public static Command collectHighStow(ArmSubsystem armSubsystem,
+  TurretSubsystem turretSubsystem,
+  ManipulatorSubsystem manipulatorSubsystem) {
+      return new GoToPositionManipulator(
+        Constants.ManipulatorConstants.CONE_LEFT
+                        + 6,
+        Constants.ManipulatorConstants.CONE_RIGHT + 6,
+        manipulatorSubsystem)
           .andThen(new StowReveredExtend(armSubsystem, turretSubsystem));
     }
-  }
+  
+    public static Command deliverConeHigh(ArmSubsystem armSubsystem,
+      TurretSubsystem turretSubsystem,
+      ManipulatorSubsystem manipulatorSubsystem) {
+        return UtilityCommands.pivotArm(130, armSubsystem).andThen(new ExtendTicks(60, armSubsystem));
+      //return new CommandManipulator(.2, 15, 0.7, true,
+      //manipulatorSubsystem).alongWith(UtilityCommands.pivotArm(127, armSubsystem).andThen(new ExtendTicks(60, armSubsystem)));
+      }
+
 }
+

@@ -188,6 +188,15 @@ public class ArmSubsystem extends SubsystemBase {
     return this.extendMotor.getEncoder().getPosition();
   }
 
+  public void enableExtendReverseSoftLimits() {
+    this.extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+  }
+
+  public void disableExtendReverseSoftLimits() {
+    this.extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
+    extendMotor.getEncoder().setPosition(0);
+  }
+
   public void commandExtend(double input) {
     input = input * powerLimitExtend;
 
