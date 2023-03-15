@@ -42,6 +42,7 @@ public class PivotToDegreeMagic extends CommandBase {
   private boolean isFinished;
   private Watchdog watchdog;
   private final double WATCHDOG_TIMEOUT = 4.5;
+  private boolean isCommanded;
   private boolean didConfigure;
 
   /** Creates a new PivotToDegreeMagic. */
@@ -65,6 +66,7 @@ public class PivotToDegreeMagic extends CommandBase {
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
+    this.isCommanded = false;
 
     this.isFinished = false;
     this.initialAngle = 0;
@@ -109,6 +111,7 @@ public class PivotToDegreeMagic extends CommandBase {
   @Override
   public void initialize() {
     this.isFinished = false;
+    this.isCommanded = false;
 
     /* Factory default hardware to prevent unexpected behavior */
     pivotMotor.configFactoryDefault();
@@ -157,8 +160,8 @@ public class PivotToDegreeMagic extends CommandBase {
     // /* Set the peak and nominal outputs */
     pivotMotor.configNominalOutputForward(0, kTimeoutMs);
     pivotMotor.configNominalOutputReverse(0, kTimeoutMs);
-    pivotMotor.configPeakOutputForward(1, kTimeoutMs);
-    pivotMotor.configPeakOutputReverse(-1, kTimeoutMs);
+    pivotMotor.configPeakOutputForward(0.7, kTimeoutMs);
+    pivotMotor.configPeakOutputReverse(-0.7, kTimeoutMs);
 
     // /* Set Motion Magic gains in slot0 - see documentation */
     pivotMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
@@ -190,7 +193,11 @@ public class PivotToDegreeMagic extends CommandBase {
 
     boolean isSafe = safeToContinue.get();
 
-    pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
+    if (!isCommanded) {
+      pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
+
+      isCommanded = true;
+    }
 
     Telemetry.logData("isSafe", isSafe, PivotToDegreeMagic.class);
     Telemetry.logData("isFinished", isFinished, PivotToDegreeMagic.class);

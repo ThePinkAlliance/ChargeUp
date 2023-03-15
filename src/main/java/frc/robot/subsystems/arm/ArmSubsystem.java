@@ -177,7 +177,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public boolean atExtensionSetpoint() {
-    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < .2;
+    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < 3;
   }
 
   public boolean atPivotSetpoint() {

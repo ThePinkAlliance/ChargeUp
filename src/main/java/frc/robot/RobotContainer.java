@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -16,14 +19,17 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AprilTagMoverCommand;
+import frc.robot.commands.StowReveredExtend;
 import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.KnockConeLeftStageOne;
 import frc.robot.commands.arm.KnockConeLeftStageTwo;
 import frc.robot.commands.arm.KnockConeRightStageOne;
 import frc.robot.commands.arm.KnockConeRightStageTwo;
+import frc.robot.commands.arm.UtilityCommands;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
 import frc.robot.commands.arm.turret.RotateToDegree;
@@ -64,7 +70,11 @@ public class RobotContainer {
         private final CameraSubsystem cameraSubsystem = new CameraSubsystem(CameraType.LIMELIGHT);
         private final ScoringSubsystem scoringSubsystem = new ScoringSubsystem();
 
+        public static Supplier<Boolean> wasHighPressed;
+
         public RobotContainer() {
+                wasHighPressed = () -> false;
+
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
                 configureControllerBindings();
@@ -104,11 +114,11 @@ public class RobotContainer {
                                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 /* Arm Controls (Base) */
-                armSubsystem.setDefaultCommand(
-                                new JoystickArm(armSubsystem,
-                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis),
-                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerPivotAxis)
-                                                                / 2));
+                // armSubsystem.setDefaultCommand(
+                // new JoystickArm(armSubsystem,
+                // () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis),
+                // () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerPivotAxis)
+                // / 2));
 
                 manipulatorSubsystem.setDefaultCommand(new JoystickManipulator(manipulatorSubsystem,
                                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorLeftAxis),
@@ -121,7 +131,7 @@ public class RobotContainer {
                 // turretSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper).onTrue(
-                                new PivotToDegreeMagic(126, // 78
+                                new PivotToDegreeMagic(127, // 78
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -129,9 +139,9 @@ public class RobotContainer {
                                                 armSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
-                                new PivotToDegreeMagic(90, // 78
+                                new PivotToDegreeMagic(83, // 78
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> true,
                                                 armSubsystem));
@@ -139,36 +149,59 @@ public class RobotContainer {
                 /* Extend Controls (Base) */
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonA)
-                                .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CUBE_LEFT + 3,
-                                                Constants.ManipulatorConstants.CUBE_RIGHT + 3, manipulatorSubsystem))
-                                .debounce(0.25)
-                                .onTrue(new GoToPositionManipulator(Constants.ManipulatorConstants.CONE_LEFT
-                                                + 5,
-                                                Constants.ManipulatorConstants.CONE_RIGHT + 5, manipulatorSubsystem));
+                                .onTrue(new PivotToDegreeMagic(79, // 78
+                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
+                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                                () -> true,
+                                                armSubsystem)
+                                                .alongWith(UtilityCommands.zeroManipulator(manipulatorSubsystem)))
+                                .onFalse(new GoToPositionManipulator(
+                                                Constants.ManipulatorConstants.CUBE_LEFT + 3,
+                                                Constants.ManipulatorConstants.CUBE_RIGHT + 3,
+                                                manipulatorSubsystem));
+
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB).onTrue(new PivotToDegreeMagic(83, // 78
+                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                                Constants.ArmConstants.MAX_ACCELERATION, 3,
+                                Constants.ArmConstants.MOTIONM_GAINS_FX,
+                                () -> true,
+                                armSubsystem).alongWith(UtilityCommands.zeroManipulator(manipulatorSubsystem)))
+                                .onFalse(new GoToPositionManipulator(
+                                                Constants.ManipulatorConstants.CONE_LEFT
+                                                                + 6,
+                                                Constants.ManipulatorConstants.CONE_RIGHT + 6,
+                                                manipulatorSubsystem));
+
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX).onTrue(
+                                UtilityCommands.collectHigh(armSubsystem, turretSubsystem, manipulatorSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY)
+                                .onTrue(new StowReveredExtend(armSubsystem, turretSubsystem));
+
+                new Trigger(() -> driverJoytick.getRawAxis(2) > 0.05)
                                 .onTrue(new KnockConeLeftStageOne(armSubsystem, manipulatorSubsystem, turretSubsystem))
                                 .onFalse(new KnockConeLeftStageTwo(armSubsystem, manipulatorSubsystem,
                                                 turretSubsystem));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
+                new Trigger(() -> driverJoytick.getRawAxis(3) > 0.05)
                                 .onTrue(new KnockConeRightStageOne(armSubsystem, manipulatorSubsystem, turretSubsystem))
                                 .onFalse(new KnockConeRightStageTwo(armSubsystem, manipulatorSubsystem,
                                                 turretSubsystem));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB)
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB)
                                 .onTrue(new CommandManipulator(.2, 15, 0.7, true,
                                                 manipulatorSubsystem));
 
-                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY)
+                new POVButton(towerJoytick, 0)
                                 .onTrue(new ExtendTicks(60, armSubsystem));
-                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonX)
+                new POVButton(towerJoytick, 270)
                                 .onTrue(new ExtendTicks(35, armSubsystem));
 
-                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB)
+                new POVButton(towerJoytick, 180)
                                 .onTrue(new ExtendTicks(0, armSubsystem));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonStart)
+                new POVButton(driverJoytick, Constants.OIConstants.kButtonStart)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
                 // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
@@ -190,6 +223,7 @@ public class RobotContainer {
 
         public void onDisabledInit() {
                 armSubsystem.setPositionToHold(0);
+                armSubsystem.getPivotTalon().configFactoryDefault();
         }
 
         public Command getAutonomousCommand() {
