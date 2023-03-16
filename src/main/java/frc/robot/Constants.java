@@ -17,7 +17,7 @@ public final class Constants {
                 public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
                 public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
                 public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-                public static final double kPTurning = 0.50;
+                public static final double kPTurning = 0.47;
         }
 
         public static final class DriveConstants {
@@ -82,6 +82,10 @@ public final class Constants {
                 public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.5;
         }
 
+        public static final class TurretConstants {
+                public static final double TURRET_OFFSET = 160;
+        }
+
         public static final class AutoConstants {
                 public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond;
                 public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond
@@ -109,6 +113,7 @@ public final class Constants {
                 public static final int kTowerExtendAxis = 1;
                 public static final int kTowerManipulatorRightAxis = 4;
                 public static final int kTowerManipulatorLeftAxis = 0;
+                public static final int lTowerTurretAxis = 4;
 
                 public static final int kDriverFieldOrientedButtonIdx = 1;
 

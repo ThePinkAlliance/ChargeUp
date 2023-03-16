@@ -11,6 +11,9 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -32,9 +35,14 @@ import frc.robot.commands.arm.KnockConeRightStageOne;
 import frc.robot.commands.arm.KnockConeRightStageTwo;
 import frc.robot.commands.arm.UtilityCommands;
 import frc.robot.commands.arm.extend.ExtendTicks;
+import frc.robot.commands.arm.extend.ExtendTicksPlus;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
+import frc.robot.commands.arm.turret.JoystickTurret;
 import frc.robot.commands.arm.turret.RotateToDegree;
+import frc.robot.commands.drive.Navigate;
 import frc.robot.commands.drive.SwerveJoystickCmd;
+import frc.robot.commands.drive.TimedNavigate;
+import frc.robot.commands.drive.autos.ScoreAndLeaveCommunity;
 import frc.robot.commands.manipulator.JoystickManipulator;
 import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
@@ -54,7 +62,7 @@ public class RobotContainer {
         private final Joystick driverJoytick = new Joystick(OIConstants.kDriverControllerPort);
         private final Joystick towerJoytick = new Joystick(OIConstants.kTowerControllerPort);
 
-        private SendableChooser<Trajectory> autoSendable = new SendableChooser<Trajectory>();
+        private SendableChooser<Command> autoSendable = new SendableChooser<Command>();
 
         public static PIDController xController = new PIDController(AutoConstants.kPXController, 0.5, 0);
         public static PIDController yController = new PIDController(AutoConstants.kPYController, 0, 0);
@@ -90,16 +98,26 @@ public class RobotContainer {
                         /**
                          * These are all testing trajectories for pathweaver.
                          */
-                        Trajectory idk = TrajectoryUtil.fromPathweaverJson(
-                                        Filesystem.getDeployDirectory().toPath().resolve("output/idk.wpilib.json"));
-                        Trajectory e1 = TrajectoryUtil.fromPathweaverJson(
-                                        Filesystem.getDeployDirectory().toPath().resolve("output/E1.wpilib.json"));
-                        Trajectory e2 = TrajectoryUtil.fromPathweaverJson(
-                                        Filesystem.getDeployDirectory().toPath().resolve("output/E2.wpilib.json"));
+                        // Trajectory idk = TrajectoryUtil.fromPathweaverJson(
+                        // Filesystem.getDeployDirectory().toPath().resolve("output/idk.wpilib.json"));
+                        // Trajectory e1 = TrajectoryUtil.fromPathweaverJson(
+                        // Filesystem.getDeployDirectory().toPath().resolve("output/E1.wpilib.json"));
+                        // Trajectory e2 = TrajectoryUtil.fromPathweaverJson(
+                        // Filesystem.getDeployDirectory().toPath().resolve("output/E2.wpilib.json"));
 
-                        autoSendable.addOption("e1", e1);
-                        autoSendable.addOption("e2", e2);
-                        autoSendable.setDefaultOption("idk", idk);
+                        Command timedScoreOne = new TimedNavigate(swerveSubsystem, new ChassisSpeeds(-1, 0, 0), .5);
+                        Command leaveCommunity = new Navigate(swerveSubsystem, new SwerveModulePosition(
+                                        2.89, new Rotation2d()), 1.2)
+                                        .alongWith(new CommandManipulator(.2, 15, 0.7, true,
+                                                        manipulatorSubsystem));
+
+                        autoSendable.setDefaultOption("Do Nothing", new InstantCommand());
+                        autoSendable.addOption("Score One",
+                                        timedScoreOne);
+                        autoSendable.addOption("Score One & Leave Community",
+                                        new ScoreAndLeaveCommunity(swerveSubsystem));
+                        autoSendable.addOption("Leave Community",
+                                        leaveCommunity);
                 } catch (Exception err) {
                         err.printStackTrace();
                 }
@@ -115,13 +133,14 @@ public class RobotContainer {
                                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 /* Arm Controls (Base) - Extend Only */
-                 armSubsystem.setDefaultCommand(
-                 new JoystickArmExtend(towerJoytick, armSubsystem,
-                 () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis)));
+                armSubsystem.setDefaultCommand(
+                                new JoystickArmExtend(towerJoytick, armSubsystem,
+                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis)));
 
-                manipulatorSubsystem.setDefaultCommand(new JoystickManipulator(manipulatorSubsystem,
-                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorLeftAxis),
-                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerManipulatorRightAxis)));
+                turretSubsystem.setDefaultCommand(
+                                new JoystickTurret(turretSubsystem,
+                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.lTowerTurretAxis),
+                                                armSubsystem));
 
                 // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper)
                 // .onTrue(new ScoreFromNumpad(
@@ -130,7 +149,7 @@ public class RobotContainer {
                 // turretSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper).onTrue(
-                                new PivotToDegreeMagic(127, // 78
+                                new PivotToDegreeMagic(132,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -138,16 +157,16 @@ public class RobotContainer {
                                                 armSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonRightBumper).onTrue(
-                                new PivotToDegreeMagic(83, // 78
+                                new PivotToDegreeMagic(84,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 2,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
                                                 () -> true,
                                                 armSubsystem));
 
-                /* Extend Controls (Base) */
+                /* Tower Scoring */
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonA)
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonA)
                                 .onTrue(new PivotToDegreeMagic(79, // 78
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
@@ -158,9 +177,10 @@ public class RobotContainer {
                                 .onFalse(new GoToPositionManipulator(
                                                 Constants.ManipulatorConstants.CUBE_LEFT + 3,
                                                 Constants.ManipulatorConstants.CUBE_RIGHT + 3,
-                                                manipulatorSubsystem).andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
+                                                manipulatorSubsystem)
+                                                .andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB).onTrue(new PivotToDegreeMagic(83, // 78
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB).onTrue(new PivotToDegreeMagic(83, // 78
                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -170,11 +190,17 @@ public class RobotContainer {
                                                 Constants.ManipulatorConstants.CONE_LEFT
                                                                 + 6,
                                                 Constants.ManipulatorConstants.CONE_RIGHT + 6,
-                                                manipulatorSubsystem).andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
+                                                manipulatorSubsystem)
+                                                .andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
 
-                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY).onTrue(
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY).onTrue(
                                 UtilityCommands.collectHighDeploy(armSubsystem, turretSubsystem, manipulatorSubsystem))
-                                .onFalse(UtilityCommands.collectHighStow(armSubsystem, turretSubsystem, manipulatorSubsystem));
+                                .onFalse(UtilityCommands.collectHighStow(armSubsystem, turretSubsystem,
+                                                manipulatorSubsystem));
+
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB)
+                                .onTrue(new CommandManipulator(.2, 15, 0.7, true,
+                                                manipulatorSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
                                 .onTrue(new StowReveredExtend(armSubsystem, turretSubsystem));
@@ -189,36 +215,29 @@ public class RobotContainer {
                                 .onFalse(new KnockConeRightStageTwo(armSubsystem, manipulatorSubsystem,
                                                 turretSubsystem));
 
-                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB)
-                                .onTrue(new CommandManipulator(.2, 15, 0.7, true,
-                                                manipulatorSubsystem));
-                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY).onTrue(
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY).onTrue(
                                 UtilityCommands.deliverConeHigh(armSubsystem, turretSubsystem, manipulatorSubsystem));
-                                
 
                 new POVButton(towerJoytick, 0)
-                                .onTrue(new ExtendTicks(60, armSubsystem));
+                                .onTrue(UtilityCommands.pivotArm(132, armSubsystem)
+                                                .andThen(new ExtendTicksPlus(90, armSubsystem)));
                 new POVButton(towerJoytick, 270)
-                                .onTrue(new ExtendTicks(35, armSubsystem));
+                                .onTrue(UtilityCommands.pivotArm(130, armSubsystem).andThen(
+                                                new ExtendTicks(28, armSubsystem)));
 
                 new POVButton(towerJoytick, 180)
                                 .onTrue(new ExtendTicks(0, armSubsystem));
 
-                new POVButton(driverJoytick, Constants.OIConstants.kButtonStart)
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonStart)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-                // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
-                // .whileTrue(new AprilTagMoverCommand(swerveSubsystem, cameraSubsystem,
-                // driverJoytick));
-
                 /* Turret Controls (Base) */
-                new POVButton(driverJoytick, 90).onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 160));
+                new POVButton(driverJoytick, 270).onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90,
+                                160 + Constants.TurretConstants.TURRET_OFFSET));
 
-                new POVButton(driverJoytick, 180)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 180));
-
-                new POVButton(driverJoytick, 270)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 200));
+                new POVButton(driverJoytick, 90)
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 200
+                                                - Constants.TurretConstants.TURRET_OFFSET));
 
                 new POVButton(driverJoytick, 0)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 100, 0));
@@ -230,21 +249,23 @@ public class RobotContainer {
         }
 
         public Command getAutonomousCommand() {
-                Trajectory trajectory = autoSendable.getSelected();
+                return autoSendable.getSelected();
+                // Trajectory trajectory = autoSendable.getSelected();
 
-                // Reset the swerve subsystem pose to the inital pose of the trajectory.
-                swerveSubsystem.resetOdometry(trajectory.getInitialPose());
+                // // Reset the swerve subsystem pose to the inital pose of the trajectory.
+                // swerveSubsystem.resetOdometry(trajectory.getInitialPose());
 
-                // 4. Construct command to follow trajectory
-                Command swerveControllerCommand = swerveSubsystem.buildSwerveCommand(trajectory);
+                // // 4. Construct command to follow trajectory
+                // Command swerveControllerCommand =
+                // swerveSubsystem.buildSwerveCommand(trajectory);
 
-                // 5. Add some init and wrap-up, and return everything
-                return new SequentialCommandGroup(
-                                new InstantCommand(() -> SmartDashboard.putString("InitalPose",
-                                                swerveSubsystem.getPose()
-                                                                .toString()),
-                                                swerveSubsystem),
-                                swerveControllerCommand.alongWith(),
-                                new InstantCommand(() -> swerveSubsystem.stopModules(), swerveSubsystem));
+                // // 5. Add some init and wrap-up, and return everything
+                // return new SequentialCommandGroup(
+                // new InstantCommand(() -> SmartDashboard.putString("InitalPose",
+                // swerveSubsystem.getPose()
+                // .toString()),
+                // swerveSubsystem),
+                // swerveControllerCommand.alongWith(),
+                // new InstantCommand(() -> swerveSubsystem.stopModules(), swerveSubsystem));
         }
 }

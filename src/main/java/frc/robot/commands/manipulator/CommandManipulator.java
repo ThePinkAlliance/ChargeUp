@@ -22,7 +22,7 @@ public class CommandManipulator extends CommandBase {
   double currentThreshold;
   double power;
   Watchdog watchdog;
-  private final double WATCHDOG_TIMEOUT = .75;
+  private final double WATCHDOG_TIMEOUT = 1.75;
 
   /** Creates a new PowerUntilTime. */
   public CommandManipulator(double sustainedTime, double currentThreshold, double power, boolean inverted,
@@ -100,6 +100,9 @@ public class CommandManipulator extends CommandBase {
     } else {
       manipulatorSubsystem.setRightPower(inverted ? -power : power);
     }
+
+    Telemetry.logData("Left Current", leftCurrent, CommandManipulator.class);
+    Telemetry.logData("Right Current", rightCurrent, CommandManipulator.class);
   }
 
   // Called once the command ends or is interrupted.

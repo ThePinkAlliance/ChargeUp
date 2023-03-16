@@ -83,7 +83,7 @@ public class ArmSubsystem extends SubsystemBase {
     this.pivotMotor.configOpenloopRamp(0.5);
 
     extendMotor.getPIDController().setP(0.1);
-    extendMotor.getPIDController().setOutputRange(-0.7, 0.7);
+    extendMotor.getPIDController().setOutputRange(-0.65, 0.65);
     extendMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.ArmConstants.EXTENDER_90_MAX_LIMIT);
     extendMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.ArmConstants.EXTENDER_MIN_LIMIT);
     extendMotor.setOpenLoopRampRate(.5);
@@ -196,6 +196,7 @@ public class ArmSubsystem extends SubsystemBase {
     this.extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
     extendMotor.getEncoder().setPosition(0);
   }
+
   public void enableExtendForwardSoftLimits() {
     this.extendMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
   }
