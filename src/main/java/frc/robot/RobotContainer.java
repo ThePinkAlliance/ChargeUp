@@ -235,6 +235,8 @@ public class RobotContainer {
                 new POVButton(driverJoytick, 270).onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90,
                                 160 + Constants.TurretConstants.TURRET_OFFSET));
 
+                new POVButton(driverJoytick, 180).onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 180));
+
                 new POVButton(driverJoytick, 90)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 90, 200
                                                 - Constants.TurretConstants.TURRET_OFFSET));

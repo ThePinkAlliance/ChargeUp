@@ -36,7 +36,7 @@ public class JoystickTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double input = Math.abs(inputSupplier.get()) > 0.05 ? inputSupplier.get() : 0;
+    double input = Math.abs(inputSupplier.get()) > 0.05 ? inputSupplier.get() * -1 : 0;
 
     if (armSubsystem.getArmPitch() >= minimumAngle) {
       this.turretSubsystem.powerTurret(input);

@@ -24,6 +24,7 @@ public class TurretSubsystem extends SubsystemBase {
     this.turretController.setIdleMode(IdleMode.kBrake);
     this.turretController.setOpenLoopRampRate(0.3);
     this.turretController.setClosedLoopRampRate(0.2);
+    this.turretController.setInverted(true);
     this.useFaker = RobotBase.isSimulation();
 
     this.neoFaker = new Faker();
