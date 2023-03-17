@@ -30,6 +30,7 @@ public class SwerveModule {
     private boolean invertDriveEncoder = false;
     private boolean invertSteerMotor = false;
 
+    @Deprecated
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed,
             boolean turningEncoderReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
@@ -89,6 +90,7 @@ public class SwerveModule {
         resetEncoders();
     }
 
+    @Deprecated
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed,
             boolean turningEncoderReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed,
@@ -121,6 +123,7 @@ public class SwerveModule {
         resetEncoders();
     }
 
+    @Deprecated
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed,
             boolean turningEncoderReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed,

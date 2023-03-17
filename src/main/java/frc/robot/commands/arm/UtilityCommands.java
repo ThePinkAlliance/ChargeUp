@@ -64,8 +64,8 @@ public class UtilityCommands {
       ManipulatorSubsystem manipulatorSubsystem) {
     return new GoToPositionManipulator(
         Constants.ManipulatorConstants.CONE_LEFT
-            + 6,
-        Constants.ManipulatorConstants.CONE_RIGHT + 6,
+            + Constants.ManipulatorConstants.CONE_GRIP_MULTIPLER,
+        Constants.ManipulatorConstants.CONE_RIGHT + Constants.ManipulatorConstants.CONE_GRIP_MULTIPLER,
         manipulatorSubsystem)
         .andThen(new StowReveredExtend(armSubsystem, turretSubsystem));
   }

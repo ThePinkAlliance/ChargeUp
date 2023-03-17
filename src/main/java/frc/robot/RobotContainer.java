@@ -175,12 +175,14 @@ public class RobotContainer {
                                                 armSubsystem)
                                                 .alongWith(UtilityCommands.zeroManipulator(manipulatorSubsystem)))
                                 .onFalse(new GoToPositionManipulator(
-                                                Constants.ManipulatorConstants.CUBE_LEFT + 3,
-                                                Constants.ManipulatorConstants.CUBE_RIGHT + 3,
+                                                Constants.ManipulatorConstants.CUBE_LEFT
+                                                                + Constants.ManipulatorConstants.CUBE_GRIP_MULTIPLER,
+                                                Constants.ManipulatorConstants.CUBE_RIGHT
+                                                                + Constants.ManipulatorConstants.CUBE_GRIP_MULTIPLER,
                                                 manipulatorSubsystem)
                                                 .andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
 
-                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB).onTrue(new PivotToDegreeMagic(83, // 78
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB).onTrue(new PivotToDegreeMagic(81.5, // 78
                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                 Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -188,8 +190,9 @@ public class RobotContainer {
                                 armSubsystem).alongWith(UtilityCommands.zeroManipulator(manipulatorSubsystem)))
                                 .onFalse(new GoToPositionManipulator(
                                                 Constants.ManipulatorConstants.CONE_LEFT
-                                                                + 6,
-                                                Constants.ManipulatorConstants.CONE_RIGHT + 6,
+                                                                + Constants.ManipulatorConstants.CONE_GRIP_MULTIPLER,
+                                                Constants.ManipulatorConstants.CONE_RIGHT
+                                                                + Constants.ManipulatorConstants.CONE_GRIP_MULTIPLER,
                                                 manipulatorSubsystem)
                                                 .andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
 

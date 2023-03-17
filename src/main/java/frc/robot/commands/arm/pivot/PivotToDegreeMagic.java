@@ -178,6 +178,7 @@ public class PivotToDegreeMagic extends CommandBase {
     initialAngle = armSubsystem.getArmPitch();
 
     pivotMotor.setSelectedSensorPosition(0);
+    pivotMotor.configAllowableClosedloopError(kSlotIdx, 30, kTimeoutMs);
 
     watchdog.reset();
     watchdog.enable();
@@ -221,11 +222,21 @@ public class PivotToDegreeMagic extends CommandBase {
     double currentPosition = pivotMotor.getSelectedSensorPosition();
     double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
     double diff = Math.abs(desiredPosition - currentPosition);
+    boolean differenceMet = diff <= 29.5794701987;
+    boolean watchdogKill = watchdog.isExpired();
 
     Telemetry.logData("Pitch Difference", diff, PivotToDegreeMagic.class);
     Telemetry.logData("Current Pitch Position", currentPosition, PivotToDegreeMagic.class);
     Telemetry.logData("Desired Pitch Position", desiredPosition, PivotToDegreeMagic.class);
 
-    return (diff <= 130 || watchdog.isExpired());
+    if (watchdogKill) {
+      Telemetry.logData("----- WatchDog Kill; Pos Difference -----", diff, PivotToDegreeMagic.class);
+    }
+
+    if (differenceMet) {
+      Telemetry.logData("----- Difference Met; Pos Difference -----", diff, PivotToDegreeMagic.class);
+    }
+
+    return (differenceMet || watchdogKill);
   }
 }
