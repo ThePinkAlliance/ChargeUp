@@ -131,6 +131,10 @@ public class SwerveSubsystem extends SubsystemBase {
                 new SwerveModuleState(backRight.getState().speedMetersPerSecond, new Rotation2d(heading)));
     }
 
+    public double getPitch() {
+        return this.gyro.getPitch();
+    }
+
     public void addVisionMeasurement(Pose2d pose, double timestamp) {
         this.estimator.addVisionMeasurement(pose, timestamp);
     }

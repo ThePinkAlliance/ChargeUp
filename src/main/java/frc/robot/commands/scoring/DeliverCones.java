@@ -15,11 +15,11 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 public class DeliverCones {
   public static Command deliverHigh(ArmSubsystem armSubsystem) {
     return new SequentialCommandGroup(UtilityCommands.pivotArm(132, armSubsystem),
-        new ExtendTicksPlus(92, armSubsystem));
+        new ExtendTicksPlus(99, armSubsystem));
   }
 
   public static Command deliverMid(ArmSubsystem armSubsystem) {
     return new SequentialCommandGroup(UtilityCommands.pivotArm(130, armSubsystem),
-        new ExtendTicks(28, armSubsystem));
+        new ExtendTicks(31, armSubsystem));
   }
 }

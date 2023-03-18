@@ -113,8 +113,8 @@ public class RobotContainer {
                                         2.89, new Rotation2d()), 1.2)
                                         .alongWith(new CommandManipulator(.2, 15, 0.7, true,
                                                         manipulatorSubsystem));
-                        Command dock = new Navigate(swerveSubsystem, new SwerveModulePosition(2.738, new Rotation2d()),
-                                        .5).alongWith(
+                        Command dock = new Navigate(swerveSubsystem, new SwerveModulePosition(2.838, new Rotation2d()),
+                                        1.6).alongWith(
                                                         new CommandManipulator(.2, 15, 0.7, true,
                                                                         manipulatorSubsystem));
 
