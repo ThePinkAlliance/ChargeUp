@@ -8,13 +8,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Telemetry;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class DockAuto extends CommandBase {
   private SwerveSubsystem swerveSubsystem;
   private double angleRange;
-  private boolean hasReachedDock;
+  private boolean didReachDock;
   private boolean isFinished;
 
   private final double MAX_POWER_METERS;
@@ -30,10 +31,10 @@ public class DockAuto extends CommandBase {
 
     this.swerveSubsystem = swerveSubsystem;
     this.angleRange = angleRange;
-    this.hasReachedDock = false;
-    this.isFinished = true;
+    this.didReachDock = false;
+    this.isFinished = false;
 
-    this.watchdog = new Watchdog(4, () -> {
+    this.watchdog = new Watchdog(10, () -> {
       this.swerveSubsystem
           .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
 
@@ -50,35 +51,62 @@ public class DockAuto extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.hasReachedDock = false;
-    this.isFinished = true;
-
-    this.swerveSubsystem.setModuleStates(
-        Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(MAX_POWER_METERS, 0, 0)));
+    this.didReachDock = false;
+    this.isFinished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (swerveSubsystem.getPitch() >= 10) {
-      hasReachedDock = true;
+    double currentPitch = swerveSubsystem.getPitch();
 
-      // watchdog.;
+    if (currentPitch >= 14 && !didReachDock) {
+      didReachDock = true;
+
+      watchdog.reset();
+    } else if (!didReachDock) {
+      this.swerveSubsystem.setModuleStates(
+          Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(APPROACH_SPEED, 0, 0)));
     }
 
-    if (hasReachedDock) {
-      // double power =
+    if (didReachDock) {
+      double power = (MAX_POWER_METERS / MAX_ANGLE) * currentPitch;
+
+      /* Power ceiling and floor */
+      if (Math.abs(currentPitch) > MAX_ANGLE) {
+        power = Math.copySign((MAX_POWER_METERS / MAX_ANGLE) * MAX_ANGLE, currentPitch);
+      } else if (Math.abs(currentPitch) < 2) {
+        power = 0;
+
+        isFinished = true;
+      }
+
+      swerveSubsystem.setModuleStates(
+          Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(power, 0, 0)));
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    swerveSubsystem
+        .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    boolean didFinish = isFinished;
+    boolean watchdogExpired = watchdog.isExpired();
+
+    if (didFinish) {
+      Telemetry.logData("---- Dock Auto ----; didFinish", didFinish, DockAuto.class);
+    }
+
+    if (watchdogExpired) {
+      Telemetry.logData("---- Dock Auto ----; watchdog expired", watchdogExpired, DockAuto.class);
+    }
+
+    return didFinish || watchdogExpired;
   }
 }

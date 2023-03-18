@@ -66,7 +66,7 @@ public final class Constants {
                  * These values where determined by lining up all the wheels and recording the
                  * outputed positions.
                  */
-                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 1.99; // 2.93;
+                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.84; // 2.93, 1.99;
                 public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.20;
                 public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.57;
                 public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.47;

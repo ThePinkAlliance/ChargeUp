@@ -43,6 +43,7 @@ import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.drive.Navigate;
 import frc.robot.commands.drive.SwerveJoystickCmd;
 import frc.robot.commands.drive.TimedNavigate;
+import frc.robot.commands.drive.autos.DockAuto;
 import frc.robot.commands.drive.autos.ScoreAndLeaveCommunity;
 import frc.robot.commands.manipulator.JoystickManipulator;
 import frc.robot.commands.manipulator.CommandManipulator;
@@ -113,10 +114,6 @@ public class RobotContainer {
                                         2.89, new Rotation2d()), 1.2)
                                         .alongWith(new CommandManipulator(.2, 15, 0.7, true,
                                                         manipulatorSubsystem));
-                        Command dock = new Navigate(swerveSubsystem, new SwerveModulePosition(2.838, new Rotation2d()),
-                                        1.6).alongWith(
-                                                        new CommandManipulator(.2, 15, 0.7, true,
-                                                                        manipulatorSubsystem));
 
                         autoSendable.addOption("Do Nothing", new InstantCommand());
                         autoSendable.addOption("Score One",
@@ -125,7 +122,10 @@ public class RobotContainer {
                                         new ScoreAndLeaveCommunity(swerveSubsystem));
                         autoSendable.setDefaultOption("Leave Community",
                                         leaveCommunity);
-                        autoSendable.addOption("Dock", dock);
+                        autoSendable.addOption("Dock",
+                                        new SequentialCommandGroup(new CommandManipulator(.2, 15, 0.7, true,
+                                                        manipulatorSubsystem),
+                                                        new DockAuto(swerveSubsystem, 0, 2, 37, 1)));
                 } catch (Exception err) {
                         err.printStackTrace();
                 }
@@ -199,6 +199,10 @@ public class RobotContainer {
                                 UtilityCommands.collectHighDeploy(armSubsystem, turretSubsystem, manipulatorSubsystem))
                                 .onFalse(UtilityCommands.collectHighStow(armSubsystem, turretSubsystem,
                                                 manipulatorSubsystem));
+
+                new JoystickButton(driverJoytick, Constants.OIConstants.kButtonBack).onTrue(new InstantCommand(
+                                () -> swerveSubsystem.setModuleStates(Constants.DriveConstants.kDriveKinematics
+                                                .toSwerveModuleStates(new ChassisSpeeds()))));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonB)
                                 .onTrue(new CommandManipulator(.2, 15, 0.7, true,
