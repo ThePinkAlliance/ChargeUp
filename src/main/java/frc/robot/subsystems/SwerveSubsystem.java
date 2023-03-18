@@ -144,6 +144,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Front Left Angle", frontLeft.getPosition().angle.getRadians());
+
         currentPose2d = estimator.update(getRotation2d(),
                 new SwerveModulePosition[] { frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(),
                         backRight.getPosition() });

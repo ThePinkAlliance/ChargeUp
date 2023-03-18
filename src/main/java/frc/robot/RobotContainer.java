@@ -27,6 +27,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AprilTagMoverCommand;
 import frc.robot.commands.JoystickArmExtend;
+import frc.robot.commands.Stow;
 import frc.robot.commands.StowReveredExtend;
 import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.KnockConeLeftStageOne;
@@ -46,6 +47,8 @@ import frc.robot.commands.drive.autos.ScoreAndLeaveCommunity;
 import frc.robot.commands.manipulator.JoystickManipulator;
 import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
+import frc.robot.commands.scoring.DeliverCones;
+import frc.robot.commands.scoring.PickupFromGroundCone;
 import frc.robot.commands.scoring.ScoreFromNumpad;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -110,14 +113,19 @@ public class RobotContainer {
                                         2.89, new Rotation2d()), 1.2)
                                         .alongWith(new CommandManipulator(.2, 15, 0.7, true,
                                                         manipulatorSubsystem));
+                        Command dock = new Navigate(swerveSubsystem, new SwerveModulePosition(2.738, new Rotation2d()),
+                                        .5).alongWith(
+                                                        new CommandManipulator(.2, 15, 0.7, true,
+                                                                        manipulatorSubsystem));
 
-                        autoSendable.setDefaultOption("Do Nothing", new InstantCommand());
+                        autoSendable.addOption("Do Nothing", new InstantCommand());
                         autoSendable.addOption("Score One",
                                         timedScoreOne);
                         autoSendable.addOption("Score One & Leave Community",
                                         new ScoreAndLeaveCommunity(swerveSubsystem));
-                        autoSendable.addOption("Leave Community",
+                        autoSendable.setDefaultOption("Leave Community",
                                         leaveCommunity);
+                        autoSendable.addOption("Dock", dock);
                 } catch (Exception err) {
                         err.printStackTrace();
                 }
@@ -182,19 +190,10 @@ public class RobotContainer {
                                                 manipulatorSubsystem)
                                                 .andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
 
-                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB).onTrue(new PivotToDegreeMagic(81.5, // 78
-                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                                Constants.ArmConstants.MAX_ACCELERATION, 3,
-                                Constants.ArmConstants.MOTIONM_GAINS_FX,
-                                () -> true,
-                                armSubsystem).alongWith(UtilityCommands.zeroManipulator(manipulatorSubsystem)))
-                                .onFalse(new GoToPositionManipulator(
-                                                Constants.ManipulatorConstants.CONE_LEFT
-                                                                + Constants.ManipulatorConstants.CONE_GRIP_MULTIPLER,
-                                                Constants.ManipulatorConstants.CONE_RIGHT
-                                                                + Constants.ManipulatorConstants.CONE_GRIP_MULTIPLER,
-                                                manipulatorSubsystem)
-                                                .andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
+                new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB)
+                                .onTrue(PickupFromGroundCone.stageOne(armSubsystem, manipulatorSubsystem))
+                                .onFalse(PickupFromGroundCone.stageTwo(armSubsystem, manipulatorSubsystem,
+                                                turretSubsystem));
 
                 new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY).onTrue(
                                 UtilityCommands.collectHighDeploy(armSubsystem, turretSubsystem, manipulatorSubsystem))
@@ -206,27 +205,21 @@ public class RobotContainer {
                                                 manipulatorSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
-                                .onTrue(new StowReveredExtend(armSubsystem, turretSubsystem));
+                                .onTrue(new Stow(armSubsystem, turretSubsystem));
 
-                new Trigger(() -> driverJoytick.getRawAxis(2) > 0.05)
-                                .onTrue(new KnockConeLeftStageOne(armSubsystem, manipulatorSubsystem, turretSubsystem))
-                                .onFalse(new KnockConeLeftStageTwo(armSubsystem, manipulatorSubsystem,
-                                                turretSubsystem));
+                new Trigger(() -> towerJoytick.getRawAxis(2) > 0.05)
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
 
-                new Trigger(() -> driverJoytick.getRawAxis(3) > 0.05)
-                                .onTrue(new KnockConeRightStageOne(armSubsystem, manipulatorSubsystem, turretSubsystem))
-                                .onFalse(new KnockConeRightStageTwo(armSubsystem, manipulatorSubsystem,
-                                                turretSubsystem));
+                new Trigger(() -> towerJoytick.getRawAxis(3) > 0.05)
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY).onTrue(
                                 UtilityCommands.deliverConeHigh(armSubsystem, turretSubsystem, manipulatorSubsystem));
 
                 new POVButton(towerJoytick, 0)
-                                .onTrue(UtilityCommands.pivotArm(132, armSubsystem)
-                                                .andThen(new ExtendTicksPlus(90, armSubsystem)));
+                                .onTrue(DeliverCones.deliverHigh(armSubsystem));
                 new POVButton(towerJoytick, 270)
-                                .onTrue(UtilityCommands.pivotArm(130, armSubsystem).andThen(
-                                                new ExtendTicks(28, armSubsystem)));
+                                .onTrue(DeliverCones.deliverMid(armSubsystem));
 
                 new POVButton(towerJoytick, 180)
                                 .onTrue(new ExtendTicks(0, armSubsystem));

@@ -47,7 +47,7 @@ public final class Constants {
                 public static final boolean kFrontRightTurningReversed = false;
                 public static final boolean kBackRightTurningReversed = false;
 
-                public static final boolean kFrontLeftDriveEncoderReversed = true;
+                public static final boolean kFrontLeftDriveEncoderReversed = false;
                 public static final boolean kBackLeftDriveEncoderReversed = true;
                 public static final boolean kFrontRightDriveEncoderReversed = true;
                 public static final boolean kBackRightDriveEncoderReversed = true;
@@ -66,7 +66,7 @@ public final class Constants {
                  * These values where determined by lining up all the wheels and recording the
                  * outputed positions.
                  */
-                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 2.93;
+                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 1.99; // 2.93;
                 public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.20;
                 public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.57;
                 public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.47;

@@ -24,8 +24,7 @@ public class StowReveredExtend extends SequentialCommandGroup {
         Constants.ArmConstants.MAX_CRUISE_VELOCITY,
         Constants.ArmConstants.MAX_ACCELERATION, 3,
         Constants.ArmConstants.MOTIONM_GAINS_FX,
-        () -> true,
-
-        armSubsystem), new ExtendTicks(0, armSubsystem), new RotateToDegree(turretSubsystem, armSubsystem, 90, 0));
+        () -> true, armSubsystem), new ExtendTicks(0, armSubsystem),
+        new RotateToDegree(turretSubsystem, armSubsystem, 90, 0));
   }
 }
