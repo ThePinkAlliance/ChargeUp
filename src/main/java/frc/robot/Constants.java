@@ -150,9 +150,12 @@ public final class Constants {
                 public static final double POWER_LIMIT_PIVOT = 1;
                 public static final float EXTENDER_90_MAX_LIMIT = 54.0f;
                 public static final float EXTENDER_MIN_LIMIT = 3.0f;
+                public static final double EXTENDER_MARGIN_OF_ERROR = 3.0;
 
                 public static final double COLLECT_CONE_ANGLE_STAGE_ONE = 82.5;
                 public static final double COLLECT_STOW = 180.0;
+
+                public static final double LED_SPEED = 0.3;
 
         }
 

@@ -7,25 +7,18 @@ package frc.robot.subsystems.arm;
 import com.ThePinkAlliance.core.simulation.ctre.CtrePhysicsSim;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.AbsoluteEncoder;
+
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.MotorFeedbackSensor;
+
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
-import com.revrobotics.SparkMaxPIDController.AccelStrategy;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,24 +30,17 @@ public class ArmSubsystem extends SubsystemBase {
   CANSparkMax extendMotor;
   RelativeEncoder extendEncoder;
   CANCoder canCoder;
-  ProfiledPIDController pivotController;
-  ArmFeedforward pivotFeedforward;
   Spark ledController;
 
   private double powerLimitPivot;
   private double powerLimitExtend;
   private double maxRotations = 71;
   private double maxDistanceMeters = 0;
-  private double maxPivotAngle = 270;
-  private double minPivotAngle = 27;
   private double pivotOffset;
 
   private double desiredExtendRotations = 0;
-  private double desiredRotations = 0;
+ 
   private double positionToHold = 0;
-
-  private int kTimeoutMs = 10;
-  private int kSlotIdx = 0;
 
   public double getPositionToHold() {
     return positionToHold;
@@ -66,36 +52,35 @@ public class ArmSubsystem extends SubsystemBase {
 
   /** Creates a new ArmSubsystem. */
   public ArmSubsystem(int pivotMotorId, int extendMotorId, int canCoderId, double pivotOffset, double powerLimitPivot,
-      double powerLimitExtend,
-      Constraints constraints) {
+      double powerLimitExtend /*,
+      Constraints constraints */) {
+    
+    this.ledController = new Spark(0);
+
     this.pivotMotor = new TalonFX(pivotMotorId);
     this.extendMotor = new CANSparkMax(extendMotorId, MotorType.kBrushless);
     this.canCoder = new CANCoder(canCoderId);
-    this.pivotController = new ProfiledPIDController(0, 0, 0, constraints);
-    this.pivotFeedforward = new ArmFeedforward(0.01, 0, 0);
-    this.ledController = new Spark(0);
-
+    
     this.extendEncoder = extendMotor.getEncoder();
     this.pivotOffset = pivotOffset;
     this.powerLimitPivot = powerLimitPivot;
     this.powerLimitExtend = powerLimitExtend;
 
+    this.extendMotor.getPIDController().setP(0.1);
+    this.extendMotor.getPIDController().setOutputRange(-0.65, 0.65);
+    this.extendMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.ArmConstants.EXTENDER_90_MAX_LIMIT);
+    this.extendMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.ArmConstants.EXTENDER_MIN_LIMIT);
+    this.extendMotor.setOpenLoopRampRate(.5);
+    this.extendMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    this.extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    this.extendMotor.getEncoder().setPosition(0);
+    this.extendMotor.setInverted(false);
+    this.extendMotor.setIdleMode(IdleMode.kBrake);
+
     this.pivotMotor.configOpenloopRamp(0.5);
-
-    extendMotor.getPIDController().setP(0.1);
-    extendMotor.getPIDController().setOutputRange(-0.65, 0.65);
-    extendMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.ArmConstants.EXTENDER_90_MAX_LIMIT);
-    extendMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.ArmConstants.EXTENDER_MIN_LIMIT);
-    extendMotor.setOpenLoopRampRate(.5);
-    extendMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    extendMotor.getEncoder().setPosition(0);
-    extendMotor.setInverted(false);
-    extendMotor.setIdleMode(IdleMode.kBrake);
-
-    pivotMotor.setNeutralMode(NeutralMode.Brake);
-    pivotMotor.setInverted(true);
-    pivotMotor.setSelectedSensorPosition(0);
+    this.pivotMotor.setNeutralMode(NeutralMode.Brake);
+    this.pivotMotor.setInverted(true);
+    this.pivotMotor.setSelectedSensorPosition(0);
 
     SmartDashboard.putNumber("pivot-kP", 0);
     SmartDashboard.putNumber("pivot-kI", 0);
@@ -109,48 +94,6 @@ public class ArmSubsystem extends SubsystemBase {
   public TalonFX getPivotTalon() {
     return this.pivotMotor;
   }
-
-  @Deprecated
-  public double calculatePivotInput(double angle) {
-    if (angle > maxPivotAngle) {
-      angle = maxPivotAngle;
-    } else if (angle < minPivotAngle) {
-      angle = minPivotAngle;
-    }
-
-    double plantInput = pivotController.calculate(getPivotAngle(), angle);
-    double ff = this.pivotFeedforward.calculate(angle / (180 / Math.PI), canCoder.getVelocity() / (180 / Math.PI));
-
-    SmartDashboard.putNumber(getName() + " Plant Input", plantInput);
-    SmartDashboard.putNumber(getName() + " Feedforward", ff);
-
-    return plantInput + ff;
-  }
-
-  public void setPid(double p) {
-    setPid(p, this.pivotController.getI(), this.pivotController.getD());
-  }
-
-  public void setPid(double p, double i) {
-    setPid(p, i, this.pivotController.getD());
-  }
-
-  public void setPid(double p, double i, double d) {
-    this.pivotController.setPID(p, i, d);
-  }
-
-  public double getKp() {
-    return this.pivotController.getP();
-  }
-
-  public double getKi() {
-    return this.pivotController.getI();
-  }
-
-  public double getKd() {
-    return this.pivotController.getD();
-  }
-
   public void setExtenionRotations(double rotations) {
     // This will clip the commandable rotations between 0 and maxRotations.
     // if (rotations > maxRotations) {
@@ -173,15 +116,11 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void configureLED() {
-    this.ledController.set(0.03);
+    this.ledController.set(Constants.ArmConstants.LED_SPEED);
   }
 
   public boolean atExtensionSetpoint() {
-    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < 3;
-  }
-
-  public boolean atPivotSetpoint() {
-    return pivotController.atSetpoint();
+    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < Constants.ArmConstants.EXTENDER_MARGIN_OF_ERROR;
   }
 
   public double getExtendedPosition() {
