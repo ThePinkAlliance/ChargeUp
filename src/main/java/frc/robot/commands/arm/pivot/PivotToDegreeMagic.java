@@ -78,6 +78,7 @@ public class PivotToDegreeMagic extends CommandBase {
   }
 
   /** Creates a new PivotToDegreeMagic. */
+  /*
   public PivotToDegreeMagic(double desiredAngle, double cruiseVelocity, double acceleration, GainsFX gains,
       Supplier<Boolean> safeToContinue,
       ArmSubsystem armSubsystem) {
@@ -85,14 +86,14 @@ public class PivotToDegreeMagic extends CommandBase {
 
     this.acceleration = acceleration;
     this.cruiseVelocity = cruiseVelocity;
-  }
+  } */
 
   /** Creates a new PivotToDegreeMagic. */
   public PivotToDegreeMagic(double desiredAngle, double cruiseVelocity, double acceleration, int smoothingIntensity,
       GainsFX gains,
       Supplier<Boolean> safeToContinue,
       ArmSubsystem armSubsystem) {
-    this(desiredAngle, gains, safeToContinue, armSubsystem);
+     this(desiredAngle, gains, safeToContinue, armSubsystem);
 
     this.acceleration = acceleration;
     this.cruiseVelocity = cruiseVelocity;
@@ -100,12 +101,13 @@ public class PivotToDegreeMagic extends CommandBase {
   }
 
   /** Creates a new PivotToDegreeMagic. */
+  /*
   public PivotToDegreeMagic(double desiredAngle, int smoothingIntensity, GainsFX gains,
       Supplier<Boolean> safeToContinue, ArmSubsystem armSubsystem) {
     this(desiredAngle, gains, safeToContinue, armSubsystem);
 
     this.smoothingIntensity = smoothingIntensity;
-  }
+  } */
 
   // Called when the command is initially scheduled.
   @Override

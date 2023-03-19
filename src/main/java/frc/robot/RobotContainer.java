@@ -26,10 +26,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AprilTagMoverCommand;
-import frc.robot.commands.JoystickArmExtend;
 import frc.robot.commands.Stow;
-import frc.robot.commands.StowReveredExtend;
+import frc.robot.commands.StowReversedExtend;
 import frc.robot.commands.arm.JoystickArm;
+import frc.robot.commands.arm.JoystickArmExtend;
 import frc.robot.commands.arm.KnockConeLeftStageOne;
 import frc.robot.commands.arm.KnockConeLeftStageTwo;
 import frc.robot.commands.arm.KnockConeRightStageOne;
@@ -55,6 +55,7 @@ import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.CameraSubsystem.CameraType;
 import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ExtenderSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
 import frc.robot.subsystems.scoring.ScoringSubsystem;
@@ -73,10 +74,9 @@ public class RobotContainer {
         public static ProfiledPIDController thetaController = new ProfiledPIDController(
                         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
 
-        // Tower
-        private final ArmSubsystem armSubsystem = new ArmSubsystem(41, 42, 9,
-                        Constants.ArmConstants.PITCH_FLOOR_OFFSET, Constants.ArmConstants.POWER_LIMIT_PIVOT,
-                        Constants.ArmConstants.POWER_LIMIT_EXTEND/*, new Constraints(0, 0)*/);
+        private final ArmSubsystem armSubsystem = new ArmSubsystem(41, 9,
+                        Constants.ArmConstants.PITCH_FLOOR_OFFSET, Constants.ArmConstants.POWER_LIMIT_PIVOT);
+        private final ExtenderSubsystem extenderSubsystem = new ExtenderSubsystem(42, Constants.ExtenderConstants.POWER_LIMIT_EXTEND);
         private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
         private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
 
@@ -140,10 +140,12 @@ public class RobotContainer {
                                 () -> driverJoytick.getRawAxis(OIConstants.kDriverRotAxis),
                                 () -> !driverJoytick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
-                /* Arm Controls (Base) - Extend Only */
+                /* Tower Default Commands for Pivot, Extend and Turret */
                 armSubsystem.setDefaultCommand(
-                                new JoystickArmExtend(towerJoytick, armSubsystem,
-                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis)));
+                                new JoystickArm(towerJoytick, armSubsystem,
+                                                () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerPivotAxis)));
+                extenderSubsystem.setDefaultCommand(new JoystickArmExtend(towerJoytick, extenderSubsystem,
+                                                                        () -> towerJoytick.getRawAxis(Constants.OIConstants.kTowerExtendAxis)));
 
                 turretSubsystem.setDefaultCommand(
                                 new JoystickTurret(turretSubsystem,
@@ -188,17 +190,17 @@ public class RobotContainer {
                                                 Constants.ManipulatorConstants.CUBE_RIGHT
                                                                 + Constants.ManipulatorConstants.CUBE_GRIP_MULTIPLER,
                                                 manipulatorSubsystem)
-                                                .andThen(new StowReveredExtend(armSubsystem, turretSubsystem)));
+                                                .andThen(new StowReversedExtend(armSubsystem, turretSubsystem, extenderSubsystem)));
 
                 new JoystickButton(towerJoytick, Constants.OIConstants.kButtonB)
                                 .onTrue(PickupFromGroundCone.stageOne(armSubsystem, manipulatorSubsystem))
                                 .onFalse(PickupFromGroundCone.stageTwo(armSubsystem, manipulatorSubsystem,
-                                                turretSubsystem));
+                                                turretSubsystem, extenderSubsystem));
 
                 new JoystickButton(towerJoytick, Constants.OIConstants.kButtonY).onTrue(
-                                UtilityCommands.collectHighDeploy(armSubsystem, turretSubsystem, manipulatorSubsystem))
+                                UtilityCommands.collectHighDeploy(armSubsystem, turretSubsystem, manipulatorSubsystem, extenderSubsystem))
                                 .onFalse(UtilityCommands.collectHighStow(armSubsystem, turretSubsystem,
-                                                manipulatorSubsystem));
+                                                manipulatorSubsystem, extenderSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonBack).onTrue(new InstantCommand(
                                 () -> swerveSubsystem.setModuleStates(Constants.DriveConstants.kDriveKinematics
@@ -209,7 +211,7 @@ public class RobotContainer {
                                                 manipulatorSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonX)
-                                .onTrue(new Stow(armSubsystem, turretSubsystem));
+                                .onTrue(new Stow(armSubsystem, turretSubsystem, extenderSubsystem));
 
                 new Trigger(() -> towerJoytick.getRawAxis(2) > 0.05)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
@@ -218,15 +220,15 @@ public class RobotContainer {
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonY).onTrue(
-                                UtilityCommands.deliverConeHigh(armSubsystem, turretSubsystem, manipulatorSubsystem));
+                                UtilityCommands.deliverConeHigh(armSubsystem, extenderSubsystem));
 
                 new POVButton(towerJoytick, 0)
-                                .onTrue(DeliverCones.deliverHigh(armSubsystem));
+                                .onTrue(DeliverCones.deliverHigh(armSubsystem, extenderSubsystem));
                 new POVButton(towerJoytick, 270)
-                                .onTrue(DeliverCones.deliverMid(armSubsystem));
+                                .onTrue(DeliverCones.deliverMid(armSubsystem, extenderSubsystem));
 
                 new POVButton(towerJoytick, 180)
-                                .onTrue(new ExtendTicks(0, armSubsystem));
+                                .onTrue(new ExtendTicks(0, extenderSubsystem));
 
                 new JoystickButton(driverJoytick, Constants.OIConstants.kButtonStart)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
