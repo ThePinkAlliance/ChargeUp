@@ -4,11 +4,10 @@
 
 package frc.robot.commands.drive;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,25 +20,23 @@ public class DriveStraightByGyro extends CommandBase {
   SwerveSubsystem swerveSubsystem;
   TrapezoidProfile.Constraints constraints;
   PIDController thetaController;
-  ProfiledPIDController xController;
+  PIDController xController;
 
   double distance;
-  double speed;
   double startingTime;
   double startingHeading;
 
   /** Creates a new DriveStraightByGyro. */
-  public DriveStraightByGyro(double distance, double speed, TrapezoidProfile.Constraints constraints,
+  public DriveStraightByGyro(double distance, TrapezoidProfile.Constraints constraints,
       SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.swerveSubsystem = swerveSubsystem;
     this.constraints = constraints;
-    this.thetaController = new PIDController(.1, 0, 0);
-    this.xController = new ProfiledPIDController(3.5, 0, 0, new Constraints(1, 2));
+    this.thetaController = new PIDController(.29, 0, 0);
+    this.xController = new PIDController(4, 0, 0.025);
 
     this.distance = distance;
-    this.speed = speed;
 
     addRequirements(swerveSubsystem);
   }
@@ -48,11 +45,16 @@ public class DriveStraightByGyro extends CommandBase {
   @Override
   public void initialize() {
     double xLocation = swerveSubsystem.getPose().getX();
-    double xLocationRelative = distance + xLocation;
+    double xLocationTarget = distance + xLocation;
+
+    SmartDashboard.putNumber("Starting Position", xLocation);
+    SmartDashboard.putNumber("Target Position", xLocationTarget);
+
+    SmartDashboard.putNumber("Starting Angle", swerveSubsystem.getHeading());
 
     this.startingTime = Timer.getFPGATimestamp();
 
-    this.xController.setGoal(new State(xLocationRelative, 0));
+    this.xController.setSetpoint(xLocationTarget);
     this.thetaController.setSetpoint(swerveSubsystem.getHeading());
     this.startingHeading = swerveSubsystem.getHeading();
   }
@@ -62,16 +64,14 @@ public class DriveStraightByGyro extends CommandBase {
   public void execute() {
     double xLocation = swerveSubsystem.getPose().getX();
     double angle = swerveSubsystem.getHeading();
-    double thetaEffort = thetaController.calculate(angle);
-    double xEffort = xController.calculate(xLocation);
+    double thetaEffort = MathUtil.clamp(thetaController.calculate(angle), -3, 3);
+    double xEffort = MathUtil.clamp(xController.calculate(xLocation), -3, 3);
 
     swerveSubsystem.setModuleStates(
         Constants.DriveConstants.kDriveKinematics
             .toSwerveModuleStates(new ChassisSpeeds(xEffort, 0, thetaEffort)));
 
-    SmartDashboard.putNumber("xEffort", xEffort);
-    // SmartDashboard.putNumber("xEffort Processed", xEffort /
-    // Constants.DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+    SmartDashboard.putNumber("thetaEffort", thetaEffort);
     SmartDashboard.putNumber("xLocation", swerveSubsystem.getPose().getX());
   }
 

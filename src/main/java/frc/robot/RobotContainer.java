@@ -119,7 +119,7 @@ public class RobotContainer {
                         autoSendable.addOption("Score One & Leave Community",
                                         new ScoreAndLeaveCommunity(swerveSubsystem));
                         autoSendable.addOption("Drive Straight",
-                                        new DriveStraightByGyro(1, 1, new Constraints(2, 4), swerveSubsystem));
+                                        new DriveStraightByGyro(4, new Constraints(2, 4), swerveSubsystem));
                         autoSendable.setDefaultOption("Leave Community",
                                         leaveCommunity);
                         autoSendable.addOption("Dock",
