@@ -12,7 +12,8 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.StowReversedExtend;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.extend.ExtendTicksPlus;
-import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
+import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
+import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -28,7 +29,7 @@ public class UtilityCommands {
   }
 
   public static Command pivotArm(double angle, ArmSubsystem armSubsystem) {
-    return new PivotToDegreeMagic(angle, // 78
+    return new PivotToDegreeMagicNew(angle, // 78
         Constants.ArmConstants.MAX_CRUISE_VELOCITY,
         Constants.ArmConstants.MAX_ACCELERATION, 3,
         Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -58,7 +59,19 @@ public class UtilityCommands {
   public static Command deliverConeHigh(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem
       ) {
-    return UtilityCommands.pivotArm(130, armSubsystem).andThen(new ExtendTicksPlus(60, extenderSubsystem));
+    return UtilityCommands.pivotArm(130, armSubsystem).alongWith(new ExtendTicksPlus(85, extenderSubsystem));
   }
+
+  public static Command stow(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem,
+      ExtenderSubsystem extenderSubsystem
+      ) {
+    return new ExtendTicks(0, extenderSubsystem).alongWith(new PivotToDegreeMagicNew(Constants.ArmConstants.COLLECT_STOW, // 78
+    Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+    Constants.ArmConstants.MAX_ACCELERATION, 3,
+    Constants.ArmConstants.MOTIONM_GAINS_FX,
+    () -> true,
+    armSubsystem).alongWith(new RotateToDegree(turretSubsystem, armSubsystem, 90, 0)));
+  }
+  
 
 }

@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.arm.extend.ExtendTicks;
-import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
+import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ExtenderSubsystem;
@@ -21,7 +21,7 @@ public class StowReversedExtend extends SequentialCommandGroup {
   public StowReversedExtend(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem, ExtenderSubsystem extenderSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new PivotToDegreeMagic(Constants.ArmConstants.COLLECT_STOW, // 78
+    addCommands(new PivotToDegreeMagicNew(Constants.ArmConstants.COLLECT_STOW, // 78
         Constants.ArmConstants.MAX_CRUISE_VELOCITY,
         Constants.ArmConstants.MAX_ACCELERATION, 3,
         Constants.ArmConstants.MOTIONM_GAINS_FX,

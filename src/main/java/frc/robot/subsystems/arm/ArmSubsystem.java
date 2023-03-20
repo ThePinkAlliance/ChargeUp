@@ -8,18 +8,10 @@ import com.ThePinkAlliance.core.simulation.ctre.CtrePhysicsSim;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
-
-import com.revrobotics.CANSparkMax;
-
-import com.revrobotics.REVLibError;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,10 +22,7 @@ public class ArmSubsystem extends SubsystemBase {
   TalonFX pivotMotor;
   CANCoder canCoder;
   Spark ledController;
-
   private double powerLimitPivot;
-  private double maxRotations = 71;
-  private double maxDistanceMeters = 0;
   private double pivotOffset;
  
   private double positionToHold = 0;
@@ -56,11 +45,16 @@ public class ArmSubsystem extends SubsystemBase {
     this.pivotOffset = pivotOffset;
     this.powerLimitPivot = powerLimitPivot;
 
+    /* Factory default hardware to prevent unexpected behavior */
+    pivotMotor.configFactoryDefault();
+    pivotMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+    Constants.ArmConstants.kPIDLoopIdx,
+    Constants.ArmConstants.kTimeoutMs);
     this.pivotMotor.configOpenloopRamp(0.5);
     this.pivotMotor.setNeutralMode(NeutralMode.Brake);
     this.pivotMotor.setInverted(true);
     this.pivotMotor.setSelectedSensorPosition(0);
-
+    
     SmartDashboard.putNumber("pivot-kP", 0);
     SmartDashboard.putNumber("pivot-kI", 0);
     SmartDashboard.putNumber("pivot-kD", 0);
@@ -73,6 +67,10 @@ public class ArmSubsystem extends SubsystemBase {
   public TalonFX getPivotTalon() {
     return this.pivotMotor;
   }
+
+  public void holdPosition() {
+    pivotMotor.set(TalonFXControlMode.Position, getPositionToHold());
+  }
   
   public void configureLED() {
     this.ledController.set(Constants.ArmConstants.LED_SPEED);
@@ -84,7 +82,6 @@ public class ArmSubsystem extends SubsystemBase {
     this.pivotMotor.set(ControlMode.PercentOutput, input);
   }
 
-  
   public void commandPivotUnsafe(double input) {
     this.pivotMotor.set(ControlMode.PercentOutput, input);
   }
@@ -109,12 +106,19 @@ public class ArmSubsystem extends SubsystemBase {
     return canCoder.getVelocity();
   }
 
-  public void configureForCloseLoopPosition() {
-
+  public void configureTalonFX_Position()
+  {
+    /* Factory default hardware to prevent unexpected behavior */
+    //pivotMotor.configFactoryDefault();    
+    // configure close loop in slot1
+    //pivotMotor.selectProfileSlot(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.kPIDLoopIdx);
+    //pivotMotor.config_kF(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kF, Constants.ArmConstants.kTimeoutMs);
+    //pivotMotor.config_kP(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kP, Constants.ArmConstants.kTimeoutMs);
+    //pivotMotor.config_kI(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kI, Constants.ArmConstants.kTimeoutMs);
+    //pivotMotor.config_kD(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kD, Constants.ArmConstants.kTimeoutMs);
   }
 
-
-  public void configureForMotionMagic(double cruiseVelocity, double acceleration, int smoothingIntensity)
+  public void configureTalonFX_MotionMagic(double cruiseVelocity, double acceleration, int smoothingIntensity)
   {
     /* Factory default hardware to prevent unexpected behavior */
     pivotMotor.configFactoryDefault();
@@ -178,8 +182,7 @@ public class ArmSubsystem extends SubsystemBase {
     pivotMotor.configMotionAcceleration(acceleration, Constants.ArmConstants.kTimeoutMs);
     pivotMotor.configMotionSCurveStrength(smoothingIntensity, Constants.ArmConstants.kTimeoutMs);
     pivotMotor.configAllowableClosedloopError(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.kAllowableCloseLoopError, Constants.ArmConstants.kTimeoutMs);
-  
-    pivotMotor.setSelectedSensorPosition(0);
+    //pivotMotor.setSelectedSensorPosition(0);
     
   }
 

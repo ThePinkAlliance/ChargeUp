@@ -94,12 +94,12 @@ public class CameraData {
      * @param xAngle the horizontal angle (0 is in front of the camera) to the target
      * @param yAngle the vertical angle (0 is in front of the camera) to the target
      */
-    public void addReflectiveTarget(int id, double xAngle, double yAngle) {
+    public void addReflectiveTarget(int id, double xAngle, double yAngle, PipelineType pType) {
         TargetData newTarget = new TargetData();
         newTarget.id = id;
         newTarget.targetXAngle = xAngle;
         newTarget.targetYAngle = yAngle;
-        newTarget.targetType = PipelineType.REFLECTIVE;
+        newTarget.targetType = pType;
         targets.add(newTarget);
     }
 

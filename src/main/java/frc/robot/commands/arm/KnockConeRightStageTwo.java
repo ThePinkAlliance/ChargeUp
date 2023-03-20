@@ -6,7 +6,7 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
+import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
@@ -28,7 +28,7 @@ public class KnockConeRightStageTwo extends SequentialCommandGroup {
                                 new GoToPositionManipulator(Constants.ManipulatorConstants.COLLECT_CONE_RIGHT_LEFT_STAGE_TWO , Double.NaN,
                                                 manipulatorSubsystem),
 
-                                new PivotToDegreeMagic(Constants.ArmConstants.COLLECT_STOW,
+                                new PivotToDegreeMagicNew(Constants.ArmConstants.COLLECT_STOW,
                                                 Constants.ArmConstants.MAX_CRUISE_VELOCITY,
                                                 Constants.ArmConstants.MAX_ACCELERATION, 3,
                                                 Constants.ArmConstants.MOTIONM_GAINS_FX,

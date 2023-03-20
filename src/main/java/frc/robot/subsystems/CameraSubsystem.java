@@ -7,7 +7,6 @@ import frc.robot.subsystems.camera.CameraData;
 import frc.robot.subsystems.camera.CameraInterface;
 import frc.robot.subsystems.camera.CameraInterfaceSim;
 import frc.robot.subsystems.camera.LimeLightCamera;
-import frc.robot.subsystems.camera.PhotonVisionCamera;
 import frc.robot.subsystems.camera.CameraInterface.PipelineType;
 
 public class CameraSubsystem extends SubsystemBase {
@@ -27,7 +26,7 @@ public class CameraSubsystem extends SubsystemBase {
         if (!Robot.isReal())
             camera = new CameraInterfaceSim();
         else if (type == CameraType.PHOTON_VISION)
-            camera = new PhotonVisionCamera();
+            camera = new LimeLightCamera();  //removed photon for now due to time constraints.
         else
             camera = new LimeLightCamera();
     }

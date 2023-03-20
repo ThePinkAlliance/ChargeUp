@@ -7,11 +7,12 @@ import java.util.function.Supplier;
 import com.ThePinkAlliance.core.util.GainsFX;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Telemetry;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
@@ -30,8 +31,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
 
   private boolean isFinished;
   private Watchdog watchdog;
-  private final double WATCHDOG_TIMEOUT = 4.5;
-  private boolean isCommanded;
+  private final double WATCHDOG_TIMEOUT = 1.5;
   
 
   /** Creates a new PivotToDegreeMagic. */
@@ -46,8 +46,6 @@ public class PivotToDegreeMagicNew extends CommandBase {
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
-    this.isCommanded = false;
-
     this.isFinished = false;
     this.initialAngle = 0;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
@@ -72,10 +70,11 @@ public class PivotToDegreeMagicNew extends CommandBase {
   @Override
   public void initialize() {
     this.isFinished = false;
-    this.isCommanded = false; 
-    this.armSubsystem.configureForMotionMagic(cruiseVelocity, acceleration, smoothingIntensity);
+    armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity);
     initialAngle = armSubsystem.getArmPitch();
     pivotMotor.setSelectedSensorPosition(0);
+    double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
+    pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
     watchdog.reset();
     watchdog.enable();
     System.out.println("---- Pivot Init ----");
@@ -86,21 +85,15 @@ public class PivotToDegreeMagicNew extends CommandBase {
   public void execute() {
     double currentPosition = pivotMotor.getSelectedSensorPosition();
     double currentPitch = ((currentPosition + .001) / 1578.6776859504) + initialAngle;
-    double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
-
     boolean isSafe = safeToContinue.get();
 
-    if (!isCommanded) {
-      pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
+    //pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
 
-      isCommanded = true;
-    }
-
-    Telemetry.logData("isSafe", isSafe, PivotToDegreeMagic.class);
-    Telemetry.logData("isFinished", isFinished, PivotToDegreeMagic.class);
-    Telemetry.logData("currentAngle", currentPitch, PivotToDegreeMagic.class);
-    Telemetry.logData("desiredAngle", desiredAngle, PivotToDegreeMagic.class);
-    Telemetry.logData("initalAngle", initialAngle, PivotToDegreeMagic.class);
+    Telemetry.logData("isSafe", isSafe, PivotToDegreeMagicNew.class);
+    Telemetry.logData("isFinished", isFinished, PivotToDegreeMagicNew.class);
+    Telemetry.logData("currentAngle", currentPitch, PivotToDegreeMagicNew.class);
+    Telemetry.logData("desiredAngle", desiredAngle, PivotToDegreeMagicNew.class);
+    Telemetry.logData("initalAngle", initialAngle, PivotToDegreeMagicNew.class);
   }
 
   // Called once the command ends or is interrupted.
@@ -119,16 +112,16 @@ public class PivotToDegreeMagicNew extends CommandBase {
     boolean differenceMet = diff <= 139; // 29.5794701987;
     boolean watchdogKill = watchdog.isExpired();
 
-    Telemetry.logData("Pitch Difference", diff, PivotToDegreeMagic.class);
-    Telemetry.logData("Current Pitch Position", currentPosition, PivotToDegreeMagic.class);
-    Telemetry.logData("Desired Pitch Position", desiredPosition, PivotToDegreeMagic.class);
+    Telemetry.logData("Pitch Difference", diff, PivotToDegreeMagicNew.class);
+    Telemetry.logData("Current Pitch Position", currentPosition, PivotToDegreeMagicNew.class);
+    Telemetry.logData("Desired Pitch Position", desiredPosition, PivotToDegreeMagicNew.class);
 
     if (watchdogKill) {
-      Telemetry.logData("----- WatchDog Kill; Pos Difference -----", diff, PivotToDegreeMagic.class);
+      Telemetry.logData("----- WatchDog Kill; Pos Difference -----", diff, PivotToDegreeMagicNew.class);
     }
 
     if (differenceMet) {
-      Telemetry.logData("----- Difference Met; Pos Difference -----", diff, PivotToDegreeMagic.class);
+      Telemetry.logData("----- Difference Met; Pos Difference -----", diff, PivotToDegreeMagicNew.class);
     }
 
     return (differenceMet || watchdogKill);

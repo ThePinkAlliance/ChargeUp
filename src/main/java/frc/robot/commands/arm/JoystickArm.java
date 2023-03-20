@@ -6,6 +6,8 @@ package frc.robot.commands.arm;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -39,11 +41,9 @@ public class JoystickArm extends CommandBase {
   @Override
   public void initialize() {
     updateHoldPosition = false;
-    armSubsystem.getPivotTalon().configFactoryDefault();
-    armSubsystem.getPivotTalon().config_kP(0, 0.1);
+    armSubsystem.configureTalonFX_Position();
     this.armSubsystem.setPositionToHold(this.armSubsystem.getPivotTalon().getSelectedSensorPosition());
     Telemetry.logData("Status", "Init", JoystickArm.class);
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -55,8 +55,8 @@ public class JoystickArm extends CommandBase {
     if (input == 0) {
       if (updateHoldPosition) {
         this.armSubsystem.setPositionToHold(this.armSubsystem.getPivotTalon().getSelectedSensorPosition());
-
         updateHoldPosition = false;
+        this.armSubsystem.commandPivot(0);
       }
 
       // this.armSubsystem.getPivotTalon().set(ControlMode.Position,
@@ -68,11 +68,12 @@ public class JoystickArm extends CommandBase {
           || this.armSubsystem.getArmPitch() > ANGLE_FLOOR && Math.signum(input) == -1)
           || (this.armSubsystem.getArmPitch() > ANGLE_CEILING && Math.signum(input) == -1
               || this.armSubsystem.getArmPitch() < ANGLE_CEILING && Math.signum(input) == 1)) {
+        input = input * Math.abs(input);
         this.armSubsystem.commandPivot(input);
+      
       } else {
         this.armSubsystem.commandPivot(0);
       }
-
       this.updateHoldPosition = true;
     }
 

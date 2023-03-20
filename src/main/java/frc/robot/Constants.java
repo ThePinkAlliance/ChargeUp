@@ -84,6 +84,8 @@ public final class Constants {
 
         public static final class TurretConstants {
                 public static final double TURRET_OFFSET = 160;
+                public static final double ANGLE_TOLERANCE_FOR_EXTERNAL_SENSOR = 0.5;
+                public static final GainsFX PID_ROTATE_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
         }
 
         public static final class AutoConstants {
@@ -134,6 +136,7 @@ public final class Constants {
                 private static double ACCEL_MULTIPLER = 2.5;
 
                 public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.20, 0, 0, 0.3, 0, 1);
+                public static final GainsFX POSITION_GAINS_FX = new GainsFX(0.1, 0, 0, 0.3, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864 * VELOCITY_MULTIPLER;
                 /**
                  * Old Value 18480; The acceleration needs to be tuned so it can accel and

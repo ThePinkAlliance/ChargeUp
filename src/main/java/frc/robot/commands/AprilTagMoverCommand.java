@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Telemetry;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.camera.CameraData;
@@ -22,7 +23,7 @@ public class AprilTagMoverCommand extends CommandBase {
     Joystick joystick;
     Timer sustainedReach;
 
-    public AprilTagMoverCommand(SwerveSubsystem driveSubsystem, CameraSubsystem cameraSubsystem, Joystick joystick) {
+    public AprilTagMoverCommand(Joystick joystick, SwerveSubsystem driveSubsystem, CameraSubsystem cameraSubsystem) {
         this.driveSubsystem = driveSubsystem;
         this.cameraSubsystem = cameraSubsystem;
         this.joystick = joystick;
@@ -37,17 +38,11 @@ public class AprilTagMoverCommand extends CommandBase {
         reachedTarget = false;
         sustainedReach.stop();
         sustainedReach.reset();
+        Telemetry.logData("initialized", true, AprilTagMoverCommand.class);
     }
 
     @Override
     public void execute() {
-        /*
-         * if (!findReflectiveTarget) {
-         * driveCloserToTarget();
-         * } else {
-         * findReflectiveTarget();
-         * }
-         */
         driveCloserToTarget_NoRetro();
     }
 
@@ -55,28 +50,13 @@ public class AprilTagMoverCommand extends CommandBase {
     public boolean isFinished() {
         if (reachedTarget || (joystick != null && joystick.getRawButton(Constants.OIConstants.kButtonX) == false) ? true : false) {
             System.out.println("AprilTagMoveCommand: finished");
+            Telemetry.logData("isFinished", true, AprilTagMoverCommand.class);
             return true;
         } else {
             return false;
         }
     }
 
-    private void driveCloserToTarget() {
-        double rightDriveSpeed = 0;
-        double leftDriveSpeed = 0;
-        CameraData camResult = cameraSubsystem.getTarget();
-        if (camResult.pipelineType == PipelineType.APRIL_TAG) {
-            if (camResult.hasTargets()) {
-                double distance = camResult.getTargets().get(0).targetDistance;
-                double angle = camResult.getTargets().get(0).targetXAngle;
-                SwerveModuleState[] states = Constants.DriveConstants.kDriveKinematics
-                        .toSwerveModuleStates(getHolonomicDriveValues(distance, angle));
-
-                driveSubsystem.setModuleStates(states);
-            }
-        } else
-            System.out.println("Waiting for pipeline to switch to APRIL TAG mode");
-    }
 
     private void driveCloserToTarget_NoRetro() {
 
@@ -84,13 +64,14 @@ public class AprilTagMoverCommand extends CommandBase {
         if (camResult.pipelineType == PipelineType.APRIL_TAG) {
             double translation = 0.0;
             double yAxisTranslation = 0.0;
+            Telemetry.logData("Has Targets", camResult.getTargets().get(0), AprilTagMoverCommand.class);
             if (camResult.hasTargets()) {
                 TargetData target = camResult.getTargets().get(0);
                 //if (target.targetDistance > 1)
                 //    translation = -0.6;
                 //else if (target.targetDistance < .45)
                 if (target.targetDistance > .88) {
-                    translation = 0.5;
+                    translation = 0.6;
                     sustainedReach.stop();
                     sustainedReach.reset();
                 }
@@ -102,39 +83,21 @@ public class AprilTagMoverCommand extends CommandBase {
                 }
                 double x = camResult.getTargets().get(0).targetXAngle;
                 if (x > 2.0)
-                    yAxisTranslation = -0.3;
+                    yAxisTranslation = -0.5;
                 else if (x < -2.0)
-                    yAxisTranslation = 0.3;
+                    yAxisTranslation = 0.5;
                 else
-                    yAxisTranslation = 0.0;
-                SmartDashboard.putNumber("VX = ", translation);
-                SmartDashboard.putNumber("XY", yAxisTranslation);
-                SmartDashboard.putNumber("# Targets = ", camResult.getTargets().size());
-                SmartDashboard.putNumber("Distance Meters = ", camResult.getTargets().get(0).targetDistance);
-                SmartDashboard.putNumber("Angle Offset = ", x);
+                    yAxisTranslation = 0.5;
+                
+                Telemetry.logData("VX", translation, AprilTagMoverCommand.class);
+                Telemetry.logData("VY", yAxisTranslation, AprilTagMoverCommand.class);
+                Telemetry.logData("#Targets = ", camResult.getTargets().size(), AprilTagMoverCommand.class );
+                Telemetry.logData("Distance Meters = ", camResult.getTargets().get(0).targetDistance,AprilTagMoverCommand.class);
+                Telemetry.logData("Angle Offset", x, AprilTagMoverCommand.class);
             }
 
             driveSubsystem.move(translation, yAxisTranslation, 0);
         }
-    }
-
-    private void findReflectiveTarget() {
-        CameraData camResult = cameraSubsystem.getTarget();
-        if (camResult.pipelineType == PipelineType.REFLECTIVE) {
-            if (camResult.hasTargets()) {
-                if (camResult.getTargets().get(0).targetXAngle < -5)
-                    driveSubsystem.move(-0.3, 0.3, 0);
-                else if (camResult.getTargets().get(0).targetXAngle > 5)
-                    driveSubsystem.move(0.3, -0.3, 0);
-                else {
-                    driveSubsystem.stopModules();
-                    cameraSubsystem.setPipeline(PipelineType.APRIL_TAG);
-                    findReflectiveTarget = false;
-                }
-            } else
-                driveSubsystem.stopModules();
-        } else
-            System.out.println("Waiting for pipeline to switch to REFLECTIVE mode");
     }
 
     /**

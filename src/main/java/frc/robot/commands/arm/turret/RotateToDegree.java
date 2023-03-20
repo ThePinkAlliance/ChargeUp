@@ -26,7 +26,7 @@ public class RotateToDegree extends CommandBase {
   private ArmSubsystem armSubsystem;
   private double angleTolerence;
   Watchdog watchdog;
-  private final double WATCHDOG_TIMEOUT = 4.2;
+  private final double WATCHDOG_TIMEOUT = 1.5;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle,

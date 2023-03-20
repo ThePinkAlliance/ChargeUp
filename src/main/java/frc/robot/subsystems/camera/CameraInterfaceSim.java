@@ -38,7 +38,7 @@ public class CameraInterfaceSim implements CameraInterface {
         retVal.isConnected = SmartDashboard.getBoolean(CAM_CONNECTED_KEY, false);
         boolean hasTarget = SmartDashboard.getBoolean(CAM_HAS_TARGET_KEY, false);
         retVal.latencyMillis = SmartDashboard.getNumber(CAM_LATENCY_KEY, 40000);
-        if (SmartDashboard.getBoolean(CAM_IS_APRIL_TAG_KEY, true)) {
+        if (SmartDashboard.getBoolean(CAM_IS_APRIL_TAG_KEY, false)) {
             retVal.pipelineType = PipelineType.APRIL_TAG;
             if (hasTarget) {
                 retVal.addAprilTagTarget((int)SmartDashboard.getNumber(CAM_ID_KEY, 1), 
@@ -48,11 +48,11 @@ public class CameraInterfaceSim implements CameraInterface {
                     SmartDashboard.getNumber(CAM_DISTANCE_KEY, 1.0));
             }
         } else {
-            retVal.pipelineType = PipelineType.REFLECTIVE;
+            retVal.pipelineType = PipelineType.REFLECTIVE_HIGH;
             if (hasTarget) {
                 retVal.addReflectiveTarget((int)SmartDashboard.getNumber(CAM_ID_KEY, 1), 
                     SmartDashboard.getNumber(CAM_XANGLE_KEY, 0), 
-                    SmartDashboard.getNumber(CAM_YANGLE_KEY, 0));
+                    SmartDashboard.getNumber(CAM_YANGLE_KEY, 0), PipelineType.REFLECTIVE_HIGH);
             }
         }
         
