@@ -3,6 +3,8 @@ package frc.robot.subsystems.camera;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableValue;
+import frc.robot.Telemetry;
+import frc.robot.commands.AprilTagMoverCommand;
 
 public class LimeLightCamera implements CameraInterface {
 
@@ -35,6 +37,7 @@ public class LimeLightCamera implements CameraInterface {
         // System.out.println();
 
         if (isConnected()) {
+            Telemetry.logData("isConnected", true, AprilTagMoverCommand.class);
             return (int) (cam.getEntry("getpipe").getDouble(0));
         } else
             throw new IllegalStateException("Limelight camera not connected");
@@ -65,8 +68,10 @@ public class LimeLightCamera implements CameraInterface {
                     case APRIL_TAG:
                         getAprilTagTargets(camera, camTargets);
 
-                    case REFLECTIVE:
-                        getReflectiveTarget(camera, camTargets);
+                    case REFLECTIVE_HIGH:
+                        getReflectiveTarget(camera, camTargets, PipelineType.REFLECTIVE_HIGH);
+                    case REFLECTIVE_LOW:
+                        getReflectiveTarget(camera, camTargets, PipelineType.REFLECTIVE_LOW);
                 }
             }
         }
@@ -81,10 +86,10 @@ public class LimeLightCamera implements CameraInterface {
      * @param camTargets
      * @return a list of 0 or more reflective targets from largest area to smallest.
      */
-    private void getReflectiveTarget(NetworkTable camera, CameraData camTargets) {
+    private void getReflectiveTarget(NetworkTable camera, CameraData camTargets, PipelineType pType) {
         // TODO: How do we get multiple targets?
         camTargets.addReflectiveTarget(0, camera.getEntry("tx").getDouble(0),
-                camera.getEntry("ty").getDouble(0));
+                camera.getEntry("ty").getDouble(0), pType);
     }
 
     /**
@@ -97,11 +102,11 @@ public class LimeLightCamera implements CameraInterface {
     private void getAprilTagTargets(NetworkTable camera, CameraData camTargets) {
         // TODO: How do we get multiple targets?
         //double[] camPose = camera.getEntry("targetpose_cameraspace").getDoubleArray(new double[0]);
-        double[] camPose = camera.getEntry("campose").getDoubleArray(new double[0]);
+        double[] camPose = camera.getEntry("targetpose_cameraspace").getDoubleArray(new double[0]);
         String aa = "";
         for (int i = 0; i < camPose.length; i++)
             aa += camPose[i] + ",";
-        System.out.println("CAMPOSE: " + aa);
+        Telemetry.logData("targetpose_cameraspace", aa, getClass());
         // Don't trust the flag that tells you there is a target
         if (camPose.length > 5) {
             double targetDistance = Math.abs(camPose[2]);

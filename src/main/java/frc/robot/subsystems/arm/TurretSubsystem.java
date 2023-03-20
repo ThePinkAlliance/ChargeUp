@@ -23,7 +23,7 @@ public class TurretSubsystem extends SubsystemBase {
     this.turretController.setSmartCurrentLimit(20);
     this.turretController.setIdleMode(IdleMode.kBrake);
     this.turretController.setOpenLoopRampRate(0.3);
-    this.turretController.setClosedLoopRampRate(0.2);
+    this.turretController.setClosedLoopRampRate(0.0);
     this.turretController.setInverted(true);
     this.useFaker = RobotBase.isSimulation();
 
@@ -39,7 +39,7 @@ public class TurretSubsystem extends SubsystemBase {
       neoFaker.update();
     }
 
-    SmartDashboard.putNumber("turret rotations", turretController.getEncoder().getPosition());
+    SmartDashboard.putNumber("Turret otations", turretController.getEncoder().getPosition());
   }
 
   public CANSparkMax getCanSparkMax() {
@@ -68,6 +68,10 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     return rotations * 360;
+  }
+
+  public double getTurretPosition() {
+    return this.turretController.getEncoder().getPosition();
   }
 
   public boolean isMoving() {

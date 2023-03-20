@@ -7,18 +7,11 @@ package frc.robot.subsystems.arm;
 import com.ThePinkAlliance.core.simulation.ctre.CtrePhysicsSim;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
-
-import com.revrobotics.CANSparkMax;
-
-import com.revrobotics.REVLibError;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,18 +20,10 @@ import frc.robot.Constants;
 
 public class ArmSubsystem extends SubsystemBase {
   TalonFX pivotMotor;
-  CANSparkMax extendMotor;
-  RelativeEncoder extendEncoder;
   CANCoder canCoder;
   Spark ledController;
-
   private double powerLimitPivot;
-  private double powerLimitExtend;
-  private double maxRotations = 71;
-  private double maxDistanceMeters = 0;
   private double pivotOffset;
-
-  private double desiredExtendRotations = 0;
  
   private double positionToHold = 0;
 
@@ -51,37 +36,25 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   /** Creates a new ArmSubsystem. */
-  public ArmSubsystem(int pivotMotorId, int extendMotorId, int canCoderId, double pivotOffset, double powerLimitPivot,
-      double powerLimitExtend /*,
-      Constraints constraints */) {
+  public ArmSubsystem(int pivotMotorId, int canCoderId, double pivotOffset, double powerLimitPivot) {
     
     this.ledController = new Spark(0);
 
     this.pivotMotor = new TalonFX(pivotMotorId);
-    this.extendMotor = new CANSparkMax(extendMotorId, MotorType.kBrushless);
     this.canCoder = new CANCoder(canCoderId);
-    
-    this.extendEncoder = extendMotor.getEncoder();
     this.pivotOffset = pivotOffset;
     this.powerLimitPivot = powerLimitPivot;
-    this.powerLimitExtend = powerLimitExtend;
 
-    this.extendMotor.getPIDController().setP(0.1);
-    this.extendMotor.getPIDController().setOutputRange(-0.65, 0.65);
-    this.extendMotor.setSoftLimit(SoftLimitDirection.kForward, Constants.ArmConstants.EXTENDER_90_MAX_LIMIT);
-    this.extendMotor.setSoftLimit(SoftLimitDirection.kReverse, Constants.ArmConstants.EXTENDER_MIN_LIMIT);
-    this.extendMotor.setOpenLoopRampRate(.5);
-    this.extendMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    this.extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    this.extendMotor.getEncoder().setPosition(0);
-    this.extendMotor.setInverted(false);
-    this.extendMotor.setIdleMode(IdleMode.kBrake);
-
+    /* Factory default hardware to prevent unexpected behavior */
+    pivotMotor.configFactoryDefault();
+    pivotMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+    Constants.ArmConstants.kPIDLoopIdx,
+    Constants.ArmConstants.kTimeoutMs);
     this.pivotMotor.configOpenloopRamp(0.5);
     this.pivotMotor.setNeutralMode(NeutralMode.Brake);
     this.pivotMotor.setInverted(true);
     this.pivotMotor.setSelectedSensorPosition(0);
-
+    
     SmartDashboard.putNumber("pivot-kP", 0);
     SmartDashboard.putNumber("pivot-kI", 0);
     SmartDashboard.putNumber("pivot-kD", 0);
@@ -94,60 +67,13 @@ public class ArmSubsystem extends SubsystemBase {
   public TalonFX getPivotTalon() {
     return this.pivotMotor;
   }
-  public void setExtenionRotations(double rotations) {
-    // This will clip the commandable rotations between 0 and maxRotations.
-    // if (rotations > maxRotations) {
-    // rotations = maxRotations;
-    // } else if (rotations < 0) {
-    // rotations = 0;
-    // }
 
-    REVLibError err = extendMotor.getPIDController().setReference(
-        rotations,
-        ControlType.kPosition);
-
-    if (err == REVLibError.kOk) {
-      this.desiredExtendRotations = rotations;
-    } else if (err == REVLibError.kSetpointOutOfRange) {
-      System.err.println("[ARM, Extend]: Desired rotations out of range");
-    } else {
-      System.err.println("[ARM, Extend]: Error " + err.toString());
-    }
+  public void holdPosition() {
+    pivotMotor.set(TalonFXControlMode.Position, getPositionToHold());
   }
-
+  
   public void configureLED() {
     this.ledController.set(Constants.ArmConstants.LED_SPEED);
-  }
-
-  public boolean atExtensionSetpoint() {
-    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < Constants.ArmConstants.EXTENDER_MARGIN_OF_ERROR;
-  }
-
-  public double getExtendedPosition() {
-    return this.extendMotor.getEncoder().getPosition();
-  }
-
-  public void enableExtendReverseSoftLimits() {
-    this.extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-  }
-
-  public void disableExtendReverseSoftLimits() {
-    this.extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
-    extendMotor.getEncoder().setPosition(0);
-  }
-
-  public void enableExtendForwardSoftLimits() {
-    this.extendMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-  }
-
-  public void disableExtendForwardSoftLimits() {
-    this.extendMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
-  }
-
-  public void commandExtend(double input) {
-    input = input * powerLimitExtend;
-
-    this.extendMotor.set(input);
   }
 
   public void commandPivot(double input) {
@@ -156,31 +82,12 @@ public class ArmSubsystem extends SubsystemBase {
     this.pivotMotor.set(ControlMode.PercentOutput, input);
   }
 
-  public void commandExtendUnsafe(double input) {
-    this.extendMotor.set(input);
-  }
-
   public void commandPivotUnsafe(double input) {
     this.pivotMotor.set(ControlMode.PercentOutput, input);
   }
 
   public double getPivotDemandedPower() {
     return this.pivotMotor.getMotorOutputPercent();
-  }
-
-  public double getExtendCurrent() {
-    return this.extendMotor.getOutputCurrent();
-  }
-
-  /**
-   * Returns the extended distance in meters.
-   */
-  public double getExtensionDistance() {
-    return extendEncoder.getPosition() * (maxDistanceMeters / maxRotations);
-  }
-
-  public double getExtensionRotations() {
-    return extendMotor.getEncoder().getPosition();
   }
 
   public double getPivotVoltage() {
@@ -195,25 +102,94 @@ public class ArmSubsystem extends SubsystemBase {
     return (canCoder.getAbsolutePosition() - Constants.ArmConstants.PITCH_FLOOR_ABSOLUTE) + pivotOffset;
   }
 
-  @Deprecated
-  public double getPivotAngle() {
-    return getArmPitch();
-  }
-
   public double getPivotVelocity() {
     return canCoder.getVelocity();
+  }
+
+  public void configureTalonFX_Position()
+  {
+    /* Factory default hardware to prevent unexpected behavior */
+    //pivotMotor.configFactoryDefault();    
+    // configure close loop in slot1
+    //pivotMotor.selectProfileSlot(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.kPIDLoopIdx);
+    //pivotMotor.config_kF(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kF, Constants.ArmConstants.kTimeoutMs);
+    //pivotMotor.config_kP(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kP, Constants.ArmConstants.kTimeoutMs);
+    //pivotMotor.config_kI(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kI, Constants.ArmConstants.kTimeoutMs);
+    //pivotMotor.config_kD(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kD, Constants.ArmConstants.kTimeoutMs);
+  }
+
+  public void configureTalonFX_MotionMagic(double cruiseVelocity, double acceleration, int smoothingIntensity)
+  {
+    /* Factory default hardware to prevent unexpected behavior */
+    pivotMotor.configFactoryDefault();
+
+    /* Configure Sensor Source for Pirmary PID */
+    /*
+     * Note: we can connect the can coder and use it as the encoder for motion
+     * magic.
+     */
+    pivotMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
+    Constants.ArmConstants.kPIDLoopIdx,
+    Constants.ArmConstants.kTimeoutMs);
+
+    // /*
+    // * set deadband to super small 0.001 (0.1 %).
+    // * The default deadband is 0.04 (4 %)
+    // */
+    pivotMotor.configNeutralDeadband(Constants.ArmConstants.kPercentDeadband, Constants.ArmConstants.kTimeoutMs);
+
+    // /**
+    // * Configure Talon FX Output and Sensor direction accordingly Invert Motor to
+    // * have green LEDs when driving Talon Forward / Requesting Postiive Output
+    // Phase
+    // * sensor to have positive increment when driving Talon Forward (Green LED)
+    // */
+    // // pivotMotor.setSensorPhase(false);
+    // /*
+    // * Talon FX does not need sensor phase set for its integrated sensor
+    // * This is because it will always be correct if the selected feedback device
+    // is
+    // * integrated sensor (default value)
+    // * and the user calls getSelectedSensor* to get the sensor's
+    // position/velocity.
+    // *
+    // * https://phoenix-documentation.readthedocs.io/en/latest/ch14_MCSensor.html#
+    // * sensor-phase
+    // */
+    // // pivotMotor.setSensorPhase(true);
+
+    // /* Set relevant frame periods to be at least as fast as periodic rate */
+    pivotMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10,
+        Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic,
+        Constants.ArmConstants.kPeriodMs, Constants.ArmConstants.kTimeoutMs);
+
+    // /* Set the peak and nominal outputs */
+    pivotMotor.configNominalOutputForward(0, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.configNominalOutputReverse(0, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.configPeakOutputForward(Constants.ArmConstants.kNominalForwardPeak, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.configPeakOutputReverse(Constants.ArmConstants.kNominalReversePeak, Constants.ArmConstants.kTimeoutMs);
+
+    // /* Set Motion Magic gains in slot0 - see documentation */
+    pivotMotor.selectProfileSlot(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.kPIDLoopIdx);
+    pivotMotor.config_kF(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kF, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.config_kP(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kP, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.config_kI(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kI, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.config_kD(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kD, Constants.ArmConstants.kTimeoutMs);
+
+    // /* Set acceleration and vcruise velocity - see documentation */
+    pivotMotor.configMotionCruiseVelocity(cruiseVelocity, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.configMotionAcceleration(acceleration, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.configMotionSCurveStrength(smoothingIntensity, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.configAllowableClosedloopError(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.kAllowableCloseLoopError, Constants.ArmConstants.kTimeoutMs);
+    //pivotMotor.setSelectedSensorPosition(0);
+    
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    // System.out.println("[ARM/PERIODIC] Extend Position: " +
-    // extendMotor.getEncoder().getPosition());
-
-    SmartDashboard.putNumber("[EXTEND] Ticks", getExtensionRotations());
     SmartDashboard.putNumber("Pitch Motor Ticks", pivotMotor.getSelectedSensorPosition());
     SmartDashboard.putNumber("Absolute Pitch", canCoder.getAbsolutePosition());
-    SmartDashboard.putNumber("Pivot Pitch", this.getPivotAngle());
   }
 }

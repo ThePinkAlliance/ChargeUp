@@ -45,6 +45,8 @@ public class JoystickTurret extends CommandBase {
     }
 
     SmartDashboard.putNumber("Turret Angle", turretSubsystem.getTurretAngle());
+    SmartDashboard.putNumber("Turret Position", turretSubsystem.getTurretPosition());
+  
   }
 
   // Called once the command ends or is interrupted.

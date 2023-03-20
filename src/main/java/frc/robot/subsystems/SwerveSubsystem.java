@@ -135,6 +135,12 @@ public class SwerveSubsystem extends SubsystemBase {
         return this.gyro.getPitch();
     }
 
+    //-180 to 180
+    public double getYaw() {
+        double value = (double)this.gyro.getYaw(); 
+        return value;
+    }
+
     public void addVisionMeasurement(Pose2d pose, double timestamp) {
         this.estimator.addVisionMeasurement(pose, timestamp);
     }

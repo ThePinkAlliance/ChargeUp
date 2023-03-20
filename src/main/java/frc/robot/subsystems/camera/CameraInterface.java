@@ -7,11 +7,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public interface CameraInterface {
     static final int PIPELINE_APRILTAG = 0;
-    static final int PIPELINE_REFLECTIVE = 1;
+    static final int PIPELINE_REFLECTIVE_HIGH = 1;
+    static final int PIPELINE_REFLECTIVE_LOW = 2;
     
     public enum PipelineType {
         APRIL_TAG,
-        REFLECTIVE
+        REFLECTIVE_HIGH,
+        REFLECTIVE_LOW
     }
 
     /**
@@ -64,16 +66,20 @@ public interface CameraInterface {
     default int getPipelineIndex(PipelineType type) {
         int pipelineIndex = 0;
         switch (type) {
-            case REFLECTIVE:
-                pipelineIndex = PIPELINE_REFLECTIVE;
+            case REFLECTIVE_HIGH:
+                pipelineIndex = PIPELINE_REFLECTIVE_HIGH;
                 break;
-            
+
+            case REFLECTIVE_LOW:
+                pipelineIndex = PIPELINE_REFLECTIVE_LOW;
+                break;
+
             case APRIL_TAG:
                 pipelineIndex = PIPELINE_APRILTAG;
                 break;
                 
             default:
-                throw new IllegalStateException("Unknown PhotonVision pipeline type" + type);
+                throw new IllegalStateException("Unknown pipeline type" + type);
         }
         return pipelineIndex;
 
@@ -91,7 +97,11 @@ public interface CameraInterface {
                 break;
 
             case 1: 
-                pipelineType = PipelineType.REFLECTIVE;
+                pipelineType = PipelineType.REFLECTIVE_HIGH;
+                break;
+            
+            case 2: 
+                pipelineType = PipelineType.REFLECTIVE_LOW;
                 break;
 
             default: throw new IllegalStateException("Unknown PhotonVision pipeline #" + pipelineIndex);

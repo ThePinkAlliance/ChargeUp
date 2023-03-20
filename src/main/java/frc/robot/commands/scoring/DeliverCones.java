@@ -10,16 +10,17 @@ import frc.robot.commands.arm.UtilityCommands;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.extend.ExtendTicksPlus;
 import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ExtenderSubsystem;
 
 /** Add your docs here. */
 public class DeliverCones {
-  public static Command deliverHigh(ArmSubsystem armSubsystem) {
+  public static Command deliverHigh(ArmSubsystem armSubsystem, ExtenderSubsystem extenderSubsystem) {
     return new SequentialCommandGroup(UtilityCommands.pivotArm(132, armSubsystem),
-        new ExtendTicksPlus(99, armSubsystem));
+        new ExtendTicksPlus(99, extenderSubsystem));
   }
 
-  public static Command deliverMid(ArmSubsystem armSubsystem) {
+  public static Command deliverMid(ArmSubsystem armSubsystem, ExtenderSubsystem extenderSubsystem) {
     return new SequentialCommandGroup(UtilityCommands.pivotArm(130, armSubsystem),
-        new ExtendTicks(31, armSubsystem));
+        new ExtendTicks(31, extenderSubsystem));
   }
 }

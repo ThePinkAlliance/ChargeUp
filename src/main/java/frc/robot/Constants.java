@@ -84,6 +84,8 @@ public final class Constants {
 
         public static final class TurretConstants {
                 public static final double TURRET_OFFSET = 160;
+                public static final double ANGLE_TOLERANCE_FOR_EXTERNAL_SENSOR = 0.5;
+                public static final GainsFX PID_ROTATE_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
         }
 
         public static final class AutoConstants {
@@ -134,6 +136,7 @@ public final class Constants {
                 private static double ACCEL_MULTIPLER = 2.5;
 
                 public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.20, 0, 0, 0.3, 0, 1);
+                public static final GainsFX POSITION_GAINS_FX = new GainsFX(0.1, 0, 0, 0.3, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864 * VELOCITY_MULTIPLER;
                 /**
                  * Old Value 18480; The acceleration needs to be tuned so it can accel and
@@ -146,17 +149,30 @@ public final class Constants {
                 public static final double MAX_ACCELERATION = 6064 * ACCEL_MULTIPLER;
                 public static final double PITCH_FLOOR_ABSOLUTE = 131.66;
                 public static final double PITCH_FLOOR_OFFSET = 71.11;
-                public static final double POWER_LIMIT_EXTEND = 1;
                 public static final double POWER_LIMIT_PIVOT = 1;
-                public static final float EXTENDER_90_MAX_LIMIT = 54.0f;
-                public static final float EXTENDER_MIN_LIMIT = 3.0f;
-                public static final double EXTENDER_MARGIN_OF_ERROR = 3.0;
+                
 
                 public static final double COLLECT_CONE_ANGLE_STAGE_ONE = 82.5;
                 public static final double COLLECT_STOW = 180.0;
 
                 public static final double LED_SPEED = 0.3;
 
+                public static final int kSlotIdx = 0;
+                public static final int kSlotId_ForPosition = 1;
+                public static final int kPIDLoopIdx = 0;
+                public static final int kTimeoutMs = 10;
+                public static final int kPeriodMs = 10;
+                public static final double kPercentDeadband = 0.001;
+                public static final double kNominalForwardPeak = 0.7;
+                public static final double kNominalReversePeak = -0.7;
+                public static final double kAllowableCloseLoopError = 27.0;
+        }
+
+        public static final class ExtenderConstants {
+                public static final float EXTENDER_90_MAX_LIMIT = 54.0f;
+                public static final float EXTENDER_MIN_LIMIT = 3.0f;
+                public static final double EXTENDER_MARGIN_OF_ERROR = 3.0;
+                public static final double POWER_LIMIT_EXTEND = 1;
         }
 
         public static final class ManipulatorConstants {

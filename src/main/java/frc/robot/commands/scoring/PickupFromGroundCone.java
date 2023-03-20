@@ -8,11 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.commands.StowReveredExtend;
+import frc.robot.commands.StowReversedExtend;
 import frc.robot.commands.arm.UtilityCommands;
-import frc.robot.commands.arm.pivot.PivotToDegreeMagic;
+import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ExtenderSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
 
@@ -21,7 +22,7 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PickupFromGroundCone {
   public static Command stageOne(ArmSubsystem armSubsystem, ManipulatorSubsystem manipulatorSubsystem) {
-    return new ParallelCommandGroup(new PivotToDegreeMagic(81.5, // 78
+    return new ParallelCommandGroup(new PivotToDegreeMagicNew(81.5, // 78
         Constants.ArmConstants.MAX_CRUISE_VELOCITY,
         Constants.ArmConstants.MAX_ACCELERATION, 3,
         Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -31,12 +32,12 @@ public class PickupFromGroundCone {
   }
 
   public static Command stageTwo(ArmSubsystem armSubsystem, ManipulatorSubsystem manipulatorSubsystem,
-      TurretSubsystem turretSubsystem) {
+      TurretSubsystem turretSubsystem, ExtenderSubsystem extenderSubsystem) {
     return new SequentialCommandGroup(new GoToPositionManipulator(
         Constants.ManipulatorConstants.CONE_LEFT
             + Constants.ManipulatorConstants.CONE_GRIP_MULTIPLER,
         Constants.ManipulatorConstants.CONE_RIGHT
             + Constants.ManipulatorConstants.CONE_GRIP_MULTIPLER,
-        manipulatorSubsystem), new StowReveredExtend(armSubsystem, turretSubsystem));
+        manipulatorSubsystem), new StowReversedExtend(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 }
