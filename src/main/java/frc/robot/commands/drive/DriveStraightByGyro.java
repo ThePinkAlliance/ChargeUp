@@ -7,8 +7,6 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -18,27 +16,23 @@ import frc.robot.subsystems.SwerveSubsystem;
 
 public class DriveStraightByGyro extends CommandBase {
   SwerveSubsystem swerveSubsystem;
-  TrapezoidProfile.Constraints constraints;
   PIDController thetaController;
   PIDController xController;
 
   double distance;
   double startingTime;
   double startingHeading;
-
-  private final double MAX_SPEED;
+  double speed;
 
   /** Creates a new DriveStraightByGyro. */
-  public DriveStraightByGyro(double distance, TrapezoidProfile.Constraints constraints,
-      SwerveSubsystem swerveSubsystem) {
+  public DriveStraightByGyro(double distance, double speed, SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.swerveSubsystem = swerveSubsystem;
-    this.constraints = constraints;
     this.thetaController = new PIDController(.29, 0, 0);
     this.xController = new PIDController(4, 0, 0.025);
 
-    this.MAX_SPEED = 3;
+    this.speed = speed;
     this.distance = distance;
 
     addRequirements(swerveSubsystem);
@@ -47,6 +41,7 @@ public class DriveStraightByGyro extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    distance = SmartDashboard.getNumber("SLFTestOnlyDistance", 0);
     double xLocation = swerveSubsystem.getPose().getX();
     double xLocationTarget = distance + xLocation;
 
@@ -66,13 +61,12 @@ public class DriveStraightByGyro extends CommandBase {
   public void execute() {
     double xLocation = swerveSubsystem.getPose().getX();
     double angle = swerveSubsystem.getHeading();
-    double thetaEffort = MathUtil.clamp(thetaController.calculate(angle), -MAX_SPEED, MAX_SPEED);
-    double xEffort = MathUtil.clamp(xController.calculate(xLocation), -MAX_SPEED, MAX_SPEED);
+    double thetaEffort = MathUtil.clamp(thetaController.calculate(angle), -speed, speed);
+    double xEffort = MathUtil.clamp(xController.calculate(xLocation), -speed, speed);
 
     swerveSubsystem.setModuleStates(
         Constants.DriveConstants.kDriveKinematics
             .toSwerveModuleStates(new ChassisSpeeds(xEffort, 0, thetaEffort)));
-
     SmartDashboard.putNumber("thetaEffort", thetaEffort);
     SmartDashboard.putNumber("xLocation", swerveSubsystem.getPose().getX());
   }

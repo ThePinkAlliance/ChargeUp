@@ -10,66 +10,69 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class GrabberSubsystem extends SubsystemBase {
-  private CANSparkMax collectMotor;
-  private CANSparkMax angleMotor;
-
-  private int collectCurrentLimit;
-  private int graspCurrentLimit;
+  private CANSparkMax intakeMotor;
+  private CANSparkMax graspMotor;
 
   /** Creates a new GrabberSubsystem. */
   public GrabberSubsystem() {
-    this.collectCurrentLimit = 35;
-    this.graspCurrentLimit = 40;
+    this.graspMotor = new CANSparkMax(Constants.GrabberConstants.GRABBER_CAN_ID_GRASP, MotorType.kBrushless);
+    this.intakeMotor = new CANSparkMax(Constants.GrabberConstants.GRABBER_CAN_ID_INTAKE, MotorType.kBrushless);
 
-    this.angleMotor = new CANSparkMax(43, MotorType.kBrushless);
-    this.collectMotor = new CANSparkMax(44, MotorType.kBrushless);
+    this.graspMotor.setSmartCurrentLimit(Constants.GrabberConstants.GRABBER_GRASP_CURRENT_LIMIT);
+    this.intakeMotor.setSmartCurrentLimit(Constants.GrabberConstants.GRABBER_INTAKE_CURRENT_LIMIT);
 
-    this.angleMotor.setSmartCurrentLimit(graspCurrentLimit);
-    this.collectMotor.setSmartCurrentLimit(collectCurrentLimit);
+    this.graspMotor.getPIDController().setP(Constants.GrabberConstants.GRASP_GAINS_FX.kP);
+    this.intakeMotor.getPIDController().setP(Constants.GrabberConstants.INTAKE_GAINS_FX.kP);
 
-    this.angleMotor.getPIDController().setP(0.1);
-    this.collectMotor.getPIDController().setP(0.1);
+    this.intakeMotor.setIdleMode(IdleMode.kBrake);
+    this.graspMotor.setIdleMode(IdleMode.kBrake);
 
-    this.collectMotor.setIdleMode(IdleMode.kBrake);
-    this.angleMotor.setIdleMode(IdleMode.kBrake);
+    this.graspMotor.setInverted(false);
 
-    this.angleMotor.setInverted(false);
-
-    this.angleMotor.getEncoder().setPosition(0);
+    this.graspMotor.getEncoder().setPosition(0);
   }
 
-  public void setCollectSpeed(double speed) {
-    this.collectMotor.set(speed);
+  public void setIntakeSpeed(double speed) {
+    this.intakeMotor.set(speed);
   }
 
   public void setGraspRotations(double rotations) {
-    this.angleMotor.getPIDController().setReference(rotations, ControlType.kPosition);
+    this.graspMotor.getPIDController().setReference(rotations, ControlType.kPosition);
   }
 
   public void disableGrasp() {
-    this.angleMotor.set(0);
+    this.graspMotor.set(0);
   }
 
   public double getGraspRotations() {
-    return this.angleMotor.getEncoder().getPosition();
+    return this.graspMotor.getEncoder().getPosition();
   }
 
-  public double getCurrentGrasp() {
-    return this.angleMotor.getOutputCurrent();
+  public double getGraspCurrent() {
+    return this.graspMotor.getOutputCurrent();
   }
 
-  public double getCurrentCollect() {
-    return this.collectMotor.getOutputCurrent();
+  public double getIntakeCurrent() {
+    return this.intakeMotor.getOutputCurrent();
   }
 
   public void setGraspPower(double power) {
-    this.angleMotor.set(power);
+    this.graspMotor.set(power);
   }
 
-  public boolean collectAtCurrentLimit() {
-    return this.collectMotor.getOutputCurrent() >= collectCurrentLimit;
+  public boolean intakeAtCurrentLimit() {
+    return getIntakeCurrent() >= Constants.GrabberConstants.GRABBER_INTAKE_CURRENT_LIMIT;
+  }
+
+  public boolean graspAtCustomCurrentLimit(double customLimit) {
+    return getGraspCurrent() >= customLimit;
+  }
+
+  public void zeroGraspPosition() {
+    this.graspMotor.getEncoder().setPosition(0);
   }
 
   @Override

@@ -67,9 +67,9 @@ public class RotateBasedOnExternalSensor extends CommandBase {
     Telemetry.logData("Starting Position:", startingPosition, RotateBasedOnExternalSensor.class);
     Telemetry.logData("Desired Rotations:", desiredRotations, RotateBasedOnExternalSensor.class);
     Telemetry.logData("Sensor Error:", error, RotateBasedOnExternalSensor.class);
-    sparkMax.getPIDController().setP(Constants.TurretConstants.PID_ROTATE_GAINS_FX.kP);
-    sparkMax.getPIDController().setI(Constants.TurretConstants.PID_ROTATE_GAINS_FX.kI);
-    sparkMax.getPIDController().setD(Constants.TurretConstants.PID_ROTATE_GAINS_FX.kD);
+    sparkMax.getPIDController().setP(Constants.TurretConstants.TURRET_GAINS_FX.kP);
+    sparkMax.getPIDController().setI(Constants.TurretConstants.TURRET_GAINS_FX.kI);
+    sparkMax.getPIDController().setD(Constants.TurretConstants.TURRET_GAINS_FX.kD);
     watchdog.reset();
     watchdog.enable();
     System.out.println("armSubSystem.getArmPitch() " + armSubsystem.getArmPitch());

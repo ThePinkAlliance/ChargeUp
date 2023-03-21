@@ -38,6 +38,7 @@ import frc.robot.commands.arm.JoystickArmExtend;
 import frc.robot.commands.arm.UtilityCommands;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.grabber.CommandGrabber;
+import frc.robot.commands.arm.grabber.GrabberOpen;
 import frc.robot.commands.arm.grabber.JoystickGrabber;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.arm.turret.JoystickTurret;
@@ -49,6 +50,8 @@ import frc.robot.commands.drive.SwerveJoystickCmd;
 import frc.robot.commands.drive.TimedNavigate;
 import frc.robot.commands.drive.autos.DockAuto;
 import frc.robot.commands.drive.autos.ScoreAndLeaveCommunity;
+import frc.robot.commands.drive.autos.ScoreHighCenterAndLeaveCommunity;
+import frc.robot.commands.drive.autos.TAutoScoreCubeLeftLeave;
 import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.commands.scoring.DeliverCones;
@@ -118,10 +121,11 @@ public class RobotContainer {
                                         timedScoreOne);
                         autoSendable.addOption("Score One & Leave Community",
                                         new ScoreAndLeaveCommunity(swerveSubsystem));
-                        autoSendable.addOption("Drive Straight",
-                                        new DriveStraightByGyro(4, new Constraints(2, 4), swerveSubsystem));
-                        autoSendable.addOption("Drive Backwards",
-                                        new DriveStraightByGyro(-4, new Constraints(2, 4), swerveSubsystem));
+                        //autoSendable.addOption("Drive Straight",
+                        //                new DriveStraightByGyro(4, swerveSubsystem));
+                        //autoSendable.addOption("Drive Backwards",
+                        //                new DriveStraightByGyro(-4, swerveSubsystem));
+                        autoSendable.addOption("TAuto, Score Cube", ScoreHighCenterAndLeaveCommunity.scoreCubeHigh(extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem));  
                         // autoSendable.setDefaultOption("Leave Community",
                         // leaveCommunity);
                         // autoSendable.addOption("Dock",
@@ -217,7 +221,7 @@ public class RobotContainer {
                                                 .toSwerveModuleStates(new ChassisSpeeds()))));
 
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonB)
-                                .onTrue(new CommandGrabber(0.5, 0.61, grabberSubsystem));
+                                .onTrue(new GrabberOpen(grabberSubsystem, Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER));
 
                 // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonX)
                 // .onTrue(new AprilTagMoverCommand(towerJoystick, swerveSubsystem,

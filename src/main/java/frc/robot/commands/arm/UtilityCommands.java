@@ -7,17 +7,20 @@ package frc.robot.commands.arm;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.StowReversedExtend;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.extend.ExtendTicksPlus;
+import frc.robot.commands.arm.grabber.GrabberOpen;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.manipulator.CommandManipulator;
 import frc.robot.commands.manipulator.GoToPositionManipulator;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ExtenderSubsystem;
+import frc.robot.subsystems.arm.GrabberSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
 
@@ -72,6 +75,5 @@ public class UtilityCommands {
     () -> true,
     armSubsystem).alongWith(new RotateToDegree(turretSubsystem, armSubsystem, 90, 0)));
   }
-  
 
 }

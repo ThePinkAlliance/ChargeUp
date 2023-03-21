@@ -14,12 +14,16 @@ public class ExtendTicksPlus extends CommandBase {
   double desiredRotations;
   Watchdog watchdog;
   private final double WATCHDOG_TIMEOUT = 3.0;
+  private double lastMin;
+  private double lastMax;
+  private double outputRange;
 
   /** Creates a new ExtendTicks. */
   public ExtendTicksPlus(double desiredRotations, ExtenderSubsystem extenderSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.extenderSubsystem = extenderSubsystem;
     this.desiredRotations = desiredRotations;
+    this.outputRange = 0;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       this.extenderSubsystem.commandExtend(0);
     });
@@ -27,11 +31,25 @@ public class ExtendTicksPlus extends CommandBase {
     addRequirements(extenderSubsystem);
   }
 
+  public ExtendTicksPlus(double desiredRotations, double outputRange, ExtenderSubsystem extenderSubsystem) {
+    this(desiredRotations, extenderSubsystem);
+
+    this.outputRange = outputRange;
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     watchdog.reset();
     watchdog.enable();
+
+    if (outputRange != 0) {
+      this.lastMin = this.extenderSubsystem.getOutputMin();
+      this.lastMax = this.extenderSubsystem.getOutputMax();
+
+      this.extenderSubsystem.configureOutputRange(outputRange);
+    }
+
     extenderSubsystem.disableExtendForwardSoftLimits();
     extenderSubsystem.setExtenionRotations(desiredRotations);
   }
@@ -46,6 +64,7 @@ public class ExtendTicksPlus extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     extenderSubsystem.enableExtendForwardSoftLimits();
+    extenderSubsystem.configureOutputRange(lastMin, lastMax);
   }
 
   // Returns true when the command should end.

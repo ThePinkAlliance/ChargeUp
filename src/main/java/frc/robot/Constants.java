@@ -85,8 +85,23 @@ public final class Constants {
         public static final class TurretConstants {
                 public static final double TURRET_OFFSET = 160;
                 public static final double ANGLE_TOLERANCE_FOR_EXTERNAL_SENSOR = 0.5;
-                public static final GainsFX PID_ROTATE_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
+                public static final GainsFX TURRET_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
         }
+
+        public static final class GrabberConstants {
+                public static final int GRABBER_CAN_ID_GRASP = 43;
+                public static final int GRABBER_CAN_ID_INTAKE = 44;
+                public static final int GRABBER_INTAKE_CURRENT_LIMIT = 35;
+                public static final int GRABBER_GRASP_CURRENT_LIMIT = 40;
+                public static final double GRABBER_GRASP_OPEN_WATCHDOG = 0.8;
+                public static final double GRABBER_GRASP_OPEN_POWER = 0.5;
+                public static final double GRABBER_GRASP_CLOSE_POWER = 0.7;
+                public static final double GRABBER_GRASP_SUSTAINED_CURRENT_OPEN_LIMIT = 30;
+                public static final double GRABBER_GRASP_SUSTAINED_CURRENT_OPEN_TIMEOUT = 0.2;
+                public static final double GRABBER_GRASP_SUSTAINED_CURRENT_CLOSE_TIMEOUT = 0.3;
+                public static final GainsFX GRASP_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
+                public static final GainsFX INTAKE_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
+        }       
 
         public static final class AutoConstants {
                 public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond;
