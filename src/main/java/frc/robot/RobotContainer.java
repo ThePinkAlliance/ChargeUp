@@ -125,7 +125,7 @@ public class RobotContainer {
                         //                new DriveStraightByGyro(4, swerveSubsystem));
                         //autoSendable.addOption("Drive Backwards",
                         //                new DriveStraightByGyro(-4, swerveSubsystem));
-                        autoSendable.addOption("TAuto, Score Cube", ScoreHighCenterAndLeaveCommunity.scoreCubeHigh(extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem));  
+                        autoSendable.addOption("TAuto, Score Cube", ScoreHighCenterAndLeaveCommunity.leaveCommunity(swerveSubsystem, armSubsystem));  
                         // autoSendable.setDefaultOption("Leave Community",
                         // leaveCommunity);
                         // autoSendable.addOption("Dock",
