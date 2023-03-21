@@ -20,7 +20,7 @@ public class GrabberCollect extends CommandBase {
     this.grabberSubsystem = grabberSubsystem;
     this.speed = speed;
     this.watchdog = new Watchdog(3, () -> {
-      this.grabberSubsystem.setCollectSpeed(0);
+      this.grabberSubsystem.setIntakeSpeed(0);
     });
 
     addRequirements(grabberSubsystem);
@@ -29,7 +29,7 @@ public class GrabberCollect extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.grabberSubsystem.setCollectSpeed(speed);
+    this.grabberSubsystem.setIntakeSpeed(speed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -40,12 +40,12 @@ public class GrabberCollect extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.grabberSubsystem.setCollectSpeed(0);
+    this.grabberSubsystem.setIntakeSpeed(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.grabberSubsystem.collectAtCurrentLimit() || this.watchdog.isExpired();
+    return this.grabberSubsystem.intakeAtCurrentLimit() || this.watchdog.isExpired();
   }
 }

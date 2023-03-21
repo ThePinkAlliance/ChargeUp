@@ -65,6 +65,22 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.extendMotor.setIdleMode(IdleMode.kBrake);
   }
 
+  public double getOutputMax() {
+    return this.extendMotor.getPIDController().getOutputMax();
+  }
+
+  public double getOutputMin() {
+    return this.extendMotor.getPIDController().getOutputMin();
+  }
+
+  public void configureOutputRange(double range) {
+    this.configureOutputRange(-range, range);
+  }
+
+  public void configureOutputRange(double min, double max) {
+    this.extendMotor.getPIDController().setOutputRange(min, max);
+  }
+
   public void setExtenionRotations(double rotations) {
     // This will clip the commandable rotations between 0 and maxRotations.
     // if (rotations > maxRotations) {

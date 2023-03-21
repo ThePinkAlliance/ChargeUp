@@ -11,17 +11,17 @@ import frc.robot.subsystems.arm.GrabberSubsystem;
 /** Add your docs here. */
 public class CommandGrabber extends CommandBase {
   private GrabberSubsystem grabberSubsystem;
-  private double collectSpeed;
+  private double intakeSpeed;
   private double graspRotations;
   private Watchdog watchdog;
 
-  public CommandGrabber(double collectSpeed, double graspRotations, GrabberSubsystem grabberSubsystem) {
-    this.collectSpeed = collectSpeed;
+  public CommandGrabber(double intakeSpeed, double graspRotations, GrabberSubsystem grabberSubsystem) {
+    this.intakeSpeed = intakeSpeed;
     this.graspRotations = graspRotations;
     this.grabberSubsystem = grabberSubsystem;
 
     this.watchdog = new Watchdog(3, () -> {
-      this.grabberSubsystem.setCollectSpeed(0);
+      this.grabberSubsystem.setIntakeSpeed(0);
       this.grabberSubsystem.disableGrasp();
     });
 
@@ -30,7 +30,7 @@ public class CommandGrabber extends CommandBase {
 
   @Override
   public void initialize() {
-    this.grabberSubsystem.setCollectSpeed(collectSpeed);
+    this.grabberSubsystem.setIntakeSpeed(intakeSpeed);
     this.grabberSubsystem.setGraspRotations(graspRotations);
   }
 
@@ -40,12 +40,12 @@ public class CommandGrabber extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    this.grabberSubsystem.setCollectSpeed(0);
+    this.grabberSubsystem.setIntakeSpeed(0);
     this.grabberSubsystem.disableGrasp();
   }
 
   @Override
   public boolean isFinished() {
-    return grabberSubsystem.collectAtCurrentLimit() || watchdog.isExpired();
+    return grabberSubsystem.intakeAtCurrentLimit() || watchdog.isExpired();
   }
 }

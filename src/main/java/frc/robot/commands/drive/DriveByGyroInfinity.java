@@ -14,36 +14,35 @@ import frc.robot.Constants;
 import frc.robot.Telemetry;
 import frc.robot.subsystems.SwerveSubsystem;
 
-public class DriveStraightByGyro extends CommandBase {
+public class DriveByGyroInfinity extends CommandBase {
   SwerveSubsystem swerveSubsystem;
   PIDController thetaController;
-  PIDController xController;
 
   double distance;
   double startingTime;
+  double desiredPitch;
   double startingHeading;
+  double forwardSpeed;
   double speed;
   boolean doStop;
 
   /** Creates a new DriveStraightByGyro. */
-  public DriveStraightByGyro(double distance, double speed, SwerveSubsystem swerveSubsystem) {
+  public DriveByGyroInfinity(double forwardSpeed, double desiredPitch, double speed, SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.swerveSubsystem = swerveSubsystem;
     this.thetaController = new PIDController(.29, 0, 0);
-    this.xController = new PIDController(4, 0, 0.025);
-
-    this.xController.setTolerance(0.1);
 
     this.speed = speed;
     this.doStop = true;
+    this.forwardSpeed = forwardSpeed;
     this.distance = distance;
 
     addRequirements(swerveSubsystem);
   }
 
-  public DriveStraightByGyro(double distance, double speed, boolean doStop, SwerveSubsystem swerveSubsystem) {
-    this(distance, speed, swerveSubsystem);
+  public DriveByGyroInfinity(double forwardSpeed, double desiredPitch, double speed, boolean doStop, SwerveSubsystem swerveSubsystem) {
+    this(forwardSpeed, desiredPitch, speed, swerveSubsystem);
 
     this.doStop = doStop;
   }
@@ -60,7 +59,6 @@ public class DriveStraightByGyro extends CommandBase {
 
     this.startingTime = Timer.getFPGATimestamp();
 
-    this.xController.setSetpoint(xLocationTarget);
     this.thetaController.setSetpoint(swerveSubsystem.getHeading());
     this.startingHeading = swerveSubsystem.getHeading();
   }
@@ -68,16 +66,14 @@ public class DriveStraightByGyro extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xLocation = swerveSubsystem.getPose().getX();
     double angle = swerveSubsystem.getHeading();
     double thetaEffort = MathUtil.clamp(thetaController.calculate(angle), -speed, speed);
-    double xEffort = MathUtil.clamp(xController.calculate(xLocation), -speed, speed);
 
     swerveSubsystem.setModuleStates(
         Constants.DriveConstants.kDriveKinematics
-            .toSwerveModuleStates(new ChassisSpeeds(xEffort, 0, thetaEffort)));
+            .toSwerveModuleStates(new ChassisSpeeds(forwardSpeed, 0, thetaEffort)));
     SmartDashboard.putNumber("thetaEffort", thetaEffort);
-    SmartDashboard.putNumber("xLocation", swerveSubsystem.getPose().getX());
+    SmartDashboard.putNumber("Current Pitch", swerveSubsystem.getPitch());
   }
 
   // Called once the command ends or is interrupted.
@@ -92,11 +88,11 @@ public class DriveStraightByGyro extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean finished = this.xController.atSetpoint();
+    boolean finished = swerveSubsystem.getPitch() > desiredPitch;
 
     if (finished) {
-      Telemetry.logData("---- DriveStraightByGyro ----", "Finished At: " + this.xController.getPositionError(),
-          DriveStraightByGyro.class);
+      Telemetry.logData("---- DriveStraightByInfinity ----", "Finished Pitch: " + this.swerveSubsystem.getPitch(),
+          DriveByGyroInfinity.class);
     }
 
     return finished;

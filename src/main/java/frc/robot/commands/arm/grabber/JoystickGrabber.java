@@ -12,14 +12,14 @@ import frc.robot.subsystems.arm.GrabberSubsystem;
 
 public class JoystickGrabber extends CommandBase {
   GrabberSubsystem grabberSubsystem;
-  Supplier<Double> collect;
+  Supplier<Double> intake;
   Supplier<Double> grasp;
 
   /** Creates a new JoystickGrabber. */
-  public JoystickGrabber(Supplier<Double> collect, Supplier<Double> grasp, GrabberSubsystem grabberSubsystem) {
+  public JoystickGrabber(Supplier<Double> intake, Supplier<Double> grasp, GrabberSubsystem grabberSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
 
-    this.collect = collect;
+    this.intake = intake;
     this.grasp = grasp;
 
     this.grabberSubsystem = grabberSubsystem;
@@ -35,14 +35,20 @@ public class JoystickGrabber extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.grabberSubsystem.setCollectSpeed(collect.get());
+    double intakeInput = intake.get();
+    double graspInput = grasp.get();
+    this.grabberSubsystem.setIntakeSpeed(intake.get());
     this.grabberSubsystem.setGraspPower(grasp.get());
+    SmartDashboard.putNumber("Grabber.Grasp.Input", graspInput);
+    SmartDashboard.putNumber("Grabber.Grasp.Current", grabberSubsystem.getGraspCurrent());
+    SmartDashboard.putNumber("Grabber.Intake.Input", intakeInput);
+    SmartDashboard.putNumber("Grabber.Intake.Current", grabberSubsystem.getIntakeCurrent());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.grabberSubsystem.setCollectSpeed(0);
+    this.grabberSubsystem.setIntakeSpeed(0);
     this.grabberSubsystem.setGraspPower(0);
   }
 
