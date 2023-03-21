@@ -26,6 +26,8 @@ public class DriveStraightByGyro extends CommandBase {
   double startingTime;
   double startingHeading;
 
+  private final double MAX_SPEED;
+
   /** Creates a new DriveStraightByGyro. */
   public DriveStraightByGyro(double distance, TrapezoidProfile.Constraints constraints,
       SwerveSubsystem swerveSubsystem) {
@@ -36,6 +38,7 @@ public class DriveStraightByGyro extends CommandBase {
     this.thetaController = new PIDController(.29, 0, 0);
     this.xController = new PIDController(4, 0, 0.025);
 
+    this.MAX_SPEED = 3;
     this.distance = distance;
 
     addRequirements(swerveSubsystem);
@@ -49,7 +52,6 @@ public class DriveStraightByGyro extends CommandBase {
 
     SmartDashboard.putNumber("Starting Position", xLocation);
     SmartDashboard.putNumber("Target Position", xLocationTarget);
-
     SmartDashboard.putNumber("Starting Angle", swerveSubsystem.getHeading());
 
     this.startingTime = Timer.getFPGATimestamp();
@@ -64,8 +66,8 @@ public class DriveStraightByGyro extends CommandBase {
   public void execute() {
     double xLocation = swerveSubsystem.getPose().getX();
     double angle = swerveSubsystem.getHeading();
-    double thetaEffort = MathUtil.clamp(thetaController.calculate(angle), -3, 3);
-    double xEffort = MathUtil.clamp(xController.calculate(xLocation), -3, 3);
+    double thetaEffort = MathUtil.clamp(thetaController.calculate(angle), -MAX_SPEED, MAX_SPEED);
+    double xEffort = MathUtil.clamp(xController.calculate(xLocation), -MAX_SPEED, MAX_SPEED);
 
     swerveSubsystem.setModuleStates(
         Constants.DriveConstants.kDriveKinematics

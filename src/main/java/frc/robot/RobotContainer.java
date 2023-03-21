@@ -37,6 +37,8 @@ import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.JoystickArmExtend;
 import frc.robot.commands.arm.UtilityCommands;
 import frc.robot.commands.arm.extend.ExtendTicks;
+import frc.robot.commands.arm.grabber.CommandGrabber;
+import frc.robot.commands.arm.grabber.JoystickGrabber;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.arm.turret.JoystickTurret;
 import frc.robot.commands.arm.turret.RotateBasedOnExternalSensor;
@@ -56,6 +58,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.CameraSubsystem.CameraType;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ExtenderSubsystem;
+import frc.robot.subsystems.arm.GrabberSubsystem;
 import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
 import frc.robot.subsystems.camera.CameraInterface.PipelineType;
@@ -80,10 +83,12 @@ public class RobotContainer {
         private final ExtenderSubsystem extenderSubsystem = new ExtenderSubsystem(42,
                         Constants.ExtenderConstants.POWER_LIMIT_EXTEND);
         private final TurretSubsystem turretSubsystem = new TurretSubsystem(31);
-        private final ManipulatorSubsystem manipulatorSubsystem = new ManipulatorSubsystem(43, 44);
+        // private final ManipulatorSubsystem manipulatorSubsystem = new
+        // ManipulatorSubsystem(43, 44);
 
         private final CameraSubsystem cameraSubsystem = new CameraSubsystem(CameraType.LIMELIGHT);
         private final ScoringSubsystem scoringSubsystem = new ScoringSubsystem();
+        private final GrabberSubsystem grabberSubsystem = new GrabberSubsystem();
 
         public RobotContainer() {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -100,18 +105,13 @@ public class RobotContainer {
                         /**
                          * These are all testing trajectories for pathweaver.
                          */
-                        // Trajectory idk = TrajectoryUtil.fromPathweaverJson(
-                        // Filesystem.getDeployDirectory().toPath().resolve("output/idk.wpilib.json"));
-                        // Trajectory e1 = TrajectoryUtil.fromPathweaverJson(
-                        // Filesystem.getDeployDirectory().toPath().resolve("output/E1.wpilib.json"));
-                        // Trajectory e2 = TrajectoryUtil.fromPathweaverJson(
-                        // Filesystem.getDeployDirectory().toPath().resolve("output/E2.wpilib.json"));
 
                         Command timedScoreOne = new TimedNavigate(swerveSubsystem, new ChassisSpeeds(-1, 0, 0), .5);
-                        Command leaveCommunity = new Navigate(swerveSubsystem, new SwerveModulePosition(
-                                        2.89, new Rotation2d()), 1.2)
-                                        .alongWith(new CommandManipulator(.2, 15, 0.7, true,
-                                                        manipulatorSubsystem));
+                        // Command leaveCommunity = new Navigate(swerveSubsystem, new
+                        // SwerveModulePosition(
+                        // 2.89, new Rotation2d()), 1.2)
+                        // .alongWith(new CommandManipulator(.2, 15, 0.7, true,
+                        // manipulatorSubsystem));
 
                         autoSendable.addOption("Do Nothing", new InstantCommand());
                         autoSendable.addOption("Score One",
@@ -120,12 +120,14 @@ public class RobotContainer {
                                         new ScoreAndLeaveCommunity(swerveSubsystem));
                         autoSendable.addOption("Drive Straight",
                                         new DriveStraightByGyro(4, new Constraints(2, 4), swerveSubsystem));
-                        autoSendable.setDefaultOption("Leave Community",
-                                        leaveCommunity);
-                        autoSendable.addOption("Dock",
-                                        new SequentialCommandGroup(new CommandManipulator(.2, 15, 0.7, true,
-                                                        manipulatorSubsystem),
-                                                        new DockAuto(swerveSubsystem, 0, 2, 37, 1)));
+                        autoSendable.addOption("Drive Backwards",
+                                        new DriveStraightByGyro(-4, new Constraints(2, 4), swerveSubsystem));
+                        // autoSendable.setDefaultOption("Leave Community",
+                        // leaveCommunity);
+                        // autoSendable.addOption("Dock",
+                        // new SequentialCommandGroup(new CommandManipulator(.2, 15, 0.7, true,
+                        // manipulatorSubsystem),
+                        // new DockAuto(swerveSubsystem, 0, 2, 37, 1)));
                 } catch (Exception err) {
                         err.printStackTrace();
                 }
@@ -141,16 +143,21 @@ public class RobotContainer {
                                 () -> !driverJoystick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 /* Tower Default Commands for Pivot, Extend and Turret */
-                armSubsystem.setDefaultCommand(
-                                new JoystickArm(towerJoystick, armSubsystem,
-                                                () -> towerJoystick.getRawAxis(Constants.OIConstants.kTowerPivotAxis)));
+                // armSubsystem.setDefaultCommand(
+                // new JoystickArm(towerJoystick, armSubsystem,
+                // () -> towerJoystick.getRawAxis(Constants.OIConstants.kTowerPivotAxis)));
                 extenderSubsystem.setDefaultCommand(new JoystickArmExtend(towerJoystick, extenderSubsystem,
                                 () -> towerJoystick.getRawAxis(Constants.OIConstants.kTowerExtendAxis)));
 
-                turretSubsystem.setDefaultCommand(
-                                new JoystickTurret(turretSubsystem,
-                                                () -> towerJoystick.getRawAxis(Constants.OIConstants.lTowerTurretAxis),
-                                                armSubsystem));
+                grabberSubsystem.setDefaultCommand(new JoystickGrabber(
+                                () -> towerJoystick.getRawAxis(Constants.OIConstants.kTowerPivotAxis),
+                                () -> towerJoystick.getRawAxis(Constants.OIConstants.lTowerTurretAxis),
+                                grabberSubsystem));
+
+                // turretSubsystem.setDefaultCommand(
+                // new JoystickTurret(turretSubsystem,
+                // () -> towerJoystick.getRawAxis(Constants.OIConstants.lTowerTurretAxis),
+                // armSubsystem));
 
                 // new JoystickButton(driverJoytick, Constants.OIConstants.kButtonLeftBumper)
                 // .onTrue(new ScoreFromNumpad(
@@ -176,41 +183,41 @@ public class RobotContainer {
 
                 /* Tower Scoring */
 
-                new JoystickButton(towerJoystick, Constants.OIConstants.kButtonA)
-                                .onTrue(new PivotToDegreeMagicNew(79, // 78
-                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                                                Constants.ArmConstants.MAX_ACCELERATION, 3,
-                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
-                                                () -> true,
-                                                armSubsystem)
-                                                .alongWith(UtilityCommands.zeroManipulator(manipulatorSubsystem)))
-                                .onFalse(new GoToPositionManipulator(
-                                                Constants.ManipulatorConstants.CUBE_LEFT
-                                                                + Constants.ManipulatorConstants.CUBE_GRIP_MULTIPLER,
-                                                Constants.ManipulatorConstants.CUBE_RIGHT
-                                                                + Constants.ManipulatorConstants.CUBE_GRIP_MULTIPLER,
-                                                manipulatorSubsystem)
-                                                .andThen(new StowReversedExtend(armSubsystem, turretSubsystem,
-                                                                extenderSubsystem)));
+                // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonA)
+                // .onTrue(new PivotToDegreeMagicNew(79, // 78
+                // Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                // Constants.ArmConstants.MAX_ACCELERATION, 3,
+                // Constants.ArmConstants.MOTIONM_GAINS_FX,
+                // () -> true,
+                // armSubsystem)
+                // .alongWith(UtilityCommands.zeroManipulator(manipulatorSubsystem)))
+                // .onFalse(new GoToPositionManipulator(
+                // Constants.ManipulatorConstants.CUBE_LEFT
+                // + Constants.ManipulatorConstants.CUBE_GRIP_MULTIPLER,
+                // Constants.ManipulatorConstants.CUBE_RIGHT
+                // + Constants.ManipulatorConstants.CUBE_GRIP_MULTIPLER,
+                // manipulatorSubsystem)
+                // .andThen(new StowReversedExtend(armSubsystem, turretSubsystem,
+                // extenderSubsystem)));
 
-                new JoystickButton(towerJoystick, Constants.OIConstants.kButtonB)
-                                .onTrue(PickupFromGroundCone.stageOne(armSubsystem, manipulatorSubsystem))
-                                .onFalse(PickupFromGroundCone.stageTwo(armSubsystem, manipulatorSubsystem,
-                                                turretSubsystem, extenderSubsystem));
+                // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonB)
+                // .onTrue(PickupFromGroundCone.stageOne(armSubsystem, manipulatorSubsystem))
+                // .onFalse(PickupFromGroundCone.stageTwo(armSubsystem, manipulatorSubsystem,
+                // turretSubsystem, extenderSubsystem));
 
-                new JoystickButton(towerJoystick, Constants.OIConstants.kButtonY).onTrue(
-                                UtilityCommands.collectHighDeploy(armSubsystem, turretSubsystem, manipulatorSubsystem,
-                                                extenderSubsystem))
-                                .onFalse(UtilityCommands.collectHighStow(armSubsystem, turretSubsystem,
-                                                manipulatorSubsystem, extenderSubsystem));
+                // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonY).onTrue(
+                // UtilityCommands.collectHighDeploy(armSubsystem, turretSubsystem,
+                // manipulatorSubsystem,
+                // extenderSubsystem))
+                // .onFalse(UtilityCommands.collectHighStow(armSubsystem, turretSubsystem,
+                // manipulatorSubsystem, extenderSubsystem));
 
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonBack).onTrue(new InstantCommand(
                                 () -> swerveSubsystem.setModuleStates(Constants.DriveConstants.kDriveKinematics
                                                 .toSwerveModuleStates(new ChassisSpeeds()))));
 
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonB)
-                                .onTrue(new CommandManipulator(.2, 15, 0.7, true,
-                                                manipulatorSubsystem));
+                                .onTrue(new CommandGrabber(0.5, 0.61, grabberSubsystem));
 
                 // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonX)
                 // .onTrue(new AprilTagMoverCommand(towerJoystick, swerveSubsystem,
