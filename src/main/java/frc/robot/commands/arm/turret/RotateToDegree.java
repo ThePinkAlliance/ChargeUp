@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
+import frc.robot.Constants;
 import frc.robot.Telemetry;
 
 /**
@@ -63,7 +64,7 @@ public class RotateToDegree extends CommandBase {
 
     double currentAngle = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double desiredPosRadians = desiredAngle * (Math.PI / 180);
-    double desiredRotations = desiredPosRadians * (348.7 / (2 * Math.PI));
+    double desiredRotations = desiredPosRadians * (Constants.TurretConstants.FULL_MOTOR_ROTATIONS / (2 * Math.PI));
     System.out.println("armSubSystem.getArmPitch() " + armSubsystem.getArmPitch());
     if (armSubsystem.getArmPitch() > safetyPivotAngle) {
       sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);

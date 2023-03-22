@@ -10,14 +10,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class TurretSubsystem extends SubsystemBase {
   private CANSparkMax turretController;
   private double powerLimit;
   private Faker neoFaker;
   private boolean useFaker;
-
-  private final double FULL_MOTOR_ROTATIONS;
 
   /** Creates a new TurretSubsystem. */
   public TurretSubsystem(int motorID) {
@@ -32,8 +31,6 @@ public class TurretSubsystem extends SubsystemBase {
     this.neoFaker = new Faker();
 
     this.powerLimit = 1;
-
-    this.FULL_MOTOR_ROTATIONS = 686;
   }
 
   @Override
@@ -68,7 +65,7 @@ public class TurretSubsystem extends SubsystemBase {
     if (useFaker) {
       rotations = neoFaker.getPosition() / 366;
     } else {
-      rotations = this.turretController.getEncoder().getPosition() / FULL_MOTOR_ROTATIONS;
+      rotations = this.turretController.getEncoder().getPosition() / Constants.TurretConstants.FULL_MOTOR_ROTATIONS;
     }
 
     return rotations * 360;

@@ -53,6 +53,7 @@ public class DockAuto extends CommandBase {
   public void initialize() {
     this.didReachDock = false;
     this.isFinished = false;
+    this.watchdog.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -60,6 +61,7 @@ public class DockAuto extends CommandBase {
   public void execute() {
     double currentPitch = swerveSubsystem.getPitch();
 
+    // 14 might be too high.
     if (currentPitch >= 14 && !didReachDock) {
       didReachDock = true;
 
@@ -75,7 +77,7 @@ public class DockAuto extends CommandBase {
       /* Power ceiling and floor */
       if (Math.abs(currentPitch) > MAX_ANGLE) {
         power = Math.copySign((MAX_POWER_METERS / MAX_ANGLE) * MAX_ANGLE, currentPitch);
-      } else if (Math.abs(currentPitch) < 2) {
+      } else if (Math.abs(currentPitch) < 4.5) {
         power = 0;
 
         isFinished = true;

@@ -36,7 +36,6 @@ public class ScoreHighCenterAndLeaveCommunity {
 
   public static Command balenceStation(SwerveSubsystem swerveSubsystem) {
     return new DriveStraightByGyro(2, 1.8, swerveSubsystem)
-        .andThen(new DriveByGyroInfinity(1.8, 8, 1.8, swerveSubsystem))
-        .andThen(new BalenceBase(5, 1, 0.4, swerveSubsystem));
+        .andThen(new DriveByGyroInfinity(0.5, 8, 1.5, swerveSubsystem));
   }
 }
