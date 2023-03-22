@@ -86,6 +86,7 @@ public final class Constants {
                 public static final double TURRET_OFFSET = 160;
                 public static final double ANGLE_TOLERANCE_FOR_EXTERNAL_SENSOR = 0.5;
                 public static final GainsFX TURRET_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
+                public static final double FULL_MOTOR_ROTATIONS = 686;
         }
 
         public static final class GrabberConstants {
@@ -101,7 +102,7 @@ public final class Constants {
                 public static final double GRABBER_GRASP_SUSTAINED_CURRENT_CLOSE_TIMEOUT = 0.3;
                 public static final GainsFX GRASP_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
                 public static final GainsFX INTAKE_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
-        }       
+        }
 
         public static final class AutoConstants {
                 public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond;
@@ -165,7 +166,6 @@ public final class Constants {
                 public static final double PITCH_FLOOR_ABSOLUTE = 131.66;
                 public static final double PITCH_FLOOR_OFFSET = 71.11;
                 public static final double POWER_LIMIT_PIVOT = 1;
-                
 
                 public static final double COLLECT_CONE_ANGLE_STAGE_ONE = 82.5;
                 public static final double COLLECT_STOW = 180.0;

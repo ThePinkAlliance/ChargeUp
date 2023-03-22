@@ -121,11 +121,18 @@ public class RobotContainer {
                                         timedScoreOne);
                         autoSendable.addOption("Score One & Leave Community",
                                         new ScoreAndLeaveCommunity(swerveSubsystem));
-                        //autoSendable.addOption("Drive Straight",
-                        //                new DriveStraightByGyro(4, swerveSubsystem));
-                        //autoSendable.addOption("Drive Backwards",
-                        //                new DriveStraightByGyro(-4, swerveSubsystem));
-                        autoSendable.addOption("TAuto, Score Cube", ScoreHighCenterAndLeaveCommunity.leaveCommunity(swerveSubsystem, armSubsystem));  
+                        // autoSendable.addOption("Drive Straight",
+                        // new DriveStraightByGyro(4, swerveSubsystem));
+                        // autoSendable.addOption("Drive Backwards",
+                        // new DriveStraightByGyro(-4, swerveSubsystem));
+                        autoSendable.addOption("TAuto, Score Cube",
+                                        ScoreHighCenterAndLeaveCommunity
+                                                        .scoreCubeHigh(extenderSubsystem, turretSubsystem, armSubsystem,
+                                                                        grabberSubsystem, swerveSubsystem)
+                                                        .andThen(ScoreHighCenterAndLeaveCommunity
+                                                                        .leaveCommunity(swerveSubsystem, armSubsystem))
+                                                        .andThen(
+                                                                        new DockAuto(swerveSubsystem, 0, 2, 37, 1.8)));
                         // autoSendable.setDefaultOption("Leave Community",
                         // leaveCommunity);
                         // autoSendable.addOption("Dock",
@@ -221,7 +228,8 @@ public class RobotContainer {
                                                 .toSwerveModuleStates(new ChassisSpeeds()))));
 
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonB)
-                                .onTrue(new GrabberOpen(grabberSubsystem, Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER));
+                                .onTrue(new GrabberOpen(grabberSubsystem,
+                                                Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER));
 
                 // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonX)
                 // .onTrue(new AprilTagMoverCommand(towerJoystick, swerveSubsystem,

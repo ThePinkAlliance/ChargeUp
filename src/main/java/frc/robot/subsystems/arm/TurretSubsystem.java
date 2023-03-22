@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class TurretSubsystem extends SubsystemBase {
   private CANSparkMax turretController;
@@ -39,7 +40,7 @@ public class TurretSubsystem extends SubsystemBase {
       neoFaker.update();
     }
 
-    SmartDashboard.putNumber("Turret otations", turretController.getEncoder().getPosition());
+    SmartDashboard.putNumber("Turret Rotations", turretController.getEncoder().getPosition());
   }
 
   public CANSparkMax getCanSparkMax() {
@@ -64,7 +65,7 @@ public class TurretSubsystem extends SubsystemBase {
     if (useFaker) {
       rotations = neoFaker.getPosition() / 366;
     } else {
-      rotations = this.turretController.getEncoder().getPosition() / 348.7;
+      rotations = this.turretController.getEncoder().getPosition() / Constants.TurretConstants.FULL_MOTOR_ROTATIONS;
     }
 
     return rotations * 360;
