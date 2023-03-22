@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.arm.UtilityCommands;
 import frc.robot.commands.arm.extend.ExtendTicksPlus;
 import frc.robot.commands.arm.grabber.GrabberOpen;
-import frc.robot.commands.drive.BalenceBase;
 import frc.robot.commands.drive.DriveByGyroInfinity;
 import frc.robot.commands.drive.DriveStraightByGyro;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -26,7 +25,15 @@ public class ScoreHighCenterAndLeaveCommunity {
         .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 
-  public static Command leaveCommunity(SwerveSubsystem swerveSubsystem, ArmSubsystem armSubsystem) {
+  public static Command leaveCommunityCenter(SwerveSubsystem swerveSubsystem, ArmSubsystem armSubsystem) {
+    return new DriveStraightByGyro(-2, 2.2, false, swerveSubsystem)
+        .alongWith(UtilityCommands.pivotArm(200, armSubsystem))
+        .andThen(new DriveByGyroInfinity(-1.8, -8, 1.8, false, swerveSubsystem)
+            .alongWith(UtilityCommands.pivotArm(160, armSubsystem)))
+        .andThen(new DriveStraightByGyro(-1.6, 2.2, swerveSubsystem));
+  }
+
+  public static Command leaveCommunityRight(SwerveSubsystem swerveSubsystem, ArmSubsystem armSubsystem) {
     return new DriveStraightByGyro(-2, 1.8, false, swerveSubsystem)
         .alongWith(UtilityCommands.pivotArm(200, armSubsystem))
         .andThen(new DriveByGyroInfinity(-1.8, -8, 1.5, false, swerveSubsystem)
@@ -34,8 +41,7 @@ public class ScoreHighCenterAndLeaveCommunity {
         .andThen(new DriveStraightByGyro(-1.6, 1.8, swerveSubsystem));
   }
 
-  public static Command balenceStation(SwerveSubsystem swerveSubsystem) {
-    return new DriveStraightByGyro(2, 1.8, swerveSubsystem)
-        .andThen(new DriveByGyroInfinity(0.5, 8, 1.5, swerveSubsystem));
+  public static Command balanceStation(SwerveSubsystem swerveSubsystem) {
+    return new DockAuto(swerveSubsystem, 0, 2, 37, 3.0);
   }
 }

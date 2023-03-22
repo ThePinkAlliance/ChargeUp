@@ -49,7 +49,7 @@ import frc.robot.commands.drive.Navigate;
 import frc.robot.commands.drive.SwerveJoystickCmd;
 import frc.robot.commands.drive.TimedNavigate;
 import frc.robot.commands.drive.autos.DockAuto;
-import frc.robot.commands.drive.autos.ScoreAndLeaveCommunity;
+
 import frc.robot.commands.drive.autos.ScoreHighCenterAndLeaveCommunity;
 import frc.robot.commands.drive.autos.TAutoScoreCubeLeftLeave;
 import frc.robot.commands.manipulator.CommandManipulator;
@@ -119,8 +119,6 @@ public class RobotContainer {
                         autoSendable.addOption("Do Nothing", new InstantCommand());
                         autoSendable.addOption("Score One",
                                         timedScoreOne);
-                        autoSendable.addOption("Score One & Leave Community",
-                                        new ScoreAndLeaveCommunity(swerveSubsystem));
                         // autoSendable.addOption("Drive Straight",
                         // new DriveStraightByGyro(4, swerveSubsystem));
                         // autoSendable.addOption("Drive Backwards",
@@ -128,11 +126,10 @@ public class RobotContainer {
                         autoSendable.addOption("TAuto, Score Cube",
                                         ScoreHighCenterAndLeaveCommunity
                                                         .scoreCubeHigh(extenderSubsystem, turretSubsystem, armSubsystem,
-                                                                        grabberSubsystem, swerveSubsystem)
+                                                                     grabberSubsystem, swerveSubsystem)
                                                         .andThen(ScoreHighCenterAndLeaveCommunity
-                                                                        .leaveCommunity(swerveSubsystem, armSubsystem))
-                                                        .andThen(
-                                                                        new DockAuto(swerveSubsystem, 0, 2, 37, 1.8)));
+                                                                     .leaveCommunityCenter(swerveSubsystem, armSubsystem))
+                                                        .andThen(ScoreHighCenterAndLeaveCommunity.balanceStation(swerveSubsystem)));
                         // autoSendable.setDefaultOption("Leave Community",
                         // leaveCommunity);
                         // autoSendable.addOption("Dock",
