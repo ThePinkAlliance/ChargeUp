@@ -46,6 +46,7 @@ import frc.robot.commands.arm.turret.RotateBasedOnExternalSensor;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.drive.DriveStraightByGyro;
 import frc.robot.commands.drive.Navigate;
+import frc.robot.commands.drive.StrafeByGyro;
 import frc.robot.commands.drive.SwerveJoystickCmd;
 import frc.robot.commands.drive.TimedNavigate;
 import frc.robot.commands.drive.autos.DockAuto;
@@ -116,26 +117,26 @@ public class RobotContainer {
                         // .alongWith(new CommandManipulator(.2, 15, 0.7, true,
                         // manipulatorSubsystem));
 
+                        autoSendable.addOption("Strafe Left", new StrafeByGyro(2, 3, swerveSubsystem).debug());
+                        autoSendable.addOption("Strafe Right", new StrafeByGyro(-2, 3, swerveSubsystem).debug());
+                        autoSendable.addOption("Leave Community Left",
+                                        new DriveStraightByGyro(-4.65, 3, swerveSubsystem)
+                                                        .andThen(new StrafeByGyro(-1.7, 2, swerveSubsystem))
+                                                        .andThen(new DockAuto(swerveSubsystem, 0,
+                                                                        2, 37, 3.0)));
+
                         autoSendable.addOption("Do Nothing", new InstantCommand());
                         autoSendable.addOption("Score One",
                                         timedScoreOne);
-                        // autoSendable.addOption("Drive Straight",
-                        // new DriveStraightByGyro(4, swerveSubsystem));
-                        // autoSendable.addOption("Drive Backwards",
-                        // new DriveStraightByGyro(-4, swerveSubsystem));
-                        autoSendable.addOption("TAuto, Score Cube",
+                        autoSendable.addOption("Center, Score Cube, Balence, and Leave Community",
                                         ScoreHighCenterAndLeaveCommunity
                                                         .scoreCubeHigh(extenderSubsystem, turretSubsystem, armSubsystem,
-                                                                     grabberSubsystem, swerveSubsystem)
+                                                                        grabberSubsystem, swerveSubsystem)
                                                         .andThen(ScoreHighCenterAndLeaveCommunity
-                                                                     .leaveCommunityCenter(swerveSubsystem, armSubsystem))
-                                                        .andThen(ScoreHighCenterAndLeaveCommunity.balanceStation(swerveSubsystem)));
-                        // autoSendable.setDefaultOption("Leave Community",
-                        // leaveCommunity);
-                        // autoSendable.addOption("Dock",
-                        // new SequentialCommandGroup(new CommandManipulator(.2, 15, 0.7, true,
-                        // manipulatorSubsystem),
-                        // new DockAuto(swerveSubsystem, 0, 2, 37, 1)));
+                                                                        .leaveCommunityCenter(swerveSubsystem,
+                                                                                        armSubsystem))
+                                                        .andThen(ScoreHighCenterAndLeaveCommunity
+                                                                        .balanceStation(swerveSubsystem)));
                 } catch (Exception err) {
                         err.printStackTrace();
                 }
