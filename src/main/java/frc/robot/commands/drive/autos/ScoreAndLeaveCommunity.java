@@ -17,6 +17,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ScoreAndLeaveCommunity extends SequentialCommandGroup {
   /** Creates a new ScoreAndLeaveCommunity. */
+  @Deprecated
   public ScoreAndLeaveCommunity(SwerveSubsystem swerveSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());

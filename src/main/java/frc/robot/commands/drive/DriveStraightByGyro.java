@@ -33,7 +33,10 @@ public class DriveStraightByGyro extends CommandBase {
     this.thetaController = new PIDController(.29, 0, 0);
     this.xController = new PIDController(4, 0, 0.025);
 
-    this.xController.setTolerance(0.1);
+    /*
+     * The controller needs an I gain later.
+     */
+    this.xController.setTolerance(0.15);
 
     this.speed = speed;
     this.doStop = true;
@@ -77,6 +80,8 @@ public class DriveStraightByGyro extends CommandBase {
         Constants.DriveConstants.kDriveKinematics
             .toSwerveModuleStates(new ChassisSpeeds(xEffort, 0, thetaEffort)));
     SmartDashboard.putNumber("thetaEffort", thetaEffort);
+    SmartDashboard.putNumber("xEffort", xEffort);
+    SmartDashboard.putNumber("Location Diff", xController.getPositionError());
     SmartDashboard.putNumber("xLocation", swerveSubsystem.getPose().getX());
   }
 
@@ -85,7 +90,7 @@ public class DriveStraightByGyro extends CommandBase {
   public void end(boolean interrupted) {
     if (doStop) {
       swerveSubsystem
-      .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
+          .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
     }
   }
 

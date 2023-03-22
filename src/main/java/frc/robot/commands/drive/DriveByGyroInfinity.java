@@ -25,6 +25,7 @@ public class DriveByGyroInfinity extends CommandBase {
   double forwardSpeed;
   double speed;
   boolean doStop;
+  boolean isReversed;
 
   /** Creates a new DriveStraightByGyro. */
   public DriveByGyroInfinity(double forwardSpeed, double desiredPitch, double speed, SwerveSubsystem swerveSubsystem) {
@@ -36,12 +37,14 @@ public class DriveByGyroInfinity extends CommandBase {
     this.speed = speed;
     this.doStop = true;
     this.forwardSpeed = forwardSpeed;
-    this.distance = distance;
+
+    this.isReversed = forwardSpeed < 0 ? true : false;
 
     addRequirements(swerveSubsystem);
   }
 
-  public DriveByGyroInfinity(double forwardSpeed, double desiredPitch, double speed, boolean doStop, SwerveSubsystem swerveSubsystem) {
+  public DriveByGyroInfinity(double forwardSpeed, double desiredPitch, double speed, boolean doStop,
+      SwerveSubsystem swerveSubsystem) {
     this(forwardSpeed, desiredPitch, speed, swerveSubsystem);
 
     this.doStop = doStop;
@@ -50,14 +53,9 @@ public class DriveByGyroInfinity extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    double xLocation = swerveSubsystem.getPose().getX();
-    double xLocationTarget = distance + xLocation;
-
-    SmartDashboard.putNumber("Starting Position", xLocation);
-    SmartDashboard.putNumber("Target Position", xLocationTarget);
-    SmartDashboard.putNumber("Starting Angle", swerveSubsystem.getHeading());
-
     this.startingTime = Timer.getFPGATimestamp();
+
+    Telemetry.logData("Status", "Starting", getClass());
 
     this.thetaController.setSetpoint(swerveSubsystem.getHeading());
     this.startingHeading = swerveSubsystem.getHeading();
@@ -72,8 +70,8 @@ public class DriveByGyroInfinity extends CommandBase {
     swerveSubsystem.setModuleStates(
         Constants.DriveConstants.kDriveKinematics
             .toSwerveModuleStates(new ChassisSpeeds(forwardSpeed, 0, thetaEffort)));
-    SmartDashboard.putNumber("thetaEffort", thetaEffort);
-    SmartDashboard.putNumber("Current Pitch", swerveSubsystem.getPitch());
+    SmartDashboard.putNumber("-- thetaEffort", thetaEffort);
+    SmartDashboard.putNumber("-- Current Pitch", swerveSubsystem.getPitch());
   }
 
   // Called once the command ends or is interrupted.
@@ -81,14 +79,20 @@ public class DriveByGyroInfinity extends CommandBase {
   public void end(boolean interrupted) {
     if (doStop) {
       swerveSubsystem
-      .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
+          .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
     }
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean finished = swerveSubsystem.getPitch() > desiredPitch;
+    boolean finished = false;
+
+    if (isReversed) {
+      finished = swerveSubsystem.getPitch() > desiredPitch;
+    } else {
+      finished = swerveSubsystem.getPitch() < desiredPitch;
+    }
 
     if (finished) {
       Telemetry.logData("---- DriveStraightByInfinity ----", "Finished Pitch: " + this.swerveSubsystem.getPitch(),

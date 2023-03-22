@@ -17,6 +17,8 @@ public class TurretSubsystem extends SubsystemBase {
   private Faker neoFaker;
   private boolean useFaker;
 
+  private final double FULL_MOTOR_ROTATIONS;
+
   /** Creates a new TurretSubsystem. */
   public TurretSubsystem(int motorID) {
     this.turretController = new CANSparkMax(motorID, MotorType.kBrushless);
@@ -30,6 +32,8 @@ public class TurretSubsystem extends SubsystemBase {
     this.neoFaker = new Faker();
 
     this.powerLimit = 1;
+
+    this.FULL_MOTOR_ROTATIONS = 686;
   }
 
   @Override
@@ -39,7 +43,7 @@ public class TurretSubsystem extends SubsystemBase {
       neoFaker.update();
     }
 
-    SmartDashboard.putNumber("Turret otations", turretController.getEncoder().getPosition());
+    SmartDashboard.putNumber("Turret Rotations", turretController.getEncoder().getPosition());
   }
 
   public CANSparkMax getCanSparkMax() {
@@ -64,7 +68,7 @@ public class TurretSubsystem extends SubsystemBase {
     if (useFaker) {
       rotations = neoFaker.getPosition() / 366;
     } else {
-      rotations = this.turretController.getEncoder().getPosition() / 348.7;
+      rotations = this.turretController.getEncoder().getPosition() / FULL_MOTOR_ROTATIONS;
     }
 
     return rotations * 360;
