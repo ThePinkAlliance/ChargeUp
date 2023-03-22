@@ -94,7 +94,7 @@ public final class Constants {
                 public static final int GRABBER_CAN_ID_INTAKE = 44;
                 public static final int GRABBER_INTAKE_CURRENT_LIMIT = 35;
                 public static final int GRABBER_GRASP_CURRENT_LIMIT = 40;
-                public static final double GRABBER_GRASP_OPEN_WATCHDOG = 0.8;
+                public static final double GRABBER_GRASP_OPEN_WATCHDOG = 0.5;
                 public static final double GRABBER_GRASP_OPEN_POWER = 0.5;
                 public static final double GRABBER_GRASP_CLOSE_POWER = 0.7;
                 public static final double GRABBER_GRASP_SUSTAINED_CURRENT_OPEN_LIMIT = 30;

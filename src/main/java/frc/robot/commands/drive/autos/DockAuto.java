@@ -60,9 +60,10 @@ public class DockAuto extends CommandBase {
   @Override
   public void execute() {
     double currentPitch = swerveSubsystem.getPitch();
-
+    double approachPitchThreshold = 12;
+    double pitchSettle = 12;
     // 14 might be too high.
-    if (currentPitch >= 14 && !didReachDock) {
+    if (currentPitch >= approachPitchThreshold && !didReachDock) {
       didReachDock = true;
 
       watchdog.reset();
@@ -72,14 +73,20 @@ public class DockAuto extends CommandBase {
     }
 
     if (didReachDock) {
-      double power = (MAX_POWER_METERS / MAX_ANGLE) * currentPitch;
+      double gain = 0.067;
+      double power = gain * currentPitch;
 
       /* Power ceiling and floor */
-      if (Math.abs(currentPitch) > MAX_ANGLE) {
+      /*if (Math.abs(currentPitch) > MAX_ANGLE) {
         power = Math.copySign((MAX_POWER_METERS / MAX_ANGLE) * MAX_ANGLE, currentPitch);
-      } else if (Math.abs(currentPitch) < 4.5) {
+      } else if (Math.abs(currentPitch) < pitchFloor) {
         power = 0;
 
+        isFinished = true;
+      }*/
+
+      if (Math.abs(currentPitch) < pitchSettle) {
+        power = 0;
         isFinished = true;
       }
 
