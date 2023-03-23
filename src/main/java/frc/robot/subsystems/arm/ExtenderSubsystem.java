@@ -34,7 +34,7 @@ public class ExtenderSubsystem extends SubsystemBase {
   private double maxDistanceMeters = 0;
 
   private double desiredExtendRotations = 0;
- 
+
   private double positionToHold = 0;
 
   public double getPositionToHold() {
@@ -47,8 +47,7 @@ public class ExtenderSubsystem extends SubsystemBase {
 
   /** Creates a new ArmSubsystem. */
   public ExtenderSubsystem(int extendMotorId, double powerLimitExtend) {
-    
-   
+
     this.extendMotor = new CANSparkMax(extendMotorId, MotorType.kBrushless);
     this.extendEncoder = extendMotor.getEncoder();
     this.powerLimitExtend = powerLimitExtend;
@@ -103,7 +102,8 @@ public class ExtenderSubsystem extends SubsystemBase {
   }
 
   public boolean atExtensionSetpoint() {
-    return Math.abs(desiredExtendRotations - this.extendMotor.getEncoder().getPosition()) < Constants.ExtenderConstants.EXTENDER_MARGIN_OF_ERROR;
+    return Math.abs(desiredExtendRotations
+        - this.extendMotor.getEncoder().getPosition()) < Constants.ExtenderConstants.EXTENDER_MARGIN_OF_ERROR;
   }
 
   public double getExtendedPosition() {
@@ -151,8 +151,6 @@ public class ExtenderSubsystem extends SubsystemBase {
   public double getExtensionRotations() {
     return extendMotor.getEncoder().getPosition();
   }
-
-  
 
   @Override
   public void periodic() {

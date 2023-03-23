@@ -32,14 +32,14 @@ public class StrafeByGyro extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.swerveSubsystem = swerveSubsystem;
-    this.thetaController = new PIDController(.39, 0, 0);
-    this.yController = new PIDController(4.5, 0.0005, 0.025);
+    this.thetaController = new PIDController(.2, 0, 0);
+    this.yController = new PIDController(4.6, 0.005, 0.025);
     this.enableDebug = false;
 
     /*
      * The controller needs an I gain later.
      */
-    this.yController.setTolerance(0.0127);
+    this.yController.setTolerance(0.15);
     this.thetaController.setTolerance(.5);
 
     this.speed = speed;

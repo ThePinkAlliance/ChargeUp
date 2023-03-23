@@ -73,17 +73,20 @@ public class DockAuto extends CommandBase {
     }
 
     if (didReachDock) {
-      double gain = 0.067;
+      double gain = 0.062;
       double power = gain * currentPitch;
 
       /* Power ceiling and floor */
-      /*if (Math.abs(currentPitch) > MAX_ANGLE) {
-        power = Math.copySign((MAX_POWER_METERS / MAX_ANGLE) * MAX_ANGLE, currentPitch);
-      } else if (Math.abs(currentPitch) < pitchFloor) {
-        power = 0;
-
-        isFinished = true;
-      }*/
+      /*
+       * if (Math.abs(currentPitch) > MAX_ANGLE) {
+       * power = Math.copySign((MAX_POWER_METERS / MAX_ANGLE) * MAX_ANGLE,
+       * currentPitch);
+       * } else if (Math.abs(currentPitch) < pitchFloor) {
+       * power = 0;
+       * 
+       * isFinished = true;
+       * }
+       */
 
       if (Math.abs(currentPitch) < pitchSettle) {
         power = 0;

@@ -100,8 +100,11 @@ public final class Constants {
                 public static final double GRABBER_GRASP_SUSTAINED_CURRENT_OPEN_LIMIT = 30;
                 public static final double GRABBER_GRASP_SUSTAINED_CURRENT_OPEN_TIMEOUT = 0.2;
                 public static final double GRABBER_GRASP_SUSTAINED_CURRENT_CLOSE_TIMEOUT = 0.3;
-                public static final GainsFX GRASP_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
+                public static final GainsFX GRASP_GAINS_FX = new GainsFX(0.2, 0.0, 0, 0.0, 0, 0);
                 public static final GainsFX INTAKE_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
+
+                public static final double GRABBER_CONE_CLOSED = 0.5;
+                public static final double GRABBER_CUBE_CLOSED = 1;
         }
 
         public static final class AutoConstants {
@@ -184,7 +187,7 @@ public final class Constants {
         }
 
         public static final class ExtenderConstants {
-                public static final float EXTENDER_90_MAX_LIMIT = 54.0f;
+                public static final float EXTENDER_90_MAX_LIMIT = 102f; // 54.0f
                 public static final float EXTENDER_MIN_LIMIT = 3.0f;
                 public static final double EXTENDER_MARGIN_OF_ERROR = 3.0;
                 public static final double POWER_LIMIT_EXTEND = 1;

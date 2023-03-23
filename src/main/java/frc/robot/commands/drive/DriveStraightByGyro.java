@@ -30,7 +30,7 @@ public class DriveStraightByGyro extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.swerveSubsystem = swerveSubsystem;
-    this.thetaController = new PIDController(.29, 0, 0);
+    this.thetaController = new PIDController(.2, 0, 0);
     this.xController = new PIDController(4, 0, 0.025);
 
     /*
