@@ -13,7 +13,7 @@ public class ExtendTicks extends CommandBase {
   ExtenderSubsystem extenderSubsystem;
   double desiredRotations;
   Watchdog watchdog;
-  private final double WATCHDOG_TIMEOUT = 3.0;
+  private final double WATCHDOG_TIMEOUT = 2.0;
 
   /** Creates a new ExtendTicks. */
   public ExtendTicks(double desiredRotations, ExtenderSubsystem extenderSubsystem) {
