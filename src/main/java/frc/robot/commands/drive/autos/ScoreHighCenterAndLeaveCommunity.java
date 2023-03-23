@@ -18,13 +18,6 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 
 /** Add your docs here. */
 public class ScoreHighCenterAndLeaveCommunity {
-  public static Command scoreCubeHigh(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
-      ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
-    return UtilityCommands.pivotArm(127, armSubsystem).alongWith(new ExtendTicksPlus(86, 0.5, extenderSubsystem))
-        .andThen(new GrabberOpen(grabberSubsystem, 1))
-        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
-  }
-
   public static Command leaveCommunityCenter(SwerveSubsystem swerveSubsystem, ArmSubsystem armSubsystem) {
     return new DriveStraightByGyro(-2, 2.2, false, swerveSubsystem)
         .alongWith(UtilityCommands.pivotArm(200, armSubsystem))

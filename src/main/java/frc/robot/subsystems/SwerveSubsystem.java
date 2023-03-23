@@ -101,9 +101,16 @@ public class SwerveSubsystem extends SubsystemBase {
     /**
      * NOTE: This method has been returning incorrect positions when using
      * SwerveControllerCommand
+     * 
+     * @deprecated This does not return the lastest pose estimate.
      */
+    @Deprecated
     public Pose2d getPose() {
         return currentPose2d;
+    }
+
+    public Pose2d getEstimatedPose() {
+        return estimator.getEstimatedPosition();
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -135,9 +142,9 @@ public class SwerveSubsystem extends SubsystemBase {
         return this.gyro.getPitch();
     }
 
-    //-180 to 180
+    // -180 to 180
     public double getYaw() {
-        double value = (double)this.gyro.getYaw(); 
+        double value = (double) this.gyro.getYaw();
         return value;
     }
 

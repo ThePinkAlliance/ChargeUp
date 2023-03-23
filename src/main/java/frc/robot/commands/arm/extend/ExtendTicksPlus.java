@@ -51,6 +51,7 @@ public class ExtendTicksPlus extends CommandBase {
     }
 
     extenderSubsystem.disableExtendForwardSoftLimits();
+    extenderSubsystem.disableExtendReverseSoftLimits();
     extenderSubsystem.setExtenionRotations(desiredRotations);
   }
 
@@ -64,6 +65,7 @@ public class ExtendTicksPlus extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     extenderSubsystem.enableExtendForwardSoftLimits();
+    extenderSubsystem.enableExtendReverseSoftLimits();
     extenderSubsystem.configureOutputRange(lastMin, lastMax);
   }
 

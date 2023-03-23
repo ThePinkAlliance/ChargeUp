@@ -31,8 +31,6 @@ public class GrabberSubsystem extends SubsystemBase {
     this.graspMotor.setIdleMode(IdleMode.kBrake);
 
     this.graspMotor.setInverted(false);
-
-    this.graspMotor.getEncoder().setPosition(0);
   }
 
   public void setIntakeSpeed(double speed) {
@@ -79,6 +77,9 @@ public class GrabberSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
+    SmartDashboard.putNumber("Grasp Temp", graspMotor.getMotorTemperature());
+    SmartDashboard.putNumber("Intake Temp", intakeMotor.getMotorTemperature());
+    SmartDashboard.putNumber("Intake Current", intakeMotor.getOutputCurrent());
     SmartDashboard.putNumber("Grasp Rotations", getGraspRotations());
   }
 }
