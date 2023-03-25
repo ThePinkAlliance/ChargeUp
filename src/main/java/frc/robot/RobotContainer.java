@@ -107,13 +107,13 @@ public class RobotContainer {
                         /**
                          * These are all testing trajectories for pathweaver.
                          */
-                        autoSendable.addOption("Score Cone High, Leave Community Right Balance",
-                                        UtilityCommands
-                                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem,
-                                                                        turretSubsystem, grabberSubsystem)
-                                                        .andThen(UtilityCommands
-                                                                        .stow(armSubsystem, turretSubsystem,
-                                                                                        extenderSubsystem)));
+                        // autoSendable.addOption("Score Cone High, Leave Community Right Balance",
+                        // UtilityCommands
+                        // .deliverConeHighAuto(armSubsystem, extenderSubsystem,
+                        // turretSubsystem, grabberSubsystem)
+                        // .andThen(UtilityCommands
+                        // .stow(armSubsystem, turretSubsystem,
+                        // extenderSubsystem))
                         // .andThen(new DriveStraightByGyro(-4.35, 3.3,
                         // swerveSubsystem)
                         // .andThen(new StrafeByGyro(2.2,
@@ -122,40 +122,47 @@ public class RobotContainer {
                         // .andThen(new DockAuto(
                         // swerveSubsystem,
                         // 0,
-                        // 2, 37, 3.0)))));
+                        // 2, 37, 3.0))));
 
-                        autoSendable.addOption("Score Cone High, Leave Community Left Balance",
-                                        UtilityCommands
-                                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem,
-                                                                        turretSubsystem, grabberSubsystem)
-                                                        .andThen(UtilityCommands
-                                                                        .stow(armSubsystem, turretSubsystem,
-                                                                                        extenderSubsystem)
-                                                                        .andThen(new DriveStraightByGyro(-4.35, 3.3,
-                                                                                        swerveSubsystem)
-                                                                                        .andThen(new StrafeByGyro(-2.2,
-                                                                                                        3,
-                                                                                                        swerveSubsystem))
-                                                                                        .andThen(new DockAuto(
-                                                                                                        swerveSubsystem,
-                                                                                                        0,
-                                                                                                        2, 37, 3.0)))));
+                        // autoSendable.addOption("Score Cone High, Leave Community Left Balance",
+                        // UtilityCommands
+                        // .deliverConeHighAuto(armSubsystem, extenderSubsystem,
+                        // turretSubsystem, grabberSubsystem)
+                        // .andThen(UtilityCommands
+                        // .stow(armSubsystem, turretSubsystem,
+                        // extenderSubsystem))
+                        // .andThen(new DriveStraightByGyro(-4.35, 3.3,
+                        // swerveSubsystem)
+                        // .andThen(new StrafeByGyro(-2.2,
+                        // 3,
+                        // swerveSubsystem))
+                        // .andThen(new DockAuto(
+                        // swerveSubsystem,
+                        // 0,
+                        // 2, 37, 3.0))));
 
+                        // armSubsystem,
+                        // grabberSubsystem, swerveSubsystem)
                         autoSendable.addOption("Score Cube High, Leave Community Center Balance",
-                                        UtilityCommands
-                                                        .scoreCubeHighAuto(extenderSubsystem, turretSubsystem,
-                                                                        armSubsystem,
-                                                                        grabberSubsystem, swerveSubsystem));
-                        // .andThen(ScoreHighCenterAndLeaveCommunity
-                        // .leaveCommunityCenter(swerveSubsystem,
-                        // armSubsystem))
-                        // .andThen(ScoreHighCenterAndLeaveCommunity
-                        // .balanceStation(swerveSubsystem)));
+                                        // UtilityCommands
+                                        // .scoreCubeHighAuto(extenderSubsystem, turretSubsystem,
+                                        // armSubsystem, grabberSubsystem,
+                                        // swerveSubsystem)
+                                        // .andThen(ScoreHighCenterAndLeaveCommunity
+                                        // .leaveCommunityCenter(swerveSubsystem,
+                                        // armSubsystem))
+
+                                        UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)
+                                                        .andThen(ScoreHighCenterAndLeaveCommunity
+                                                                        .balanceStation(swerveSubsystem)));
+
                         autoSendable.addOption("Score Cone High, Leave Community Left or Right",
                                         UtilityCommands
                                                         .deliverConeHighAuto(armSubsystem, extenderSubsystem,
                                                                         turretSubsystem, grabberSubsystem)
-                                                        .andThen(new DriveStraightByGyro(-4.35, 3, swerveSubsystem)));
+                                                        .andThen(
+                                                                        new DriveStraightByGyro(-4.35, 3,
+                                                                                        swerveSubsystem)));
 
                         autoSendable.addOption("Do Nothing", new InstantCommand());
                 } catch (Exception err) {
@@ -182,7 +189,7 @@ public class RobotContainer {
 
                 grabberSubsystem.setDefaultCommand(new JoystickGrabber(
                                 () -> towerJoystick.getRawAxis(Constants.OIConstants.kTowerPivotAxis),
-                                () -> towerJoystick.getRawAxis(Constants.OIConstants.lTowerTurretAxis),
+                                () -> 0.0,
                                 grabberSubsystem));
 
                 // new JoystickButton(driverJoystick,
@@ -233,11 +240,11 @@ public class RobotContainer {
                                                 Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER));
 
                 // Tower Triggers 0 and 180
-                // new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05)
-                // .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
+                new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05)
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
 
-                // new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05)
-                // .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
+                new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05)
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
 
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonLeftBumper)
                                 .onTrue(new CommandGrabber(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER,

@@ -40,7 +40,7 @@ public class RotateToDegree extends CommandBase {
     this.desiredAngle = desiredAngle;
     this.resetMotor = false;
     this.resetPosition = 0;
-    this.angleTolerence = 1.5;
+    this.angleTolerence = .005;
     this.safetyPivotAngle = safetyPivotAngle;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       // empty on purpose, end() will handle safing the subsystem
@@ -99,7 +99,7 @@ public class RotateToDegree extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double currentDesired = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
+    double currentDesired = this.turretSubsystem.getTurretAngle();
     double difference = Math.abs(desiredAngle - currentDesired);
     return difference <= angleTolerence || isFinished || watchdog.isExpired();
   }

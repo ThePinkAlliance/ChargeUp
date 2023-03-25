@@ -5,6 +5,7 @@
 package frc.robot.commands.drive.autos;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -21,6 +22,7 @@ public class DockAuto extends CommandBase {
   private final double MAX_POWER_METERS;
   private final double MAX_ANGLE;
   private final double APPROACH_SPEED;
+  private final Timer stablizeTimer;
 
   private final Watchdog watchdog;
 
@@ -30,11 +32,12 @@ public class DockAuto extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.swerveSubsystem = swerveSubsystem;
+    this.stablizeTimer = new Timer();
     this.angleRange = angleRange;
     this.didReachDock = false;
     this.isFinished = false;
 
-    this.watchdog = new Watchdog(10, () -> {
+    this.watchdog = new Watchdog(15, () -> {
       this.swerveSubsystem
           .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
 
@@ -54,6 +57,7 @@ public class DockAuto extends CommandBase {
     this.didReachDock = false;
     this.isFinished = false;
     this.watchdog.reset();
+    this.stablizeTimer.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -61,7 +65,7 @@ public class DockAuto extends CommandBase {
   public void execute() {
     double currentPitch = swerveSubsystem.getPitch();
     double approachPitchThreshold = 12;
-    double pitchSettle = 12;
+    double pitchSettle = 12; // 12
     // 14 might be too high.
     if (currentPitch >= approachPitchThreshold && !didReachDock) {
       didReachDock = true;
@@ -89,9 +93,17 @@ public class DockAuto extends CommandBase {
        */
 
       if (Math.abs(currentPitch) < pitchSettle) {
+        // this.stablizeTimer.start();
         power = 0;
         isFinished = true;
       }
+      // else {
+      // stablizeTimer.stop();
+      // stablizeTimer.reset();
+      // }
+
+      // if (stablizeTimer.hasElapsed(.3)) {
+      // }
 
       swerveSubsystem.setModuleStates(
           Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(power, 0, 0)));

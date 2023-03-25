@@ -70,7 +70,7 @@ public class UtilityCommands {
 
   public static Command deliverConeHigh(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem) {
-    return UtilityCommands.pivotArm(130, armSubsystem).alongWith(new ExtendTicks(107, extenderSubsystem));
+    return UtilityCommands.pivotArm(132.5, armSubsystem).alongWith(new ExtendTicks(108, extenderSubsystem));
   }
 
   public static Command deliverConeMid(ArmSubsystem armSubsystem,
@@ -81,7 +81,9 @@ public class UtilityCommands {
   public static Command deliverConeHighAuto(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem, GrabberSubsystem grabberSubsystem) {
     return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0).andThen(
-        UtilityCommands.pivotArm(130, armSubsystem));
+        UtilityCommands.pivotArm(130, armSubsystem).alongWith(
+            new ExtendTicks(108, extenderSubsystem)))
+        .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 
   // .alongWith(new ExtendTicks(107, extenderSubsystem)).andThen(new
