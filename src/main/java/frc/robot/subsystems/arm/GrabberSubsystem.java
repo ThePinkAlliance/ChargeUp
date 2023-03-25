@@ -31,6 +31,7 @@ public class GrabberSubsystem extends SubsystemBase {
     this.graspMotor.setIdleMode(IdleMode.kBrake);
 
     this.graspMotor.setInverted(false);
+    this.intakeMotor.setInverted(true);
   }
 
   public void setIntakeSpeed(double speed) {

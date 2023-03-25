@@ -4,16 +4,16 @@
 
 package frc.robot.commands.arm;
 
-
-
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.Constants;
 
 import frc.robot.commands.StowReversedExtend;
+import frc.robot.commands.StowReversedExtendNoTurret;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.extend.ExtendTicksPlus;
 import frc.robot.commands.arm.grabber.CommandGrabber;
+import frc.robot.commands.arm.grabber.CommandGrabberTerminateCurrent;
 import frc.robot.commands.arm.grabber.GrabberOpen;
 import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.arm.turret.RotateToDegree;
@@ -25,7 +25,7 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 
 /** Add your docs here. */
 public class UtilityCommands {
-  
+
   public static Command pivotArm(double angle, ArmSubsystem armSubsystem) {
     return new PivotToDegreeMagicNew(angle, // 78
         Constants.ArmConstants.MAX_CRUISE_VELOCITY,
@@ -37,9 +37,10 @@ public class UtilityCommands {
 
   public static Command scoreCubeHighAuto(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
       ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
-    return UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicksPlus(82, 0.5, extenderSubsystem))
-        .andThen(new GrabberOpen(grabberSubsystem, 1))
-        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
+    return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0)
+        .andThen(UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicksPlus(82, 0.5, extenderSubsystem))
+            .andThen(new GrabberOpen(grabberSubsystem, 1))
+            .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)));
   }
 
   public static Command deliverCubeHigh(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
@@ -56,14 +57,15 @@ public class UtilityCommands {
       TurretSubsystem turretSubsystem,
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
     return UtilityCommands.pivotArm(148, armSubsystem).alongWith(
-        new CommandGrabber(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER, 0, grabberSubsystem));
+        new CommandGrabberTerminateCurrent(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER, 0, grabberSubsystem)
+            .customWatchdog(10).customCurrentLimit(20).noKill());
   }
 
   public static Command collectStationStowCone(ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem,
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
-    return new CommandGrabber(0, -20, grabberSubsystem)
-        .andThen(new StowReversedExtend(armSubsystem, turretSubsystem, extenderSubsystem));
+    return new CommandGrabberTerminateCurrent(-.7, -16, grabberSubsystem).customCurrentLimit(10).customWatchdog(3)
+        .andThen(new StowReversedExtendNoTurret(armSubsystem, extenderSubsystem));
   }
 
   public static Command deliverConeHigh(ArmSubsystem armSubsystem,
@@ -76,10 +78,15 @@ public class UtilityCommands {
     return UtilityCommands.pivotArm(127, armSubsystem).alongWith(new ExtendTicks(35, extenderSubsystem));
   }
 
-  public static Command deliverConeHighAuto(ArmSubsystem armSubsystem, 
-  ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem, GrabberSubsystem grabberSubsystem) {
-return UtilityCommands.pivotArm(130, armSubsystem).alongWith(new ExtendTicks(107, extenderSubsystem)).andThen(new GrabberOpen(grabberSubsystem, 1));
-}
+  public static Command deliverConeHighAuto(ArmSubsystem armSubsystem,
+      ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem, GrabberSubsystem grabberSubsystem) {
+    return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0).andThen(
+        UtilityCommands.pivotArm(130, armSubsystem));
+  }
+
+  // .alongWith(new ExtendTicks(107, extenderSubsystem)).andThen(new
+  // GrabberOpen(grabberSubsystem, 1))
+
   public static Command stow(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem,
       ExtenderSubsystem extenderSubsystem) {
     return new ExtendTicks(0, extenderSubsystem)
@@ -90,6 +97,17 @@ return UtilityCommands.pivotArm(130, armSubsystem).alongWith(new ExtendTicks(107
             () -> true,
             armSubsystem))
         .andThen(new RotateToDegree(turretSubsystem, armSubsystem, 90, 0));
+  }
+
+  public static Command stowNoRotate(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem,
+      ExtenderSubsystem extenderSubsystem) {
+    return new ExtendTicks(0, extenderSubsystem)
+        .alongWith(new PivotToDegreeMagicNew(Constants.ArmConstants.COLLECT_STOW, // 78
+            Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+            Constants.ArmConstants.MAX_ACCELERATION, 3,
+            Constants.ArmConstants.MOTIONM_GAINS_FX,
+            () -> true,
+            armSubsystem));
   }
 
 }

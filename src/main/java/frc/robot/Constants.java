@@ -75,10 +75,10 @@ public final class Constants {
                 public static final double kPhysicalMaxSpeedMetersPerSecond = 6;
                 public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
-                public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.87;
+                public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.85;
                 public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond
                                 / 2.8;
-                public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3.2;
+                public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3.0;
                 public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.5;
         }
 
@@ -92,7 +92,8 @@ public final class Constants {
         public static final class GrabberConstants {
                 public static final int GRABBER_CAN_ID_GRASP = 43;
                 public static final int GRABBER_CAN_ID_INTAKE = 44;
-                public static final int GRABBER_INTAKE_CURRENT_LIMIT = 35;
+                public static final int GRABBER_INTAKE_CURRENT_LIMIT = 25;
+                public static final int BETTER_GRABBER_INTAKE_CURRENT_LIMIT = 6;
                 public static final int GRABBER_GRASP_CURRENT_LIMIT = 40;
                 public static final double GRABBER_GRASP_OPEN_WATCHDOG = 0.5;
                 public static final double GRABBER_GRASP_OPEN_POWER = 0.5;
@@ -102,6 +103,9 @@ public final class Constants {
                 public static final double GRABBER_GRASP_SUSTAINED_CURRENT_CLOSE_TIMEOUT = 0.3;
                 public static final GainsFX GRASP_GAINS_FX = new GainsFX(0.2, 0.0, 0, 0.0, 0, 0);
                 public static final GainsFX INTAKE_GAINS_FX = new GainsFX(0.01, 0.0, 0, 0.0, 0, 0);
+
+                public static final double GRASP_OPEN_POSITION = 0;
+                public static final double GRASP_CLOSED_POSITION = -20;
 
                 public static final double GRABBER_CONE_CLOSED = 0.5;
                 public static final double GRABBER_CUBE_CLOSED = 1;

@@ -36,7 +36,7 @@ public class DriveStraightByGyro extends CommandBase {
     /*
      * The controller needs an I gain later.
      */
-    this.xController.setTolerance(0.15);
+    this.xController.setTolerance(0.155);
 
     this.speed = speed;
     this.doStop = true;

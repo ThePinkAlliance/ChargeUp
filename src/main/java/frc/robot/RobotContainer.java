@@ -41,6 +41,7 @@ import frc.robot.commands.arm.UtilityCommands;
 import frc.robot.commands.arm.extend.ExtendTicks;
 import frc.robot.commands.arm.extend.ExtendTicksPlus;
 import frc.robot.commands.arm.grabber.CommandGrabber;
+import frc.robot.commands.arm.grabber.CommandGrabberTerminateCurrent;
 import frc.robot.commands.arm.grabber.GrabberCollect;
 import frc.robot.commands.arm.grabber.GrabberOpen;
 import frc.robot.commands.arm.grabber.JoystickGrabber;
@@ -108,35 +109,54 @@ public class RobotContainer {
                          */
                         autoSendable.addOption("Score Cone High, Leave Community Right Balance",
                                         UtilityCommands
-                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem, turretSubsystem, grabberSubsystem)
-                                        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)
-                                        .andThen (new DriveStraightByGyro(-4.35, 3, swerveSubsystem)
-                                        .andThen(new StrafeByGyro(2.2, 2, swerveSubsystem))
-                                        .andThen(new DockAuto(swerveSubsystem, 0,
-                                                        2, 37, 3.0)))));
+                                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem,
+                                                                        turretSubsystem, grabberSubsystem)
+                                                        .andThen(UtilityCommands
+                                                                        .stow(armSubsystem, turretSubsystem,
+                                                                                        extenderSubsystem)));
+                        // .andThen(new DriveStraightByGyro(-4.35, 3.3,
+                        // swerveSubsystem)
+                        // .andThen(new StrafeByGyro(2.2,
+                        // 3,
+                        // swerveSubsystem))
+                        // .andThen(new DockAuto(
+                        // swerveSubsystem,
+                        // 0,
+                        // 2, 37, 3.0)))));
 
                         autoSendable.addOption("Score Cone High, Leave Community Left Balance",
                                         UtilityCommands
-                                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem, turretSubsystem, grabberSubsystem)
-                                                        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)
-                                                        .andThen (new DriveStraightByGyro(-4.35, 3, swerveSubsystem)
-                                                        .andThen(new StrafeByGyro(-2.2, 2, swerveSubsystem))
-                                                        .andThen(new DockAuto(swerveSubsystem, 0,
-                                                                        2, 37, 3.0)))));
+                                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem,
+                                                                        turretSubsystem, grabberSubsystem)
+                                                        .andThen(UtilityCommands
+                                                                        .stow(armSubsystem, turretSubsystem,
+                                                                                        extenderSubsystem)
+                                                                        .andThen(new DriveStraightByGyro(-4.35, 3.3,
+                                                                                        swerveSubsystem)
+                                                                                        .andThen(new StrafeByGyro(-2.2,
+                                                                                                        3,
+                                                                                                        swerveSubsystem))
+                                                                                        .andThen(new DockAuto(
+                                                                                                        swerveSubsystem,
+                                                                                                        0,
+                                                                                                        2, 37, 3.0)))));
 
                         autoSendable.addOption("Score Cube High, Leave Community Center Balance",
                                         UtilityCommands
-                                                        .scoreCubeHighAuto(extenderSubsystem, turretSubsystem, armSubsystem,
-                                                                        grabberSubsystem, swerveSubsystem)
-                                                        .andThen(ScoreHighCenterAndLeaveCommunity
-                                                                        .leaveCommunityCenter(swerveSubsystem,
-                                                                                        armSubsystem))
-                                                        .andThen(ScoreHighCenterAndLeaveCommunity
-                                                                        .balanceStation(swerveSubsystem)));
+                                                        .scoreCubeHighAuto(extenderSubsystem, turretSubsystem,
+                                                                        armSubsystem,
+                                                                        grabberSubsystem, swerveSubsystem));
+                        // .andThen(ScoreHighCenterAndLeaveCommunity
+                        // .leaveCommunityCenter(swerveSubsystem,
+                        // armSubsystem))
+                        // .andThen(ScoreHighCenterAndLeaveCommunity
+                        // .balanceStation(swerveSubsystem)));
                         autoSendable.addOption("Score Cone High, Leave Community Left or Right",
                                         UtilityCommands
-                                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem, turretSubsystem, grabberSubsystem)
+                                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem,
+                                                                        turretSubsystem, grabberSubsystem)
                                                         .andThen(new DriveStraightByGyro(-4.35, 3, swerveSubsystem)));
+
                         autoSendable.addOption("Do Nothing", new InstantCommand());
                 } catch (Exception err) {
                         err.printStackTrace();
@@ -153,7 +173,8 @@ public class RobotContainer {
                                 () -> !driverJoystick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
 
                 turretSubsystem.setDefaultCommand(
-                                new JoystickTurret(turretSubsystem, () -> towerJoystick.getRawAxis(0), armSubsystem));
+                                new JoystickTurret(turretSubsystem, () -> towerJoystick.getRawAxis(
+                                                OIConstants.kXAxis), armSubsystem));
 
                 /* Tower Default Commands for Pivot, Extend and Turret */
                 extenderSubsystem.setDefaultCommand(new JoystickArmExtend(towerJoystick, extenderSubsystem,
@@ -164,59 +185,67 @@ public class RobotContainer {
                                 () -> towerJoystick.getRawAxis(Constants.OIConstants.lTowerTurretAxis),
                                 grabberSubsystem));
 
-                new JoystickButton(driverJoystick, Constants.OIConstants.kButtonLeftBumper).onTrue(
-                                new PivotToDegreeMagicNew(132,
-                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                                                Constants.ArmConstants.MAX_ACCELERATION, 2,
-                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
-                                                () -> true,
-                                                armSubsystem));
-
-                
+                // new JoystickButton(driverJoystick,
+                // Constants.OIConstants.kButtonLeftBumper).onTrue(
+                // new PivotToDegreeMagicNew(132,
+                // Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                // Constants.ArmConstants.MAX_ACCELERATION, 2,
+                // Constants.ArmConstants.MOTIONM_GAINS_FX,
+                // () -> true,
+                // armSubsystem));
 
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonStart)
-                                                .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+                                .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonBack).onTrue(new InstantCommand(
                                 () -> swerveSubsystem.setModuleStates(Constants.DriveConstants.kDriveKinematics
                                                 .toSwerveModuleStates(new ChassisSpeeds()))));
-                new JoystickButton(driverJoystick, Constants.OIConstants.kButtonX)
-                                                .onTrue(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
-                new JoystickButton(driverJoystick, Constants.OIConstants.kButtonB)
-                                .onTrue(new GrabberOpen(grabberSubsystem,
-                                                Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER));
-                new JoystickButton(driverJoystick, Constants.OIConstants.kButtonY).onTrue(
-                                                        UtilityCommands.collectStationDeployCone(armSubsystem, turretSubsystem, grabberSubsystem, extenderSubsystem))
-                                                        .onFalse(UtilityCommands.collectStationStowCone(armSubsystem, turretSubsystem, grabberSubsystem, extenderSubsystem));
-                new JoystickButton(driverJoystick, Constants.OIConstants.kButtonA).onTrue(
-                                new PivotToDegreeMagicNew(82,
-                                                Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                                                Constants.ArmConstants.MAX_ACCELERATION, 2,
-                                                Constants.ArmConstants.MOTIONM_GAINS_FX,
-                                                () -> true,
-                                                armSubsystem));
 
-                //Tower Y - deliver cone high
+                new JoystickButton(driverJoystick, Constants.OIConstants.kButtonLeftBumper).onTrue(
+                                UtilityCommands.collectStationDeployCone(armSubsystem, turretSubsystem,
+                                                grabberSubsystem, extenderSubsystem))
+                                .onFalse(UtilityCommands.collectStationStowCone(armSubsystem, turretSubsystem,
+                                                grabberSubsystem, extenderSubsystem));
+
+                // new JoystickButton(driverJoystick, Constants.OIConstants.kButtonA).onTrue(
+                // new PivotToDegreeMagicNew(82,
+                // Constants.ArmConstants.MAX_CRUISE_VELOCITY,
+                // Constants.ArmConstants.MAX_ACCELERATION, 2,
+                // Constants.ArmConstants.MOTIONM_GAINS_FX,
+                // () -> true,
+                // armSubsystem));
+
+                // Tower Y - deliver cone high
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonY).onTrue(
                                 UtilityCommands.deliverConeHigh(armSubsystem, extenderSubsystem));
-                //Tower B - deliver cone mid
+
+                // Tower B - deliver cone mid
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonB).onTrue(
                                 UtilityCommands.deliverConeMid(armSubsystem, extenderSubsystem));
-                
-                //Tower X - deliver cone high
+
+                // Tower X - deliver cube high
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonX).onTrue(
-                                UtilityCommands.deliverCubeHigh(extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
-                //Tower A - deliver cone mid
+                                UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
+
+                // Tower A - deliver cube mid
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonA).onTrue(
-                                UtilityCommands.deliverCubeMid(extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
-                
-                //Tower Triggers 0 and 180
-                new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
+                                new GrabberOpen(grabberSubsystem,
+                                                Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER));
 
-                new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
+                // Tower Triggers 0 and 180
+                // new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05)
+                // .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
 
-                
+                // new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05)
+                // .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
+
+                new JoystickButton(towerJoystick, Constants.OIConstants.kButtonLeftBumper)
+                                .onTrue(new CommandGrabber(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER,
+                                                Constants.GrabberConstants.GRASP_OPEN_POSITION,
+                                                grabberSubsystem).customWatchdog(6))
+                                .onFalse(new CommandGrabberTerminateCurrent(-0.7,
+                                                Constants.GrabberConstants.GRASP_CLOSED_POSITION,
+                                                grabberSubsystem).customWatchdog(1.4));
         }
 
         public void onDisabledInit() {
@@ -224,7 +253,16 @@ public class RobotContainer {
                 armSubsystem.getPivotTalon().configFactoryDefault();
         }
 
+        public void configureTele() {
+                swerveSubsystem.setGyroHeading(180);
+        }
+
         public Command getAutonomousCommand() {
+                /**
+                 * Reset the turret encoder to the robot's legal position.
+                 */
+                turretSubsystem.setEncoderPositions(91.43);
+
                 return autoSendable.getSelected();
         }
 }

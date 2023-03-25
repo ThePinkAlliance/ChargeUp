@@ -47,6 +47,10 @@ public class TurretSubsystem extends SubsystemBase {
     return turretController;
   }
 
+  public void setEncoderPositions(double pos) {
+    this.turretController.getEncoder().setPosition(pos);
+  }
+
   public void powerTurret(double input) {
     powerTurretUnsafe(input * powerLimit);
   }

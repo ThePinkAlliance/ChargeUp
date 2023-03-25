@@ -22,12 +22,14 @@ public class RotateToDegree extends CommandBase {
   private TurretSubsystem turretSubsystem;
   private boolean isFinished;
   private double desiredAngle;
-  double safetyPivotAngle;
+  private double safetyPivotAngle;
   private CANSparkMax sparkMax;
   private ArmSubsystem armSubsystem;
   private double angleTolerence;
-  Watchdog watchdog;
-  private final double WATCHDOG_TIMEOUT = 1.5;
+  private Watchdog watchdog;
+  private final double WATCHDOG_TIMEOUT = 2.5;
+  private boolean resetMotor;
+  private double resetPosition;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle,
@@ -36,6 +38,9 @@ public class RotateToDegree extends CommandBase {
     this.turretSubsystem = turretSubsystem;
     this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
+    this.resetMotor = false;
+    this.resetPosition = 0;
+    this.angleTolerence = 1.5;
     this.safetyPivotAngle = safetyPivotAngle;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       // empty on purpose, end() will handle safing the subsystem
@@ -44,6 +49,13 @@ public class RotateToDegree extends CommandBase {
 
     // Do not require armSubsystem: its only here to get information
     addRequirements(turretSubsystem);
+  }
+
+  public RotateToDegree withReset(double resetPosition) {
+    this.resetMotor = true;
+    this.resetPosition = resetPosition;
+
+    return this;
   }
 
   // Called when the command is initially scheduled.
@@ -56,12 +68,15 @@ public class RotateToDegree extends CommandBase {
     sparkMax.getPIDController().setD(0);
     watchdog.reset();
     watchdog.enable();
+
+    if (resetMotor) {
+      this.turretSubsystem.setEncoderPositions(resetPosition);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     double currentAngle = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double desiredPosRadians = desiredAngle * (Math.PI / 180);
     double desiredRotations = desiredPosRadians * (Constants.TurretConstants.FULL_MOTOR_ROTATIONS / (2 * Math.PI));

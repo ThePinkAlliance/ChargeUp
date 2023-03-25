@@ -4,25 +4,34 @@
 
 package frc.robot.commands.arm.grabber;
 
+import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Telemetry;
 import frc.robot.subsystems.arm.GrabberSubsystem;
 
 /** Add your docs here. */
-public class CommandGrabber extends CommandBase {
+public class CommandGrabberTerminateCurrent extends CommandBase {
   private GrabberSubsystem grabberSubsystem;
   private double intakeSpeed;
   private double graspRotations;
   private Watchdog watchdog;
 
-  private boolean doNotKill;
+  private MedianFilter medianFilter;
+  private boolean noKill;
+  private Timer currentTimer;
+  private double currentLimit;
 
-  public CommandGrabber(double intakeSpeed, double graspRotations, GrabberSubsystem grabberSubsystem) {
+  public CommandGrabberTerminateCurrent(double intakeSpeed, double graspRotations, GrabberSubsystem grabberSubsystem) {
     this.intakeSpeed = intakeSpeed;
     this.graspRotations = graspRotations;
     this.grabberSubsystem = grabberSubsystem;
+    this.currentTimer = new Timer();
+    this.noKill = false;
+    this.currentLimit = Constants.GrabberConstants.BETTER_GRABBER_INTAKE_CURRENT_LIMIT;
 
     this.watchdog = new Watchdog(2, () -> {
       this.grabberSubsystem.setIntakeSpeed(0);
@@ -32,7 +41,19 @@ public class CommandGrabber extends CommandBase {
     addRequirements(grabberSubsystem);
   }
 
-  public CommandGrabber customWatchdog(double time) {
+  public CommandGrabberTerminateCurrent noKill() {
+    this.noKill = true;
+
+    return this;
+  }
+
+  public CommandGrabberTerminateCurrent customCurrentLimit(double currentLimit) {
+    this.currentLimit = currentLimit;
+
+    return this;
+  }
+
+  public CommandGrabberTerminateCurrent customWatchdog(double time) {
     this.watchdog = new Watchdog(time, () -> {
       this.grabberSubsystem.setIntakeSpeed(0);
       this.grabberSubsystem.disableGrasp();
@@ -43,10 +64,13 @@ public class CommandGrabber extends CommandBase {
 
   @Override
   public void initialize() {
+    this.currentTimer.reset();
+    this.medianFilter = new MedianFilter(25);
+
     this.grabberSubsystem.setIntakeSpeed(intakeSpeed);
     this.grabberSubsystem.setGraspRotations(graspRotations);
 
-    Telemetry.logData("Target Rotations", graspRotations, CommandGrabber.class);
+    Telemetry.logData("Target Rotations", graspRotations, CommandGrabberTerminateCurrent.class);
 
     this.watchdog.reset();
     this.watchdog.enable();
@@ -56,6 +80,7 @@ public class CommandGrabber extends CommandBase {
 
   @Override
   public void execute() {
+    SmartDashboard.putNumber("Intake Current", this.grabberSubsystem.getIntakeCurrent());
   }
 
   @Override
@@ -63,24 +88,33 @@ public class CommandGrabber extends CommandBase {
     this.grabberSubsystem.setIntakeSpeed(0);
     // this.grabberSubsystem.disableGrasp();
 
+    currentTimer.stop();
+    currentTimer.reset();
+
     this.watchdog.disable();
   }
 
   @Override
   public boolean isFinished() {
     boolean watchdogKill = watchdog.isExpired();
+    double intakeCurrent = medianFilter.calculate(grabberSubsystem.getIntakeCurrent());
 
-    if (this.grabberSubsystem.getGraspRotations() >= this.graspRotations - 0.2 && this.grabberSubsystem
-        .getGraspRotations() <= this.graspRotations + 0.2) {
-      Telemetry.logData("Terminated Grabber", this.grabberSubsystem.getGraspRotations(), getClass());
+    if (intakeCurrent >= currentLimit - 2
+        && intakeCurrent <= currentLimit + 2) {
+      Telemetry.logData("--- Grabber Terminated ---", "Current at " + intakeCurrent,
+          CommandGrabberTerminateCurrent.class);
 
+      currentTimer.start();
+    }
+
+    if (currentTimer.hasElapsed(.2)) {
       return true;
     }
 
     SmartDashboard.putNumber("Grabber Diff", graspRotations - grabberSubsystem.getGraspRotations());
 
     if (watchdogKill) {
-      Telemetry.logData("--- Grabber Terminated ---", "watchdog kill", CommandGrabber.class);
+      Telemetry.logData("--- Grabber Terminated ---", "watchdog kill", CommandGrabberTerminateCurrent.class);
     }
 
     return watchdogKill;
