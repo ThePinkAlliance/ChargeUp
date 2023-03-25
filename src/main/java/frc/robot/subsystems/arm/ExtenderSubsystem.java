@@ -49,6 +49,7 @@ public class ExtenderSubsystem extends SubsystemBase {
   public ExtenderSubsystem(int extendMotorId, double powerLimitExtend) {
 
     this.extendMotor = new CANSparkMax(extendMotorId, MotorType.kBrushless);
+    this.extendMotor.restoreFactoryDefaults();
     this.extendEncoder = extendMotor.getEncoder();
     this.powerLimitExtend = powerLimitExtend;
 

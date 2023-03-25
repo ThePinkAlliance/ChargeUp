@@ -191,7 +191,7 @@ public final class Constants {
         }
 
         public static final class ExtenderConstants {
-                public static final float EXTENDER_90_MAX_LIMIT = 102f; // 54.0f
+                public static final float EXTENDER_90_MAX_LIMIT = 108f; // 54.0f
                 public static final float EXTENDER_MIN_LIMIT = 3.0f;
                 public static final double EXTENDER_MARGIN_OF_ERROR = 3.0;
                 public static final double POWER_LIMIT_EXTEND = 1;
