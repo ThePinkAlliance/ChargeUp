@@ -35,7 +35,6 @@ public class UtilityCommands {
         armSubsystem);
   }
 
-  // No Use
   public static Command scoreCubeHighAuto(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
       ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
     return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0)

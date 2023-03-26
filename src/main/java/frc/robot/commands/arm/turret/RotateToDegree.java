@@ -94,6 +94,8 @@ public class RotateToDegree extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     this.turretSubsystem.powerTurret(0);
+
+    this.watchdog.disable();
   }
 
   // Returns true when the command should end.
@@ -101,6 +103,18 @@ public class RotateToDegree extends CommandBase {
   public boolean isFinished() {
     double currentDesired = this.turretSubsystem.getTurretAngle();
     double difference = Math.abs(desiredAngle - currentDesired);
-    return difference <= angleTolerence || isFinished || watchdog.isExpired();
+
+    boolean watchdogExpired = watchdog.isExpired();
+    boolean hasMetTarget = difference <= angleTolerence;
+
+    if (hasMetTarget) {
+      Telemetry.logData("--- Rotate To Degree Terminated ---", "difference: " + difference, getClass());
+    }
+
+    if (watchdogExpired) {
+      Telemetry.logData("--- Rotate To Degree ---", "watchdog: " + watchdogExpired, getClass());
+    }
+
+    return hasMetTarget || isFinished || watchdogExpired;
   }
 }
