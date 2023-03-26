@@ -5,7 +5,7 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.Command;
-
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants;
 
 import frc.robot.commands.StowReversedExtend;
@@ -86,6 +86,7 @@ public class UtilityCommands {
     return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0).andThen(
         UtilityCommands.pivotArm(130, armSubsystem).alongWith(
             new ExtendTicks(108, extenderSubsystem)))
+        .andThen(new GrabberOpen(grabberSubsystem, 1))
         .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 
@@ -94,9 +95,11 @@ public class UtilityCommands {
 
   public static Command stow(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem,
       ExtenderSubsystem extenderSubsystem) {
-    return new ExtendTicks(0, extenderSubsystem)
-        .alongWith(pivotArm(
-            Constants.ArmConstants.COLLECT_STOW, armSubsystem))
+    return new ParallelCommandGroup(pivotArm(
+        Constants.ArmConstants.COLLECT_STOW,
+        armSubsystem),
+        new ExtendTicks(0,
+            extenderSubsystem))
         .andThen(new RotateToDegree(turretSubsystem, armSubsystem, 90, 0));
   }
 

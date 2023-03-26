@@ -44,11 +44,23 @@ public class ExtendTicks extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    watchdog.disable();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return extenderSubsystem.atExtensionSetpoint() || watchdog.isExpired();
+    boolean atSetpoint = extenderSubsystem.atExtensionSetpoint();
+    boolean watchdogExpired = watchdog.isExpired();
+
+    if (atSetpoint) {
+      Telemetry.logData("--- Extend Ticks At Setpoint", extenderSubsystem.getExtendedPosition(), getClass());
+    }
+
+    if (watchdogExpired) {
+      Telemetry.logData("--- Extend Ticks watchdog expired", extenderSubsystem.getExtendedPosition(), getClass());
+    }
+
+    return atSetpoint || watchdogExpired;
   }
 }

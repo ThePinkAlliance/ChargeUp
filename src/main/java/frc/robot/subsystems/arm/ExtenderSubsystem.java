@@ -20,6 +20,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -60,9 +61,9 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.extendMotor.setOpenLoopRampRate(.5);
     this.extendMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
     this.extendMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    this.extendMotor.getEncoder().setPosition(0);
     this.extendMotor.setInverted(false);
     this.extendMotor.setIdleMode(IdleMode.kBrake);
+    this.extendMotor.getEncoder().setPosition(0);
   }
 
   public double getOutputMax() {
@@ -98,6 +99,7 @@ public class ExtenderSubsystem extends SubsystemBase {
     } else if (err == REVLibError.kSetpointOutOfRange) {
       System.err.println("[ARM, Extend]: Desired rotations out of range");
     } else {
+      DriverStation.reportError("[ARM, Extend]: Error " + err.toString(), true);
       System.err.println("[ARM, Extend]: Error " + err.toString());
     }
   }
