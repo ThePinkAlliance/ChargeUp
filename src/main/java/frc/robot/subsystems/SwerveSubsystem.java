@@ -159,7 +159,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Front Left Angle", frontLeft.getPosition().angle.getRadians());
+        SmartDashboard.putNumber("Back Left Angle", backLeft.getPosition().angle.getRadians());
 
         SmartDashboard.putNumber("Base Pitch", getPitch());
 

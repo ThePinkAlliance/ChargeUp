@@ -115,6 +115,10 @@ public class RotateToDegree extends CommandBase {
       Telemetry.logData("--- Rotate To Degree ---", "watchdog: " + watchdogExpired, getClass());
     }
 
+    if (isFinished) {
+      Telemetry.logData("--- Rotate To Degree ---", "isFinished: " + isFinished, getClass());
+    }
+
     return hasMetTarget || isFinished || watchdogExpired;
   }
 }

@@ -70,7 +70,7 @@ import frc.robot.subsystems.scoring.ScoringSubsystem;
 
 public class RobotContainer {
 
-        private SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+        private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
         private final ShuffleboardTab debugTab = Shuffleboard.getTab("debug");
         private final Joystick driverJoystick = new Joystick(OIConstants.kDriverControllerPort);
         private final Joystick towerJoystick = new Joystick(OIConstants.kTowerControllerPort);
@@ -168,8 +168,9 @@ public class RobotContainer {
 
                         autoSendable.addOption("Test",
                                         UtilityCommands
-                                                        .deliverConeHighAuto(armSubsystem, extenderSubsystem,
-                                                                        turretSubsystem, grabberSubsystem));
+                                                        .scoreCubeHighAuto(extenderSubsystem, turretSubsystem,
+                                                                        armSubsystem, grabberSubsystem,
+                                                                        swerveSubsystem));
 
                         autoSendable.addOption("Do Nothing", new InstantCommand());
                 } catch (Exception err) {
@@ -211,8 +212,9 @@ public class RobotContainer {
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonStart)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-                new JoystickButton(driverJoystick, Constants.OIConstants.kButtonBack).onTrue(new InstantCommand(
-                                () -> swerveSubsystem = new SwerveSubsystem()));
+                // new JoystickButton(driverJoystick,
+                // Constants.OIConstants.kButtonBack).onTrue(new InstantCommand(
+                // () -> swerveSubsystem = new SwerveSubsystem()));
 
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonLeftBumper).onTrue(
                                 UtilityCommands.collectStationDeployCone(armSubsystem, turretSubsystem,
@@ -275,7 +277,6 @@ public class RobotContainer {
                  * Reset the turret encoder to the robot's legal position.
                  */
                 turretSubsystem.setEncoderPositions(91.43);
-                // turretSubsystem.setEncoderPositions(0);
 
                 return autoSendable.getSelected();
         }

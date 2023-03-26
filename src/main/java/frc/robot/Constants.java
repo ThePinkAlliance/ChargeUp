@@ -67,7 +67,7 @@ public final class Constants {
                  * outputed positions.
                  */
                 public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.84; // 2.93, 1.99;
-                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.20;
+                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.187;
                 public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.57;
                 public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.47;
 
@@ -75,7 +75,7 @@ public final class Constants {
                 public static final double kPhysicalMaxSpeedMetersPerSecond = 6;
                 public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
-                public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.96;
+                public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.85; // 0.96
                 public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond
                                 / 2.8;
                 public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3.0;
