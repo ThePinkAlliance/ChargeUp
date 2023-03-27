@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.arm.pivot;
+
 import java.util.function.Supplier;
 import com.ThePinkAlliance.core.util.GainsFX;
 
@@ -32,7 +33,6 @@ public class PivotToDegreeMagicNew extends CommandBase {
   private boolean isFinished;
   private Watchdog watchdog;
   private final double WATCHDOG_TIMEOUT = 1.5;
-  
 
   /** Creates a new PivotToDegreeMagic. */
   public PivotToDegreeMagicNew(double desiredAngle, Supplier<Boolean> safeToContinue,
@@ -42,7 +42,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
     this.safeToContinue = safeToContinue;
     this.armSubsystem = armSubsystem;
     this.pivotMotor = armSubsystem.getPivotTalon();
-    this.angleFactor = 0.000612669993242;
+    this.angleFactor = 0.0009093533;// 0.000612669993242 * 0.7438;
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
@@ -60,7 +60,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
       GainsFX gains,
       Supplier<Boolean> safeToContinue,
       ArmSubsystem armSubsystem) {
-     this(desiredAngle, safeToContinue, armSubsystem);
+    this(desiredAngle, safeToContinue, armSubsystem);
     this.acceleration = acceleration;
     this.cruiseVelocity = cruiseVelocity;
     this.smoothingIntensity = smoothingIntensity;
@@ -87,7 +87,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
     double currentPitch = ((currentPosition + .001) / 1578.6776859504) + initialAngle;
     boolean isSafe = safeToContinue.get();
 
-    //pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
+    // pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
 
     Telemetry.logData("isSafe", isSafe, PivotToDegreeMagicNew.class);
     Telemetry.logData("isFinished", isFinished, PivotToDegreeMagicNew.class);

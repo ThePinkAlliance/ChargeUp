@@ -24,7 +24,7 @@ public class ArmSubsystem extends SubsystemBase {
   Spark ledController;
   private double powerLimitPivot;
   private double pivotOffset;
- 
+
   private double positionToHold = 0;
 
   public double getPositionToHold() {
@@ -37,7 +37,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   /** Creates a new ArmSubsystem. */
   public ArmSubsystem(int pivotMotorId, int canCoderId, double pivotOffset, double powerLimitPivot) {
-    
+
     this.ledController = new Spark(0);
 
     this.pivotMotor = new TalonFX(pivotMotorId);
@@ -48,13 +48,13 @@ public class ArmSubsystem extends SubsystemBase {
     /* Factory default hardware to prevent unexpected behavior */
     pivotMotor.configFactoryDefault();
     pivotMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
-    Constants.ArmConstants.kPIDLoopIdx,
-    Constants.ArmConstants.kTimeoutMs);
+        Constants.ArmConstants.kPIDLoopIdx,
+        Constants.ArmConstants.kTimeoutMs);
     this.pivotMotor.configOpenloopRamp(0.5);
     this.pivotMotor.setNeutralMode(NeutralMode.Brake);
     this.pivotMotor.setInverted(true);
     this.pivotMotor.setSelectedSensorPosition(0);
-    
+
     SmartDashboard.putNumber("pivot-kP", 0);
     SmartDashboard.putNumber("pivot-kI", 0);
     SmartDashboard.putNumber("pivot-kD", 0);
@@ -71,7 +71,7 @@ public class ArmSubsystem extends SubsystemBase {
   public void holdPosition() {
     pivotMotor.set(TalonFXControlMode.Position, getPositionToHold());
   }
-  
+
   public void configureLED() {
     this.ledController.set(Constants.ArmConstants.LED_SPEED);
   }
@@ -106,20 +106,27 @@ public class ArmSubsystem extends SubsystemBase {
     return canCoder.getVelocity();
   }
 
-  public void configureTalonFX_Position()
-  {
+  public void configureTalonFX_Position() {
     /* Factory default hardware to prevent unexpected behavior */
-    //pivotMotor.configFactoryDefault();    
+    // pivotMotor.configFactoryDefault();
     // configure close loop in slot1
-    //pivotMotor.selectProfileSlot(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.kPIDLoopIdx);
-    //pivotMotor.config_kF(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kF, Constants.ArmConstants.kTimeoutMs);
-    //pivotMotor.config_kP(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kP, Constants.ArmConstants.kTimeoutMs);
-    //pivotMotor.config_kI(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kI, Constants.ArmConstants.kTimeoutMs);
-    //pivotMotor.config_kD(Constants.ArmConstants.kSlotId_ForPosition, Constants.ArmConstants.POSITION_GAINS_FX.kD, Constants.ArmConstants.kTimeoutMs);
+    // pivotMotor.selectProfileSlot(Constants.ArmConstants.kSlotId_ForPosition,
+    // Constants.ArmConstants.kPIDLoopIdx);
+    // pivotMotor.config_kF(Constants.ArmConstants.kSlotId_ForPosition,
+    // Constants.ArmConstants.POSITION_GAINS_FX.kF,
+    // Constants.ArmConstants.kTimeoutMs);
+    // pivotMotor.config_kP(Constants.ArmConstants.kSlotId_ForPosition,
+    // Constants.ArmConstants.POSITION_GAINS_FX.kP,
+    // Constants.ArmConstants.kTimeoutMs);
+    // pivotMotor.config_kI(Constants.ArmConstants.kSlotId_ForPosition,
+    // Constants.ArmConstants.POSITION_GAINS_FX.kI,
+    // Constants.ArmConstants.kTimeoutMs);
+    // pivotMotor.config_kD(Constants.ArmConstants.kSlotId_ForPosition,
+    // Constants.ArmConstants.POSITION_GAINS_FX.kD,
+    // Constants.ArmConstants.kTimeoutMs);
   }
 
-  public void configureTalonFX_MotionMagic(double cruiseVelocity, double acceleration, int smoothingIntensity)
-  {
+  public void configureTalonFX_MotionMagic(double cruiseVelocity, double acceleration, int smoothingIntensity) {
     /* Factory default hardware to prevent unexpected behavior */
     pivotMotor.configFactoryDefault();
 
@@ -129,8 +136,8 @@ public class ArmSubsystem extends SubsystemBase {
      * magic.
      */
     pivotMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
-    Constants.ArmConstants.kPIDLoopIdx,
-    Constants.ArmConstants.kTimeoutMs);
+        Constants.ArmConstants.kPIDLoopIdx,
+        Constants.ArmConstants.kTimeoutMs);
 
     // /*
     // * set deadband to super small 0.001 (0.1 %).
@@ -172,18 +179,23 @@ public class ArmSubsystem extends SubsystemBase {
 
     // /* Set Motion Magic gains in slot0 - see documentation */
     pivotMotor.selectProfileSlot(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.kPIDLoopIdx);
-    pivotMotor.config_kF(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kF, Constants.ArmConstants.kTimeoutMs);
-    pivotMotor.config_kP(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kP, Constants.ArmConstants.kTimeoutMs);
-    pivotMotor.config_kI(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kI, Constants.ArmConstants.kTimeoutMs);
-    pivotMotor.config_kD(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kD, Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.config_kF(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kF,
+        Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.config_kP(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kP,
+        Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.config_kI(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kI,
+        Constants.ArmConstants.kTimeoutMs);
+    pivotMotor.config_kD(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.MOTIONM_GAINS_FX.kD,
+        Constants.ArmConstants.kTimeoutMs);
 
     // /* Set acceleration and vcruise velocity - see documentation */
     pivotMotor.configMotionCruiseVelocity(cruiseVelocity, Constants.ArmConstants.kTimeoutMs);
     pivotMotor.configMotionAcceleration(acceleration, Constants.ArmConstants.kTimeoutMs);
     pivotMotor.configMotionSCurveStrength(smoothingIntensity, Constants.ArmConstants.kTimeoutMs);
-    pivotMotor.configAllowableClosedloopError(Constants.ArmConstants.kSlotIdx, Constants.ArmConstants.kAllowableCloseLoopError, Constants.ArmConstants.kTimeoutMs);
-    //pivotMotor.setSelectedSensorPosition(0);
-    
+    pivotMotor.configAllowableClosedloopError(Constants.ArmConstants.kSlotIdx,
+        Constants.ArmConstants.kAllowableCloseLoopError, Constants.ArmConstants.kTimeoutMs);
+    // pivotMotor.setSelectedSensorPosition(0);
+
   }
 
   @Override
@@ -191,5 +203,6 @@ public class ArmSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pitch Motor Ticks", pivotMotor.getSelectedSensorPosition());
     SmartDashboard.putNumber("Absolute Pitch", canCoder.getAbsolutePosition());
+    SmartDashboard.putNumber("Pitch", getArmPitch());
   }
 }
