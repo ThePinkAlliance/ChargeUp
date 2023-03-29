@@ -15,9 +15,13 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 /** Add your docs here. */
 public class ScoreHighCenterAndLeaveCommunity {
   /*
+<<<<<<< HEAD
    * Be careful of the order in which parallel command groups are executed because
    * when the command at the end of the group ends all the rest end even if they
    * are done.
+=======
+   * 
+>>>>>>> a32d0d4be6ddc715f273df7547155e78bfd81755
    */
   public static Command leaveCommunityCenter(SwerveSubsystem swerveSubsystem, ArmSubsystem armSubsystem) {
     return new DriveStraightByGyro(-2, 2.2, false, swerveSubsystem)
