@@ -126,7 +126,8 @@ public class ArmSubsystem extends SubsystemBase {
     // Constants.ArmConstants.kTimeoutMs);
   }
 
-  public void configureTalonFX_MotionMagic(double cruiseVelocity, double acceleration, int smoothingIntensity) {
+  public void configureTalonFX_MotionMagic(double cruiseVelocity, double acceleration, int smoothingIntensity,
+      double closedLoopThreshold) {
     /* Factory default hardware to prevent unexpected behavior */
     pivotMotor.configFactoryDefault();
 
@@ -194,8 +195,8 @@ public class ArmSubsystem extends SubsystemBase {
     pivotMotor.configMotionSCurveStrength(smoothingIntensity, Constants.ArmConstants.kTimeoutMs);
     pivotMotor.configAllowableClosedloopError(Constants.ArmConstants.kSlotIdx,
         Constants.ArmConstants.kAllowableCloseLoopError, Constants.ArmConstants.kTimeoutMs);
-    // pivotMotor.setSelectedSensorPosition(0);
-
+    pivotMotor.configAllowableClosedloopError(Constants.ArmConstants.kPIDLoopIdx, closedLoopThreshold,
+        Constants.ArmConstants.kTimeoutMs);
   }
 
   @Override

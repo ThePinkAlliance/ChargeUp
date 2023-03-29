@@ -40,7 +40,7 @@ public class RotateToDegree extends CommandBase {
     this.desiredAngle = desiredAngle;
     this.resetMotor = false;
     this.resetPosition = 0;
-    this.angleTolerence = .005;
+    this.angleTolerence = .05;
     this.safetyPivotAngle = safetyPivotAngle;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       // empty on purpose, end() will handle safing the subsystem
@@ -72,22 +72,26 @@ public class RotateToDegree extends CommandBase {
     if (resetMotor) {
       this.turretSubsystem.setEncoderPositions(resetPosition);
     }
-  }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
     double currentAngle = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double desiredPosRadians = desiredAngle * (Math.PI / 180);
     double desiredRotations = desiredPosRadians * (Constants.TurretConstants.FULL_MOTOR_ROTATIONS / (2 * Math.PI));
     System.out.println("armSubSystem.getArmPitch() " + armSubsystem.getArmPitch());
+
     if (armSubsystem.getArmPitch() > safetyPivotAngle) {
       sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
     } else {
       isFinished = true;
     }
-    Telemetry.logData("Turret Target Angle", desiredPosRadians, RotateToDegree.class);
-    Telemetry.logData("Current Turret Angle", currentAngle, RotateToDegree.class);
+
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    if (armSubsystem.getArmPitch() < safetyPivotAngle) {
+      isFinished = true;
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -112,11 +116,11 @@ public class RotateToDegree extends CommandBase {
     }
 
     if (watchdogExpired) {
-      Telemetry.logData("--- Rotate To Degree ---", "watchdog: " + watchdogExpired, getClass());
+      Telemetry.logData("--- Rotate To Degree ---", "difference: " + difference, getClass());
     }
 
     if (isFinished) {
-      Telemetry.logData("--- Rotate To Degree ---", "isFinished: " + isFinished, getClass());
+      Telemetry.logData("--- Rotate To Degree ---", "difference: " + difference, getClass());
     }
 
     return hasMetTarget || isFinished || watchdogExpired;

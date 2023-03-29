@@ -10,7 +10,7 @@ import com.ThePinkAlliance.core.util.GainsFX;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -19,6 +19,7 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class PivotToDegreeMagicNew extends CommandBase {
   private final double angleFactor;
+  private final double WATCHDOG_TIMEOUT = 1.2;
 
   private int smoothingIntensity;
   private double cruiseVelocity;
@@ -31,8 +32,8 @@ public class PivotToDegreeMagicNew extends CommandBase {
   private double initialAngle;
 
   private boolean isFinished;
+  private double startingTime;
   private Watchdog watchdog;
-  private final double WATCHDOG_TIMEOUT = 1.5;
 
   /** Creates a new PivotToDegreeMagic. */
   public PivotToDegreeMagicNew(double desiredAngle, Supplier<Boolean> safeToContinue,
@@ -42,7 +43,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
     this.safeToContinue = safeToContinue;
     this.armSubsystem = armSubsystem;
     this.pivotMotor = armSubsystem.getPivotTalon();
-    this.angleFactor = 0.0009093533;// 0.000612669993242 * 0.7438;
+    this.angleFactor = 0.0009093533;
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
@@ -70,7 +71,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
   @Override
   public void initialize() {
     this.isFinished = false;
-    armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity);
+    armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity, 138);
     initialAngle = armSubsystem.getArmPitch();
     pivotMotor.setSelectedSensorPosition(0);
     double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
@@ -78,22 +79,12 @@ public class PivotToDegreeMagicNew extends CommandBase {
     watchdog.reset();
     watchdog.enable();
     System.out.println("---- Pivot Init ----");
+    startingTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double currentPosition = pivotMotor.getSelectedSensorPosition();
-    double currentPitch = ((currentPosition + .001) / 1578.6776859504) + initialAngle;
-    boolean isSafe = safeToContinue.get();
-
-    // pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
-
-    Telemetry.logData("isSafe", isSafe, PivotToDegreeMagicNew.class);
-    Telemetry.logData("isFinished", isFinished, PivotToDegreeMagicNew.class);
-    Telemetry.logData("currentAngle", currentPitch, PivotToDegreeMagicNew.class);
-    Telemetry.logData("desiredAngle", desiredAngle, PivotToDegreeMagicNew.class);
-    Telemetry.logData("initalAngle", initialAngle, PivotToDegreeMagicNew.class);
   }
 
   // Called once the command ends or is interrupted.
@@ -101,27 +92,33 @@ public class PivotToDegreeMagicNew extends CommandBase {
   public void end(boolean interrupted) {
     this.armSubsystem.setPositionToHold(pivotMotor.getSelectedSensorPosition());
     System.out.println("---- Pivot Command Terminated ----");
+    Telemetry.logData("Command Time", startingTime - Timer.getFPGATimestamp(), getClass());
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     double currentPosition = pivotMotor.getSelectedSensorPosition();
+    double controllerClosedLoopError = pivotMotor.getClosedLoopError();
     double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
-    double diff = Math.abs(desiredPosition - currentPosition);
+    double diff = pivotMotor.getClosedLoopError();
     boolean differenceMet = diff <= 139; // 29.5794701987;
     boolean watchdogKill = watchdog.isExpired();
 
-    Telemetry.logData("Pitch Difference", diff, PivotToDegreeMagicNew.class);
-    Telemetry.logData("Current Pitch Position", currentPosition, PivotToDegreeMagicNew.class);
-    Telemetry.logData("Desired Pitch Position", desiredPosition, PivotToDegreeMagicNew.class);
+    // Telemetry.logData("Pitch Difference", diff, PivotToDegreeMagicNew.class);
+    // Telemetry.logData("Current Pitch Position", currentPosition,
+    // PivotToDegreeMagicNew.class);
+    // Telemetry.logData("Desired Pitch Position", desiredPosition,
+    // PivotToDegreeMagicNew.class);
 
     if (watchdogKill) {
       Telemetry.logData("----- WatchDog Kill; Pos Difference -----", diff, PivotToDegreeMagicNew.class);
+      Telemetry.logData("--- Motor Controller Closedloop Error", controllerClosedLoopError, getClass());
     }
 
     if (differenceMet) {
       Telemetry.logData("----- Difference Met; Pos Difference -----", diff, PivotToDegreeMagicNew.class);
+      Telemetry.logData("--- Motor Controller Closedloop Error", controllerClosedLoopError, getClass());
     }
 
     return (differenceMet || watchdogKill);
