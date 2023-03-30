@@ -27,7 +27,7 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 public class UtilityCommands {
 
   public static Command pivotArm(double angle, ArmSubsystem armSubsystem) {
-    return new PivotToDegreeMagicNew(angle, // 78
+    return new PivotToDegreeMagicNew(angle,
         Constants.ArmConstants.MAX_CRUISE_VELOCITY,
         Constants.ArmConstants.MAX_ACCELERATION, 3,
         Constants.ArmConstants.MOTIONM_GAINS_FX,
@@ -39,7 +39,7 @@ public class UtilityCommands {
       ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
     return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0)
         .andThen(UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicks(82, extenderSubsystem))
-            .andThen(new GrabberOpen(grabberSubsystem, 1))
+            .andThen(new GrabberOpen(grabberSubsystem, 1).powerIntake(-.3))
             .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)));
   }
 
@@ -89,9 +89,6 @@ public class UtilityCommands {
         .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 
-  // .alongWith(new ExtendTicks(107, extenderSubsystem)).andThen(new
-  // GrabberOpen(grabberSubsystem, 1))
-
   public static Command stow(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem,
       ExtenderSubsystem extenderSubsystem) {
     return new ParallelCommandGroup(pivotArm(
@@ -101,16 +98,4 @@ public class UtilityCommands {
             extenderSubsystem))
         .andThen(new RotateToDegree(turretSubsystem, armSubsystem, 90, 0));
   }
-
-  public static Command stowNoRotate(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem,
-      ExtenderSubsystem extenderSubsystem) {
-    return new ExtendTicks(0, extenderSubsystem)
-        .alongWith(new PivotToDegreeMagicNew(Constants.ArmConstants.COLLECT_STOW, // 78
-            Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-            Constants.ArmConstants.MAX_ACCELERATION, 3,
-            Constants.ArmConstants.MOTIONM_GAINS_FX,
-            () -> true,
-            armSubsystem));
-  }
-
 }

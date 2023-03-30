@@ -42,6 +42,8 @@ public class DriveStraightByGyro extends CommandBase {
     this.doStop = true;
     this.distance = distance;
 
+    SmartDashboard.putNumber("Current Heading", 0);
+
     addRequirements(swerveSubsystem);
   }
 
@@ -60,6 +62,7 @@ public class DriveStraightByGyro extends CommandBase {
     SmartDashboard.putNumber("Starting Position", xLocation);
     SmartDashboard.putNumber("Target Position", xLocationTarget);
     SmartDashboard.putNumber("Starting Angle", swerveSubsystem.getHeading());
+    SmartDashboard.putNumber("Starting Heading", swerveSubsystem.getHeading());
 
     this.startingTime = Timer.getFPGATimestamp();
 
@@ -81,6 +84,7 @@ public class DriveStraightByGyro extends CommandBase {
             .toSwerveModuleStates(new ChassisSpeeds(xEffort, 0, thetaEffort)));
     SmartDashboard.putNumber("thetaEffort", thetaEffort);
     SmartDashboard.putNumber("xEffort", xEffort);
+    SmartDashboard.putNumber("Current Heading", angle);
     SmartDashboard.putNumber("Location Diff", xController.getPositionError());
     SmartDashboard.putNumber("xLocation", swerveSubsystem.getPose().getX());
   }

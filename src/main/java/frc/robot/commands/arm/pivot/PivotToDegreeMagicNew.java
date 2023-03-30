@@ -8,12 +8,10 @@ import java.util.function.Supplier;
 import com.ThePinkAlliance.core.util.GainsFX;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Telemetry;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
@@ -93,32 +91,25 @@ public class PivotToDegreeMagicNew extends CommandBase {
     this.armSubsystem.setPositionToHold(pivotMotor.getSelectedSensorPosition());
     System.out.println("---- Pivot Command Terminated ----");
     Telemetry.logData("Command Time", startingTime - Timer.getFPGATimestamp(), getClass());
+    watchdog.disable();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double currentPosition = pivotMotor.getSelectedSensorPosition();
     double controllerClosedLoopError = pivotMotor.getClosedLoopError();
-    double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
-    double diff = pivotMotor.getClosedLoopError();
+    double diff = Math.abs(pivotMotor.getClosedLoopError());
     boolean differenceMet = diff <= 139; // 29.5794701987;
     boolean watchdogKill = watchdog.isExpired();
 
-    // Telemetry.logData("Pitch Difference", diff, PivotToDegreeMagicNew.class);
-    // Telemetry.logData("Current Pitch Position", currentPosition,
-    // PivotToDegreeMagicNew.class);
-    // Telemetry.logData("Desired Pitch Position", desiredPosition,
-    // PivotToDegreeMagicNew.class);
-
     if (watchdogKill) {
       Telemetry.logData("----- WatchDog Kill; Pos Difference -----", diff, PivotToDegreeMagicNew.class);
-      Telemetry.logData("--- Motor Controller Closedloop Error", controllerClosedLoopError, getClass());
+      Telemetry.logData("---- Motor Controller Closedloop Error ----", controllerClosedLoopError, getClass());
     }
 
     if (differenceMet) {
       Telemetry.logData("----- Difference Met; Pos Difference -----", diff, PivotToDegreeMagicNew.class);
-      Telemetry.logData("--- Motor Controller Closedloop Error", controllerClosedLoopError, getClass());
+      Telemetry.logData("---- Motor Controller Closedloop Error ----", controllerClosedLoopError, getClass());
     }
 
     return (differenceMet || watchdogKill);

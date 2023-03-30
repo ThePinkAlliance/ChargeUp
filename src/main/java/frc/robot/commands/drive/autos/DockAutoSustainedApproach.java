@@ -109,13 +109,6 @@ public class DockAutoSustainedApproach extends CommandBase {
         power = 0;
         isFinished = true;
       }
-      // else {
-      // stablizeTimer.stop();
-      // stablizeTimer.reset();
-      // }
-
-      // if (stablizeTimer.hasElapsed(.3)) {
-      // }
 
       swerveSubsystem.setModuleStates(
           Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(power, 0, 0)));

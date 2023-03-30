@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -58,7 +59,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
             DriveConstants.kBackRightDriveAbsoluteEncoderReversed, "base");
 
-    private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private final AHRS gyro = new AHRS(SerialPort.Port.kUSB);
     private final Field2d field2d = new Field2d();
     private final SwerveDrivePoseEstimator estimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             getRotation2d(), new SwerveModulePosition[] {
@@ -70,13 +71,13 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d currentPose2d = new Pose2d();
 
     public SwerveSubsystem() {
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-                zeroHeading();
-            } catch (Exception e) {
-            }
-        }).start();
+        // new Thread(() -> {
+        // try {
+        // Thread.sleep(1000);
+        zeroHeading();
+        // } catch (Exception e) {
+        // }
+        // }).start();
 
         SmartDashboard.putData(field2d);
     }
@@ -150,6 +151,10 @@ public class SwerveSubsystem extends SubsystemBase {
         this.estimator.addVisionMeasurement(pose, timestamp);
     }
 
+    public double getYaw() {
+        return gyro.getYaw();
+    }
+
     public void setKp(double kP) {
         frontLeft.setKp(kP);
         frontRight.setKp(kP);
@@ -162,24 +167,11 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Back Left Angle", backLeft.getPosition().angle.getRadians());
 
         SmartDashboard.putNumber("Base Pitch", getPitch());
+        SmartDashboard.putNumber("Base Heading", gyro.getYaw());
 
         currentPose2d = estimator.update(getRotation2d(),
                 new SwerveModulePosition[] { frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(),
                         backRight.getPosition() });
-
-        // SmartDashboard.putNumber("Robot Heading", getHeading());
-        // SmartDashboard.putNumber("Robot Location X",
-        // getPose().getTranslation().getX());
-        // SmartDashboard.putNumber("Robot Location Y",
-        // getPose().getTranslation().getY());
-        // SmartDashboard.putNumber("Front Left Rotation (canID=2):",
-        // frontLeft.getRawAbsoluteAngularPosition());
-        // SmartDashboard.putNumber("Front Right Rotation (canID=4):",
-        // frontRight.getRawAbsoluteAngularPosition());
-        // SmartDashboard.putNumber("Back Left Rotation (canID=6):",
-        // backLeft.getRawAbsoluteAngularPosition());
-        // SmartDashboard.putNumber("Back Right Rotation (canID=8):",
-        // backRight.getRawAbsoluteAngularPosition());
 
         field2d.setRobotPose(currentPose2d);
     }

@@ -61,7 +61,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <1>": {
       "plots": [
@@ -196,21 +199,34 @@
     "Plot <4>": {
       "plots": [
         {
-          "axis": [
-            {
-              "autoFit": true
-            }
-          ],
-          "height": 435,
+          "height": 568,
           "series": [
             {
               "color": [
-                0.2980392277240753,
-                0.44705885648727417,
-                0.6901960968971252,
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/[EXTEND] Ticks"
+              "id": "NT:/SmartDashboard/Base Heading"
+            },
+            {
+              "color": [
+                0.32156869769096375,
+                0.8666667342185974,
+                0.4733680188655853,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Base Pitch"
+            },
+            {
+              "color": [
+                0.0,
+                0.9620254039764404,
+                1.0,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Current Heading"
             }
           ]
         }
@@ -224,7 +240,7 @@
               "autoFit": true
             }
           ],
-          "height": 773,
+          "height": 767,
           "series": [
             {
               "color": [
@@ -243,6 +259,15 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/Target Position"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/xLocation"
             }
           ]
         }

@@ -29,6 +29,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -200,35 +201,14 @@ public class RobotContainer {
                                 () -> 0.0,
                                 grabberSubsystem));
 
-                // new JoystickButton(driverJoystick,
-                // Constants.OIConstants.kButtonLeftBumper).onTrue(
-                // new PivotToDegreeMagicNew(132,
-                // Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                // Constants.ArmConstants.MAX_ACCELERATION, 2,
-                // Constants.ArmConstants.MOTIONM_GAINS_FX,
-                // () -> true,
-                // armSubsystem));
-
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonStart)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
-
-                // new JoystickButton(driverJoystick,
-                // Constants.OIConstants.kButtonBack).onTrue(new InstantCommand(
-                // () -> swerveSubsystem = new SwerveSubsystem()));
 
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonLeftBumper).onTrue(
                                 UtilityCommands.collectStationDeployCone(armSubsystem, turretSubsystem,
                                                 grabberSubsystem, extenderSubsystem))
                                 .onFalse(UtilityCommands.collectStationStowCone(armSubsystem, turretSubsystem,
                                                 grabberSubsystem, extenderSubsystem));
-
-                // new JoystickButton(driverJoystick, Constants.OIConstants.kButtonA).onTrue(
-                // new PivotToDegreeMagicNew(82,
-                // Constants.ArmConstants.MAX_CRUISE_VELOCITY,
-                // Constants.ArmConstants.MAX_ACCELERATION, 2,
-                // Constants.ArmConstants.MOTIONM_GAINS_FX,
-                // () -> true,
-                // armSubsystem));
 
                 // Tower Y - deliver cone high
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonY).onTrue(
@@ -277,6 +257,7 @@ public class RobotContainer {
                  * Reset the turret encoder to the robot's legal position.
                  */
                 turretSubsystem.setEncoderPositions(91.43);
+                swerveSubsystem.zeroHeading();
 
                 return autoSendable.getSelected();
         }
