@@ -71,13 +71,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d currentPose2d = new Pose2d();
 
     public SwerveSubsystem() {
-        // new Thread(() -> {
-        // try {
-        // Thread.sleep(1000);
         zeroHeading();
-        // } catch (Exception e) {
-        // }
-        // }).start();
 
         SmartDashboard.putData(field2d);
     }

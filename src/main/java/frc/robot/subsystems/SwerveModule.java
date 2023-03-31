@@ -10,7 +10,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -27,39 +26,6 @@ public class SwerveModule {
     private final TalonFXConfiguration driveConfig;
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
-    private boolean invertDriveEncoder = false;
-    private boolean invertSteerMotor = false;
-
-    @Deprecated
-    public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed,
-            boolean turningEncoderReversed,
-            int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
-
-        this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
-        this.absoluteEncoderReversed = absoluteEncoderReversed;
-        this.steerConfig = new TalonFXConfiguration();
-        this.driveConfig = new TalonFXConfiguration();
-        canCoder = new CANCoder(absoluteEncoderId);
-
-        // Changed from 360 to 180 no change in pod behvior was noticed.
-        canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-
-        driveMotor = new TalonFX(driveMotorId);
-        turningMotor = new TalonFX(turningMotorId);
-
-        turningMotor.setNeutralMode(NeutralMode.Brake);
-        driveMotor.setNeutralMode(NeutralMode.Brake);
-
-        driveMotor.configAllSettings(driveConfig);
-        turningMotor.configAllSettings(steerConfig);
-
-        driveMotor.setInverted(driveMotorReversed);
-
-        turningPidController = new PIDController(Constants.ModuleConstants.kPTurning, 1.5, 0);
-        turningPidController.enableContinuousInput(-Math.PI, Math.PI);
-
-        resetEncoders();
-    }
 
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed,
             boolean turningEncoderReversed,
@@ -84,74 +50,6 @@ public class SwerveModule {
         turningMotor.configAllSettings(steerConfig);
 
         driveMotor.setInverted(driveMotorReversed);
-        turningPidController = new PIDController(ModuleConstants.kPTurning, 1.5, 0);
-        turningPidController.enableContinuousInput(-Math.PI, Math.PI);
-
-        resetEncoders();
-    }
-
-    @Deprecated
-    public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed,
-            boolean turningEncoderReversed,
-            int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed,
-            boolean invertDriveEncoder) {
-
-        this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
-        this.invertDriveEncoder = invertDriveEncoder;
-        this.absoluteEncoderReversed = absoluteEncoderReversed;
-        this.steerConfig = new TalonFXConfiguration();
-        this.driveConfig = new TalonFXConfiguration();
-        canCoder = new CANCoder(absoluteEncoderId);
-
-        // Changed from 360 to 180 no change in pod behvior was noticed.
-        canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-
-        driveMotor = new TalonFX(driveMotorId);
-        turningMotor = new TalonFX(turningMotorId);
-
-        turningMotor.setNeutralMode(NeutralMode.Brake);
-        driveMotor.setNeutralMode(NeutralMode.Brake);
-
-        driveMotor.configAllSettings(driveConfig);
-        turningMotor.configAllSettings(steerConfig);
-
-        driveMotor.setInverted(driveMotorReversed);
-
-        turningPidController = new PIDController(ModuleConstants.kPTurning, 1.0, 0);
-        turningPidController.enableContinuousInput(-Math.PI, Math.PI);
-
-        resetEncoders();
-    }
-
-    @Deprecated
-    public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed,
-            boolean turningEncoderReversed,
-            int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed,
-            String canNetwork, boolean invertSteerMotor) {
-
-        this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
-        this.invertSteerMotor = invertSteerMotor;
-        this.absoluteEncoderReversed = absoluteEncoderReversed;
-        this.steerConfig = new TalonFXConfiguration();
-        this.driveConfig = new TalonFXConfiguration();
-        canCoder = new CANCoder(absoluteEncoderId, canNetwork);
-
-        // Changed from 360 to 180 no change in pod behvior was noticed.
-        canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-
-        driveMotor = new TalonFX(driveMotorId, canNetwork);
-        turningMotor = new TalonFX(turningMotorId, canNetwork);
-
-        turningMotor.setInverted(invertSteerMotor);
-
-        turningMotor.setNeutralMode(NeutralMode.Brake);
-        driveMotor.setNeutralMode(NeutralMode.Brake);
-
-        driveMotor.configAllSettings(driveConfig);
-        turningMotor.configAllSettings(steerConfig);
-
-        driveMotor.setInverted(driveMotorReversed);
-
         turningPidController = new PIDController(ModuleConstants.kPTurning, 1.5, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -237,17 +135,6 @@ public class SwerveModule {
 
         double output = turningPidController.calculate(getTurningPosition(), state.angle.getRadians());
         turningMotor.set(ControlMode.PercentOutput, output);
-    }
-
-    public void printDebug() {
-        SmartDashboard.putNumber("Swerve[" + canCoder.getDeviceID() + "] Current Angle",
-                getTurningPosition());
-
-        SmartDashboard.putNumber("Swerve[" + canCoder.getDeviceID() + "] Current Distance",
-                getPosition().distanceMeters);
-
-        SmartDashboard.putNumber("Swerve[" + canCoder.getDeviceID() + "]",
-                this.turningMotor.getSelectedSensorPosition());
     }
 
     public void stop() {

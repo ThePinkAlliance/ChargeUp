@@ -38,6 +38,12 @@ public class DriveStraightByGyro extends CommandBase {
      */
     this.xController.setTolerance(0.155);
 
+    /*
+     * Continuous input was not enabled during our tests at slf this could be one
+     * cause.
+     */
+    this.thetaController.enableContinuousInput(-180, 180);
+
     this.speed = speed;
     this.doStop = true;
     this.distance = distance;
@@ -56,7 +62,7 @@ public class DriveStraightByGyro extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    double xLocation = swerveSubsystem.getPose().getX();
+    double xLocation = swerveSubsystem.getEstimatedPose().getX();
     double xLocationTarget = distance + xLocation;
 
     SmartDashboard.putNumber("Starting Position", xLocation);
@@ -74,7 +80,7 @@ public class DriveStraightByGyro extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xLocation = swerveSubsystem.getPose().getX();
+    double xLocation = swerveSubsystem.getEstimatedPose().getX();
     double angle = swerveSubsystem.getHeading();
     double thetaEffort = MathUtil.clamp(thetaController.calculate(angle), -speed, speed);
     double xEffort = MathUtil.clamp(xController.calculate(xLocation), -speed, speed);
@@ -86,7 +92,7 @@ public class DriveStraightByGyro extends CommandBase {
     SmartDashboard.putNumber("xEffort", xEffort);
     SmartDashboard.putNumber("Current Heading", angle);
     SmartDashboard.putNumber("Location Diff", xController.getPositionError());
-    SmartDashboard.putNumber("xLocation", swerveSubsystem.getPose().getX());
+    SmartDashboard.putNumber("xLocation", swerveSubsystem.getEstimatedPose().getX());
   }
 
   // Called once the command ends or is interrupted.
