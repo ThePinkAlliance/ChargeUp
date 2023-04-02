@@ -94,7 +94,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(getHeading());
+        return Rotation2d.fromDegrees(getYaw());
     }
 
     /**
@@ -159,6 +159,9 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Back Left Angle", backLeft.getPosition().angle.getRadians());
+        SmartDashboard.putNumber("Back Right Angle", backRight.getPosition().angle.getRadians());
+        SmartDashboard.putNumber("Front Left Angle", frontLeft.getPosition().angle.getRadians());
+        SmartDashboard.putNumber("Front Right Angle", frontRight.getPosition().angle.getRadians());
 
         SmartDashboard.putNumber("Base Pitch", getPitch());
         SmartDashboard.putNumber("Base Heading", gyro.getYaw());

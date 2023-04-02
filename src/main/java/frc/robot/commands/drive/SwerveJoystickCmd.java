@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -40,8 +41,8 @@ public class SwerveJoystickCmd extends CommandBase {
     @Override
     public void execute() {
         // 1. Get real-time joystick inputs
-        double xSpeed = Math.copySign(xSpdFunction.get(), xSpdFunction.get()); //this does not square
-        double ySpeed = Math.copySign(ySpdFunction.get(), ySpdFunction.get()); //this does not square
+        double xSpeed = Math.copySign(xSpdFunction.get(), xSpdFunction.get()); // this does not square
+        double ySpeed = Math.copySign(ySpdFunction.get(), ySpdFunction.get()); // this does not square
         xSpeed = xSpeed * Math.abs(xSpeed);
         ySpeed = ySpeed * Math.abs(ySpeed);
 
@@ -53,8 +54,10 @@ public class SwerveJoystickCmd extends CommandBase {
         turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
         // 3. Make the driving smoother
-        xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-        ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+        xSpeed = (xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond)
+                * Constants.DriveConstants.kTeleDriveSpeedReduction;
+        ySpeed = (yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond)
+                * Constants.DriveConstants.kTeleDriveSpeedReduction;
         turningSpeed = turningLimiter.calculate(turningSpeed)
                 * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 

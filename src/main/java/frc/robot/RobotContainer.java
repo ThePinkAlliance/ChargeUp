@@ -145,6 +145,9 @@ public class RobotContainer {
                                                                                         0,
                                                                                         2, 37, 3.0))));
 
+                        autoSendable.addOption("Backwards", new DriveStraightByGyro(-2.5, 1, swerveSubsystem));
+                        autoSendable.addOption("Forwards", new DriveStraightByGyro(2.5, 1, swerveSubsystem));
+
                         // armSubsystem,
                         // grabberSubsystem, swerveSubsystem)
                         autoSendable.addOption("Score Cube High, Leave Community Center Balance",
@@ -190,7 +193,7 @@ public class RobotContainer {
 
                 turretSubsystem.setDefaultCommand(
                                 new JoystickTurret(turretSubsystem, () -> towerJoystick.getRawAxis(
-                                                OIConstants.kXAxis), armSubsystem));
+                                                OIConstants.kXAxis) * 0.6, armSubsystem));
 
                 /* Tower Default Commands for Pivot, Extend and Turret */
                 extenderSubsystem.setDefaultCommand(new JoystickArmExtend(towerJoystick, extenderSubsystem,
@@ -210,6 +213,26 @@ public class RobotContainer {
                                 .onFalse(UtilityCommands.collectStationStowCone(armSubsystem, turretSubsystem,
                                                 grabberSubsystem, extenderSubsystem));
 
+                new JoystickButton(driverJoystick, Constants.OIConstants.kButtonRightBumper)
+                                .onTrue(UtilityCommands.pivotArm(83.5, armSubsystem).alongWith(
+                                                new CommandGrabberTerminateCurrent(-.7, -2, grabberSubsystem)
+                                                                .customCurrentLimit(10).customWatchdog(
+                                                                                3)))
+
+                                .onFalse(new CommandGrabberTerminateCurrent(-.7, -16, grabberSubsystem)
+                                                .customCurrentLimit(10).customWatchdog(
+                                                                3)
+                                                .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem,
+                                                                extenderSubsystem)));
+
+                new JoystickButton(towerJoystick, Constants.OIConstants.kButtonRightBumper)
+                                .onTrue(UtilityCommands.pivotArm(125, armSubsystem));
+
+                new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05).onTrue(UtilityCommands.deliverCubeHigh(
+                                extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
+                new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05).onTrue(UtilityCommands.deliverCubeMid(
+                                extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
+
                 // Tower Y - deliver cone high
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonY).onTrue(
                                 UtilityCommands.deliverConeHigh(armSubsystem, extenderSubsystem));
@@ -218,29 +241,36 @@ public class RobotContainer {
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonB).onTrue(
                                 UtilityCommands.deliverConeMid(armSubsystem, extenderSubsystem));
 
-                // Tower X - deliver cube high
+                // Tower X - stow
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonX).onTrue(
                                 UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
 
-                // Tower A - deliver cube mid
+                // Tower A - release
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonA).onTrue(
                                 new GrabberOpen(grabberSubsystem,
-                                                Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER));
+                                                Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER).powerIntake(0.2));
 
                 // Tower Triggers 0 and 180
-                new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05)
+                new POVButton(towerJoystick, 270)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
 
-                new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05)
+                new POVButton(towerJoystick, 90)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
 
-                new JoystickButton(towerJoystick, Constants.OIConstants.kButtonLeftBumper)
-                                .onTrue(new CommandGrabber(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER,
-                                                Constants.GrabberConstants.GRASP_OPEN_POSITION,
-                                                grabberSubsystem).customWatchdog(6))
-                                .onFalse(new CommandGrabberTerminateCurrent(-0.7,
-                                                Constants.GrabberConstants.GRASP_CLOSED_POSITION,
-                                                grabberSubsystem).customWatchdog(1.4));
+                new Trigger(() -> driverJoystick.getRawAxis(3) > 0.05).onTrue(new InstantCommand(() -> {
+                        Constants.DriveConstants.kTeleDriveSpeedReduction = 0.4;
+                })).onFalse(new InstantCommand(() -> {
+                        Constants.DriveConstants.kTeleDriveSpeedReduction = 1;
+                }));
+
+                // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonLeftBumper)
+                // .onTrue(new
+                // CommandGrabber(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER,
+                // Constants.GrabberConstants.GRASP_OPEN_POSITION,
+                // grabberSubsystem).customWatchdog(6))
+                // .onFalse(new CommandGrabberTerminateCurrent(-0.7,
+                // Constants.GrabberConstants.GRASP_CLOSED_POSITION,
+                // grabberSubsystem).customWatchdog(1.4));
         }
 
         public void onDisabledInit() {

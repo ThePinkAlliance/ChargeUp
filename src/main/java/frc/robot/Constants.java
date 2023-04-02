@@ -49,8 +49,8 @@ public final class Constants {
 
                 public static final boolean kFrontLeftDriveEncoderReversed = false;
                 public static final boolean kBackLeftDriveEncoderReversed = true;
-                public static final boolean kFrontRightDriveEncoderReversed = true;
-                public static final boolean kBackRightDriveEncoderReversed = true;
+                public static final boolean kFrontRightDriveEncoderReversed = false;
+                public static final boolean kBackRightDriveEncoderReversed = false;
 
                 public static final int kFrontLeftDriveAbsoluteEncoderPort = 2;
                 public static final int kBackLeftDriveAbsoluteEncoderPort = 6;
@@ -66,19 +66,20 @@ public final class Constants {
                  * These values where determined by lining up all the wheels and recording the
                  * outputed positions.
                  */
-                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.84; // 2.93, 1.99;
-                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.187;
-                public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.57;
-                public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.47;
+                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -1.018;// -0.84; // 2.93, 1.99;
+                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.194;// 1.187;
+                public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -1.569;// 1.57;
+                public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -1.661; // 1.47;
 
                 // This is the max speed without load.
-                public static final double kPhysicalMaxSpeedMetersPerSecond = 6;
+                public static final double kPhysicalMaxSpeedMetersPerSecond = 7;
                 public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
                 public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 1; // 0.96
                 public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond
                                 / 2.8;
-                public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3.0;
+                public static double kTeleDriveSpeedReduction = 1;
+                public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 2.5;
                 public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.5;
         }
 
@@ -152,13 +153,15 @@ public final class Constants {
                 public static final int kButtonA = 1;
                 public static final int kButtonLeftBumper = 5;
                 public static final int kButtonRightBumper = 6;
+
+                public static boolean cubeSelected = false;
         }
 
         public static final class ArmConstants {
                 private static double VELOCITY_MULTIPLER = 1.2;
                 private static double ACCEL_MULTIPLER = 2.5;
 
-                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.20, 0, 0, 0.3, 0, 1);
+                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.22, 0, 0, 0.3, 0, 1);
                 public static final GainsFX POSITION_GAINS_FX = new GainsFX(0.1, 0, 0, 0.3, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864 * VELOCITY_MULTIPLER;
                 /**
@@ -191,7 +194,7 @@ public final class Constants {
         }
 
         public static final class ExtenderConstants {
-                public static final float EXTENDER_90_MAX_LIMIT = 108f; // 54.0f
+                public static final float EXTENDER_90_MAX_LIMIT = 112f; // 54.0f
                 public static final float EXTENDER_MIN_LIMIT = 3.0f;
                 public static final double EXTENDER_MARGIN_OF_ERROR = 3.0;
                 public static final double POWER_LIMIT_EXTEND = 1;

@@ -38,4 +38,11 @@ public class SphericalCoordinatesTest {
     assertEquals(0, coordinateDifference.getTheta(), 0.05, "Theta Coordinate Matches");
     assertEquals(1.57, coordinateDifference.getPhi(), 0.05, "Phi Coordinate Matches");
   }
+
+  @Test
+  public void testHeadingCalculation() {
+    double newHeading = Math.IEEEremainder(-480, 360);
+
+    assertEquals(-120.0, newHeading);
+  }
 }

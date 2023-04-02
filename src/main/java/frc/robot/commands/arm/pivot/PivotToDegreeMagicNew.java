@@ -11,13 +11,14 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Telemetry;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
 public class PivotToDegreeMagicNew extends CommandBase {
   private final double angleFactor;
-  private final double WATCHDOG_TIMEOUT = 1.2;
+  private final double WATCHDOG_TIMEOUT = 2;
 
   private int smoothingIntensity;
   private double cruiseVelocity;
@@ -41,7 +42,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
     this.safeToContinue = safeToContinue;
     this.armSubsystem = armSubsystem;
     this.pivotMotor = armSubsystem.getPivotTalon();
-    this.angleFactor = 0.0009093533;
+    this.angleFactor = 0.0009093533 * 0.944; // 0.945
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
@@ -69,20 +70,23 @@ public class PivotToDegreeMagicNew extends CommandBase {
   @Override
   public void initialize() {
     this.isFinished = false;
-    armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity, 138);
+    armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity, 27);
     initialAngle = armSubsystem.getArmPitch();
     pivotMotor.setSelectedSensorPosition(0);
     double desiredPosition = (desiredAngle - initialAngle) / angleFactor;
     pivotMotor.set(TalonFXControlMode.MotionMagic, desiredPosition);
     watchdog.reset();
     watchdog.enable();
+
     System.out.println("---- Pivot Init ----");
+
     startingTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putNumber("Estimated Pitch Angle", pivotMotor.getSelectedSensorPosition() * angleFactor);
   }
 
   // Called once the command ends or is interrupted.
@@ -90,7 +94,15 @@ public class PivotToDegreeMagicNew extends CommandBase {
   public void end(boolean interrupted) {
     this.armSubsystem.setPositionToHold(pivotMotor.getSelectedSensorPosition());
     System.out.println("---- Pivot Command Terminated ----");
+
+    Telemetry.logData("Target Angle", desiredAngle, getClass());
     Telemetry.logData("Command Time", startingTime - Timer.getFPGATimestamp(), getClass());
+    Telemetry.logData("Inital Angle", initialAngle, getClass());
+    Telemetry.logData("Angle Difference", desiredAngle - initialAngle, getClass());
+
+    SmartDashboard.putNumber("Target Angle Pitch", desiredAngle);
+    SmartDashboard.putNumber("Error Pitch", pivotMotor.getClosedLoopError());
+
     watchdog.disable();
   }
 
@@ -98,8 +110,12 @@ public class PivotToDegreeMagicNew extends CommandBase {
   @Override
   public boolean isFinished() {
     double controllerClosedLoopError = pivotMotor.getClosedLoopError();
-    double diff = Math.abs(pivotMotor.getClosedLoopError());
-    boolean differenceMet = diff <= 139; // 29.5794701987;
+    double diff = Math.abs(controllerClosedLoopError);
+
+    /*
+     * We need to tune the pitch controller its inaccurate.
+     */
+    boolean differenceMet = diff <= 27; // 29.5794701987;
     boolean watchdogKill = watchdog.isExpired();
 
     if (watchdogKill) {

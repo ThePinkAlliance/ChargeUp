@@ -43,16 +43,14 @@ public class UtilityCommands {
             .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)));
   }
 
-  // No Use
   public static Command deliverCubeHigh(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
       ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
-    return UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicks(82, extenderSubsystem));
+    return UtilityCommands.pivotArm(127, armSubsystem).alongWith(new ExtendTicks(82, extenderSubsystem));
   }
 
-  // No Use
   public static Command deliverCubeMid(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
       ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
-    return UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicks(22, extenderSubsystem));
+    return UtilityCommands.pivotArm(127, armSubsystem).alongWith(new ExtendTicks(20, extenderSubsystem));
   }
 
   public static Command collectStationDeployCone(ArmSubsystem armSubsystem,
@@ -72,12 +70,13 @@ public class UtilityCommands {
 
   public static Command deliverConeHigh(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem) {
-    return UtilityCommands.pivotArm(132.5, armSubsystem).alongWith(new ExtendTicks(107, extenderSubsystem));
+    // Comp: 132.5, 107
+    return UtilityCommands.pivotArm(129, armSubsystem).alongWith(new ExtendTicks(110, extenderSubsystem));
   }
 
   public static Command deliverConeMid(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem) {
-    return UtilityCommands.pivotArm(127, armSubsystem).alongWith(new ExtendTicks(35, extenderSubsystem));
+    return UtilityCommands.pivotArm(127, armSubsystem).alongWith(new ExtendTicks(38, extenderSubsystem));
   }
 
   public static Command deliverConeHighAuto(ArmSubsystem armSubsystem,

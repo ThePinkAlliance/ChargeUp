@@ -73,7 +73,7 @@ public class DriveStraightByGyro extends CommandBase {
     this.startingTime = Timer.getFPGATimestamp();
 
     this.xController.setSetpoint(xLocationTarget);
-    this.thetaController.setSetpoint(swerveSubsystem.getHeading());
+    this.thetaController.setSetpoint(swerveSubsystem.getYaw());
     this.startingHeading = swerveSubsystem.getHeading();
   }
 
@@ -81,15 +81,21 @@ public class DriveStraightByGyro extends CommandBase {
   @Override
   public void execute() {
     double xLocation = swerveSubsystem.getEstimatedPose().getX();
-    double angle = swerveSubsystem.getHeading();
-    double thetaEffort = MathUtil.clamp(thetaController.calculate(angle), -speed, speed);
-    double xEffort = MathUtil.clamp(xController.calculate(xLocation), -speed, speed);
+    double angle = swerveSubsystem.getYaw();
+    double calculatedTheta = thetaController.calculate(angle);
+    double calculatedX = xController.calculate(xLocation);
+    double thetaEffort = MathUtil.clamp(calculatedTheta, -0.5, 0.5);
+    double xEffort = MathUtil.clamp(calculatedX, -speed, speed);
 
     swerveSubsystem.setModuleStates(
         Constants.DriveConstants.kDriveKinematics
             .toSwerveModuleStates(new ChassisSpeeds(xEffort, 0, thetaEffort)));
+
     SmartDashboard.putNumber("thetaEffort", thetaEffort);
+    SmartDashboard.putNumber("Theta Diff", thetaController.getPositionError());
     SmartDashboard.putNumber("xEffort", xEffort);
+    SmartDashboard.putNumber("Calculated Theta", calculatedTheta);
+    SmartDashboard.putNumber("Calculated X", calculatedX);
     SmartDashboard.putNumber("Current Heading", angle);
     SmartDashboard.putNumber("Location Diff", xController.getPositionError());
     SmartDashboard.putNumber("xLocation", swerveSubsystem.getEstimatedPose().getX());

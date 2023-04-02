@@ -65,7 +65,7 @@ public class DockAuto extends CommandBase {
   public void execute() {
     double currentPitch = swerveSubsystem.getPitch();
     double approachPitchThreshold = 12;
-    double pitchSettle = 12; // 12
+    double pitchSettle = 5.5; // 12
     // 14 might be too high.
     if (currentPitch >= approachPitchThreshold && !didReachDock) {
       didReachDock = true;
