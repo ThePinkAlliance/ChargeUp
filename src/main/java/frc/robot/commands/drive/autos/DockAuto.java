@@ -77,7 +77,7 @@ public class DockAuto extends CommandBase {
     }
 
     if (didReachDock) {
-      double gain = 0.069 * 1.15; // Comp 0.059
+      double gain = 0.059; // Comp 0.059
       double power = gain * currentPitch;
 
       /* Power ceiling and floor */
@@ -93,17 +93,9 @@ public class DockAuto extends CommandBase {
        */
 
       if (Math.abs(currentPitch) < pitchSettle) {
-        // this.stablizeTimer.start();
         power = 0;
         isFinished = true;
       }
-      // else {
-      // stablizeTimer.stop();
-      // stablizeTimer.reset();
-      // }
-
-      // if (stablizeTimer.hasElapsed(.3)) {
-      // }
 
       swerveSubsystem.setModuleStates(
           Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(power, 0, 0)));
