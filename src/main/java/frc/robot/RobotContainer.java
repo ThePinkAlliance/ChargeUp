@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -50,6 +51,7 @@ import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.arm.turret.JoystickTurret;
 import frc.robot.commands.arm.turret.RotateBasedOnExternalSensor;
 import frc.robot.commands.arm.turret.RotateToDegree;
+import frc.robot.commands.drive.DriveByGyro;
 import frc.robot.commands.drive.DriveStraightByGyro;
 
 import frc.robot.commands.drive.StrafeByGyro;
@@ -145,8 +147,9 @@ public class RobotContainer {
                                                                                         0,
                                                                                         2, 37, 3.0))));
 
-                        autoSendable.addOption("Backwards", new DriveStraightByGyro(-2.5, 1, swerveSubsystem));
-                        autoSendable.addOption("Forwards", new DriveStraightByGyro(2.5, 1, swerveSubsystem));
+                        autoSendable.addOption("2 Piece Test", new DriveStraightByGyro(-4.622, 3, swerveSubsystem)
+                                        .alongWith(new RotateToDegree(turretSubsystem, armSubsystem, 0, 175))
+                                        .andThen(UtilityCommands.pivotArm(85, armSubsystem)));
 
                         // armSubsystem,
                         // grabberSubsystem, swerveSubsystem)
@@ -228,10 +231,10 @@ public class RobotContainer {
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonRightBumper)
                                 .onTrue(UtilityCommands.pivotArm(125, armSubsystem));
 
-                new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05).onTrue(UtilityCommands.deliverCubeHigh(
-                                extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
-                new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05).onTrue(UtilityCommands.deliverCubeMid(
-                                extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
+                new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05)
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
+                new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05)
+                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
 
                 // Tower Y - deliver cone high
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonY).onTrue(
@@ -250,12 +253,16 @@ public class RobotContainer {
                                 new GrabberOpen(grabberSubsystem,
                                                 Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER).powerIntake(0.2));
 
-                // Tower Triggers 0 and 180
-                new POVButton(towerJoystick, 270)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
+                // Tower Bumpers
+                new JoystickButton(towerJoystick, Constants.OIConstants.kButtonLeftBumper)
+                                .onTrue(UtilityCommands.deliverCubeHigh(
+                                                extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem,
+                                                swerveSubsystem));
 
-                new POVButton(towerJoystick, 90)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
+                new JoystickButton(towerJoystick, Constants.OIConstants.kButtonRightBumper)
+                                .onTrue(UtilityCommands.deliverCubeMid(
+                                                extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem,
+                                                swerveSubsystem));
 
                 new Trigger(() -> driverJoystick.getRawAxis(3) > 0.05).onTrue(new InstantCommand(() -> {
                         Constants.DriveConstants.kTeleDriveSpeedReduction = 0.4;
@@ -280,6 +287,7 @@ public class RobotContainer {
 
         public void configureTele() {
                 swerveSubsystem.setGyroHeading(180);
+                swerveSubsystem.resetOdometry(new Pose2d(0, 0, new Rotation2d(180)));
         }
 
         public Command getAutonomousCommand() {
@@ -288,6 +296,7 @@ public class RobotContainer {
                  */
                 turretSubsystem.setEncoderPositions(91.43);
                 swerveSubsystem.zeroHeading();
+                swerveSubsystem.resetOdometry(new Pose2d());
 
                 return autoSendable.getSelected();
         }

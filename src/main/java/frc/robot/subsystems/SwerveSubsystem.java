@@ -21,6 +21,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.SwerveController;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
@@ -71,7 +72,14 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d currentPose2d = new Pose2d();
 
     public SwerveSubsystem() {
-        zeroHeading();
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            zeroHeading();
+        }).start();
 
         SmartDashboard.putData(field2d);
     }
