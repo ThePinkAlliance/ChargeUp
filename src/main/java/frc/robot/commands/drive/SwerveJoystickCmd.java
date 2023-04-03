@@ -67,21 +67,24 @@ public class SwerveJoystickCmd extends CommandBase {
                 : 0.0;
         turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
-        TrapezoidProfile xProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(6, 24),
+        TrapezoidProfile xProfile = new TrapezoidProfile(
+                new TrapezoidProfile.Constraints(
+                        Constants.DriveConstants.kTeleDriveMaxSpeedMetersPerSecond,
+                        Constants.DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond),
                 new TrapezoidProfile.State(xSpeed, 0), xPreviousRef);
-        TrapezoidProfile yProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(6, 24),
+        TrapezoidProfile yProfile = new TrapezoidProfile(
+                new TrapezoidProfile.Constraints(
+                        Constants.DriveConstants.kTeleDriveMaxSpeedMetersPerSecond,
+                        Constants.DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond),
                 new TrapezoidProfile.State(ySpeed, 0), yPreviousRef);
 
-        TrapezoidProfile.State xState = xProfile.calculate(Timer.getFPGATimestamp() - profilePreviousTime);
-        TrapezoidProfile.State yState = yProfile.calculate(Timer.getFPGATimestamp() - profilePreviousTime);
+        double currentTime = Timer.getFPGATimestamp() - profilePreviousTime;
+        TrapezoidProfile.State xState = xProfile.calculate(currentTime);
+        TrapezoidProfile.State yState = yProfile.calculate(currentTime);
 
         xSpeed = xState.position;
         ySpeed = yState.position;
 
-        // 3. Make the driving smoother
-        // xSpeed = xLimiter.calculate(xSpeed * );
-        // ySpeed = yLimiter.calculate(ySpeed *
-        // DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
         turningSpeed = turningLimiter.calculate(turningSpeed)
                 * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
