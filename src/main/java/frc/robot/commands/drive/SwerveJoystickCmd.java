@@ -5,6 +5,8 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -16,17 +18,20 @@ public class SwerveJoystickCmd extends CommandBase {
 
     private final SwerveSubsystem swerveSubsystem;
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
-    private final Supplier<Boolean> fieldOrientedFunction;
+    private final Supplier<Boolean> slowDownSupplier;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+    private TrapezoidProfile.State xPreviousRef, yPreviousRef;
+    private double profilePreviousTime;
 
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
-            Supplier<Boolean> fieldOrientedFunction) {
+            Supplier<Boolean> slowdownSupplier) {
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
         this.turningSpdFunction = turningSpdFunction;
-        this.fieldOrientedFunction = fieldOrientedFunction;
+        this.slowDownSupplier = slowdownSupplier;
+        this.profilePreviousTime = 0;
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
@@ -35,7 +40,9 @@ public class SwerveJoystickCmd extends CommandBase {
 
     @Override
     public void initialize() {
-
+        xPreviousRef = new TrapezoidProfile.State(0, 0);
+        yPreviousRef = new TrapezoidProfile.State(0, 0);
+        profilePreviousTime = Timer.getFPGATimestamp();
     }
 
     @Override
@@ -49,44 +56,60 @@ public class SwerveJoystickCmd extends CommandBase {
         double turningSpeed = turningSpdFunction.get();
 
         // 2. Apply deadband
-        xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
-        ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
+        xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband
+                ? (xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond)
+                        * (slowDownSupplier.get() ? Constants.DriveConstants.kTeleDriveSpeedReduction : 1)
+                : 0.0;
+        ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband
+                ? (ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond) * (slowDownSupplier.get()
+                        ? Constants.DriveConstants.kTeleDriveSpeedReduction
+                        : 1)
+                : 0.0;
         turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
+        TrapezoidProfile xProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(6, 24),
+                new TrapezoidProfile.State(xSpeed, 0), xPreviousRef);
+        TrapezoidProfile yProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(6, 24),
+                new TrapezoidProfile.State(ySpeed, 0), yPreviousRef);
+
+        TrapezoidProfile.State xState = xProfile.calculate(Timer.getFPGATimestamp() - profilePreviousTime);
+        TrapezoidProfile.State yState = yProfile.calculate(Timer.getFPGATimestamp() - profilePreviousTime);
+
+        xSpeed = xState.position;
+        ySpeed = yState.position;
+
         // 3. Make the driving smoother
-        xSpeed = (xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond)
-                * Constants.DriveConstants.kTeleDriveSpeedReduction;
-        ySpeed = (yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond)
-                * Constants.DriveConstants.kTeleDriveSpeedReduction;
+        // xSpeed = xLimiter.calculate(xSpeed * );
+        // ySpeed = yLimiter.calculate(ySpeed *
+        // DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
         turningSpeed = turningLimiter.calculate(turningSpeed)
                 * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
         // 4. Construct desired chassis speeds
         ChassisSpeeds chassisSpeeds;
-        if (fieldOrientedFunction.get()) {
-            ySpeed = ySpeed * -1.0;
+        ySpeed = ySpeed * -1.0;
 
-            /**
-             * Drive relative to the field.
-             */
-            Rotation2d robotAngle = swerveSubsystem.getRotation2d();
-            double x = xSpeed * robotAngle.getCos() + ySpeed * robotAngle.getSin();
-            double y = xSpeed * robotAngle.getSin() + ySpeed * -robotAngle.getCos();
+        /**
+         * Drive relative to the field.
+         */
+        Rotation2d robotAngle = swerveSubsystem.getRotation2d();
+        double x = xSpeed * robotAngle.getCos() + ySpeed * robotAngle.getSin();
+        double y = xSpeed * robotAngle.getSin() + ySpeed * -robotAngle.getCos();
 
-            SmartDashboard.putNumber("x_speed", x);
-            SmartDashboard.putNumber("y_speed", y);
+        SmartDashboard.putNumber("x_speed", x);
+        SmartDashboard.putNumber("y_speed", y);
 
-            chassisSpeeds = new ChassisSpeeds(x, y, turningSpeed);
-        } else {
-            // Relative to robot
-            chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
-        }
+        chassisSpeeds = new ChassisSpeeds(x, y, turningSpeed);
 
         // 5. Convert chassis speeds to individual module states
         SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
         // 6. Output each module states to wheels
         swerveSubsystem.setModuleStates(moduleStates);
+
+        xPreviousRef = xState;
+        yPreviousRef = yState;
+        profilePreviousTime = Timer.getFPGATimestamp();
     }
 
     public void configureKp(double kP) {
