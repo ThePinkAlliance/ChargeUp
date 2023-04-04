@@ -192,7 +192,7 @@ public class RobotContainer {
                                 () -> -driverJoystick.getRawAxis(OIConstants.kYAxis),
                                 () -> -driverJoystick.getRawAxis(OIConstants.kXAxis),
                                 () -> driverJoystick.getRawAxis(OIConstants.kDriverRotAxis),
-                                () -> !driverJoystick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+                                () -> driverJoystick.getRawAxis(3) > 0.05));
 
                 turretSubsystem.setDefaultCommand(
                                 new JoystickTurret(turretSubsystem, () -> towerJoystick.getRawAxis(
@@ -263,12 +263,6 @@ public class RobotContainer {
                                 .onTrue(UtilityCommands.deliverCubeMid(
                                                 extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem,
                                                 swerveSubsystem));
-
-                new Trigger(() -> driverJoystick.getRawAxis(3) > 0.05).onTrue(new InstantCommand(() -> {
-                        Constants.DriveConstants.kTeleDriveSpeedReduction = 0.4;
-                })).onFalse(new InstantCommand(() -> {
-                        Constants.DriveConstants.kTeleDriveSpeedReduction = 1;
-                }));
 
                 // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonLeftBumper)
                 // .onTrue(new

@@ -66,10 +66,10 @@ public final class Constants {
                  * These values where determined by lining up all the wheels and recording the
                  * outputed positions.
                  */
-                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -1.018;// -0.84; // 2.93, 1.99;
-                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.194;// 1.187;
-                public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -1.569;// 1.57;
-                public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -1.661; // 1.47;
+                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 1.90; // 1.9036
+                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.55; // 1.5508
+                public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.56; // 1.5615
+                public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.49; // 1.49563
 
                 // This is the max speed without load.
                 public static final double kPhysicalMaxSpeedMetersPerSecond = 6;
@@ -78,7 +78,7 @@ public final class Constants {
                 public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 1; // 0.96
                 public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond
                                 / 2.8;
-                public static double kTeleDriveSpeedReduction = 1;
+                public static double kTeleDriveSpeedReduction = .4;
                 public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 2.5;
                 public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.5;
         }
@@ -143,7 +143,7 @@ public final class Constants {
 
                 public static final int kDriverFieldOrientedButtonIdx = 1;
 
-                public static final double kDeadband = 0.08;
+                public static final double kDeadband = 0.05;
 
                 public static final int kButtonStart = 8;
                 public static final int kButtonBack = 7;

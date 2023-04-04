@@ -205,6 +205,13 @@ public class SwerveSubsystem extends SubsystemBase {
                 this);
     }
 
+    public void configureDriveRamp(double ramp) {
+        this.backLeft.configureDriveRampRate(ramp);
+        this.backRight.configureDriveRampRate(ramp);
+        this.frontLeft.configureDriveRampRate(ramp);
+        this.frontRight.configureDriveRampRate(ramp);
+    }
+
     public void move(double vx, double vy, double radsPerSecond) {
         setModuleStates(Constants.DriveConstants.kDriveKinematics
                 .toSwerveModuleStates(new ChassisSpeeds(vx, vy, radsPerSecond)));

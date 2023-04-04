@@ -137,6 +137,10 @@ public class SwerveModule {
         turningMotor.set(ControlMode.PercentOutput, output);
     }
 
+    public void configureDriveRampRate(double ramp) {
+        this.driveMotor.configOpenloopRamp(ramp);
+    }
+
     public double getSteerError() {
         return this.turningPidController.getPositionError();
     }
