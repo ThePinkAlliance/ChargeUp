@@ -30,8 +30,8 @@ public class DriveStraightByGyro extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.swerveSubsystem = swerveSubsystem;
-    this.thetaController = new PIDController(.2, 0, 0);
-    this.xController = new PIDController(4, 0, 0.025);
+    this.thetaController = new PIDController(.4, 0.4, 0);
+    this.xController = new PIDController(4, 0, 0.5);
 
     /*
      * The controller needs an I gain later.
@@ -57,6 +57,12 @@ public class DriveStraightByGyro extends CommandBase {
     this(distance, speed, swerveSubsystem);
 
     this.doStop = doStop;
+  }
+
+  public DriveStraightByGyro configureTolerence(double tol) {
+    this.xController.setTolerance(tol);
+
+    return this;
   }
 
   // Called when the command is initially scheduled.

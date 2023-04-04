@@ -75,7 +75,7 @@
               "min": -3.14
             }
           ],
-          "height": 6,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -104,7 +104,7 @@
               "min": -3.14
             }
           ],
-          "height": 6,
+          "height": 2,
           "series": [
             {
               "color": [
@@ -136,7 +136,7 @@
               "max": 10.0
             }
           ],
-          "height": 440,
+          "height": 434,
           "series": [
             {
               "color": [
@@ -158,7 +158,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <3>": {
       "plots": [
@@ -207,7 +210,7 @@
               "autoFit": true
             }
           ],
-          "height": 574,
+          "height": 568,
           "series": [
             {
               "color": [
@@ -238,7 +241,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "name": "Gyro"
+      }
     },
     "Plot <5>": {
       "plots": [
@@ -248,7 +254,7 @@
               "autoFit": true
             }
           ],
-          "height": 773,
+          "height": 767,
           "series": [
             {
               "color": [
@@ -289,7 +295,7 @@
               "autoFit": true
             }
           ],
-          "height": 437,
+          "height": 200,
           "series": [
             {
               "color": [
@@ -328,8 +334,14 @@
               "id": "NT:/SmartDashboard/Front Right Angle"
             }
           ]
+        },
+        {
+          "height": 200
         }
-      ]
+      ],
+      "window": {
+        "name": "Pods"
+      }
     }
   }
 }

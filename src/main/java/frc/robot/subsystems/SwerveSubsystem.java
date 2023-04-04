@@ -31,7 +31,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kFrontLeftTurningReversed,
             DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
             DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed, "base");
+            DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed, "base").configurekI(1.3);
 
     private final SwerveModule frontRight = new SwerveModule(
             DriveConstants.kFrontRightDriveMotorPort,
@@ -79,6 +79,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 e.printStackTrace();
             }
             zeroHeading();
+            resetOdometry(new Pose2d());
         }).start();
 
         SmartDashboard.putData(field2d);

@@ -47,10 +47,10 @@ public final class Constants {
                 public static final boolean kFrontRightTurningReversed = false;
                 public static final boolean kBackRightTurningReversed = false;
 
-                public static final boolean kFrontLeftDriveEncoderReversed = false;
-                public static final boolean kBackLeftDriveEncoderReversed = true;
-                public static final boolean kFrontRightDriveEncoderReversed = false;
-                public static final boolean kBackRightDriveEncoderReversed = false;
+                public static final boolean kFrontLeftDriveEncoderReversed = true;
+                public static final boolean kBackLeftDriveEncoderReversed = false;
+                public static final boolean kFrontRightDriveEncoderReversed = true;
+                public static final boolean kBackRightDriveEncoderReversed = true;
 
                 public static final int kFrontLeftDriveAbsoluteEncoderPort = 2;
                 public static final int kBackLeftDriveAbsoluteEncoderPort = 6;
@@ -67,7 +67,7 @@ public final class Constants {
                  * outputed positions.
                  */
                 public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 1.90; // 1.9036
-                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.55; // 1.5508
+                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.92; // 1.9236
                 public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.56; // 1.5615
                 public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.49; // 1.49563
 
@@ -161,6 +161,7 @@ public final class Constants {
                 private static double VELOCITY_MULTIPLER = 1.2;
                 private static double ACCEL_MULTIPLER = 2.5;
 
+                // kP was .22
                 public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.22, 0, 0, 0.3, 0, 1);
                 public static final GainsFX POSITION_GAINS_FX = new GainsFX(0.1, 0, 0, 0.3, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864 * VELOCITY_MULTIPLER;

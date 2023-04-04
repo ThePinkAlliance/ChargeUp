@@ -27,6 +27,10 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 public class UtilityCommands {
 
   public static Command pivotArm(double angle, ArmSubsystem armSubsystem) {
+    if (angle < 72) {
+      throw new UnknownError("Invalid pitch angle");
+    }
+
     return new PivotToDegreeMagicNew(angle,
         Constants.ArmConstants.MAX_CRUISE_VELOCITY,
         Constants.ArmConstants.MAX_ACCELERATION, 3,
@@ -37,7 +41,14 @@ public class UtilityCommands {
 
   public static Command scoreCubeHighAuto(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
       ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
-    return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0)
+    return UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicks(82, extenderSubsystem))
+        .andThen(new GrabberOpen(grabberSubsystem, 1).powerIntake(-.3))
+        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
+  }
+
+  public static Command scoreCubeHighAuto2(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
+      ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
+    return new RotateToDegree(turretSubsystem, armSubsystem, 90, 25)
         .andThen(UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicks(82, extenderSubsystem))
             .andThen(new GrabberOpen(grabberSubsystem, 1).powerIntake(-.3))
             .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)));
@@ -71,7 +82,7 @@ public class UtilityCommands {
   public static Command deliverConeHigh(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem) {
     // Comp: 132.5, 107
-    return UtilityCommands.pivotArm(129, armSubsystem).alongWith(new ExtendTicks(110, extenderSubsystem));
+    return UtilityCommands.pivotArm(129, armSubsystem).alongWith(new ExtendTicks(108, extenderSubsystem));
   }
 
   public static Command deliverConeMid(ArmSubsystem armSubsystem,
@@ -85,6 +96,16 @@ public class UtilityCommands {
         UtilityCommands.pivotArm(130, armSubsystem).alongWith(
             new ExtendTicks(108, extenderSubsystem)))
         .andThen(new GrabberOpen(grabberSubsystem, 1))
+        .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
+  }
+
+  public static Command deliverConeHighAuto2(ArmSubsystem armSubsystem,
+      ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem, GrabberSubsystem grabberSubsystem) {
+    return new RotateToDegree(turretSubsystem, armSubsystem, 90, -5).andThen(
+        UtilityCommands.pivotArm(130, armSubsystem).alongWith(
+            new ExtendTicks(105, extenderSubsystem)))
+        .andThen(new GrabberOpen(grabberSubsystem,
+            Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER))
         .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 

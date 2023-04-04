@@ -59,10 +59,8 @@ public class SwerveJoystickCmd extends CommandBase {
                 turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
                 // 3. Make the driving smoother
-                xSpeed = (xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond)
-                                * Constants.DriveConstants.kTeleDriveSpeedReduction;
-                ySpeed = (yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond)
-                                * Constants.DriveConstants.kTeleDriveSpeedReduction;
+                xSpeed = (xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+                ySpeed = (ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
                 turningSpeed = turningLimiter.calculate(turningSpeed)
                                 * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
@@ -77,8 +75,8 @@ public class SwerveJoystickCmd extends CommandBase {
                 double x = xSpeed * robotAngle.getCos() + ySpeed * robotAngle.getSin();
                 double y = xSpeed * robotAngle.getSin() + ySpeed * -robotAngle.getCos();
 
-                SmartDashboard.putNumber("x_speed", x);
-                SmartDashboard.putNumber("y_speed", y);
+                SmartDashboard.putNumber("x_speed", xSpeed);
+                SmartDashboard.putNumber("y_speed", ySpeed);
 
                 chassisSpeeds = new ChassisSpeeds(x, y, turningSpeed);
 
@@ -86,9 +84,9 @@ public class SwerveJoystickCmd extends CommandBase {
                 SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
                 if (slowdown.get()) {
-                        swerveSubsystem.configureDriveRamp(.2);
+                        swerveSubsystem.configureDriveRamp(1.5);
                 } else {
-                        swerveSubsystem.configureDriveRamp(0);
+                        swerveSubsystem.configureDriveRamp(.9);
                 }
 
                 // 6. Output each module states to wheels

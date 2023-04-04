@@ -42,7 +42,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
     this.safeToContinue = safeToContinue;
     this.armSubsystem = armSubsystem;
     this.pivotMotor = armSubsystem.getPivotTalon();
-    this.angleFactor = 0.0009093533 * 0.944; // 0.945
+    this.angleFactor = 0.0006103967 * 1.05; // 0.945
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;

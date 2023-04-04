@@ -53,7 +53,7 @@ import frc.robot.commands.arm.turret.RotateBasedOnExternalSensor;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.drive.DriveByGyro;
 import frc.robot.commands.drive.DriveStraightByGyro;
-
+import frc.robot.commands.drive.DriveStraightByGyroStrafeLocked;
 import frc.robot.commands.drive.StrafeByGyro;
 import frc.robot.commands.drive.SwerveJoystickCmd;
 
@@ -147,9 +147,60 @@ public class RobotContainer {
                                                                                         0,
                                                                                         2, 37, 3.0))));
 
-                        autoSendable.addOption("2 Piece Test", new DriveStraightByGyro(-4.622, 3, swerveSubsystem)
-                                        .alongWith(new RotateToDegree(turretSubsystem, armSubsystem, 0, 175))
-                                        .andThen(UtilityCommands.pivotArm(85, armSubsystem)));
+                        autoSendable.addOption("2 Piece Test", UtilityCommands
+                                        .deliverConeHighAuto2(armSubsystem, extenderSubsystem,
+                                                        turretSubsystem, grabberSubsystem)
+                                        .andThen(UtilityCommands
+                                                        .stow(armSubsystem, turretSubsystem,
+                                                                        extenderSubsystem))
+                                        .andThen(
+
+                                                        new DriveStraightByGyro(-4.65, 6,
+                                                                        swerveSubsystem).configureTolerence(.09)
+                                                                        .alongWith(new RotateToDegree(turretSubsystem,
+                                                                                        armSubsystem, 85, 180))
+                                                                        .andThen(new StrafeByGyro(
+                                                                                        0.658, 3, swerveSubsystem))
+                                                                        .andThen(() -> swerveSubsystem
+                                                                                        .setModuleStates(
+                                                                                                        Constants.DriveConstants.kDriveKinematics
+                                                                                                                        .toSwerveModuleStates(
+                                                                                                                                        new ChassisSpeeds())))
+
+                                                                        .andThen(new CommandGrabberTerminateCurrent(
+                                                                                        -.7, -13,
+                                                                                        grabberSubsystem)
+                                                                                        .customCurrentLimit(15)
+                                                                                        .customWatchdog(1)
+                                                                                        .customFilterSize(60)
+                                                                                        .alongWith(UtilityCommands
+                                                                                                        .pivotArm(84,
+                                                                                                                        armSubsystem)))
+                                                                        .andThen(new CommandGrabberTerminateCurrent(
+                                                                                        -.7, -16,
+                                                                                        grabberSubsystem)
+                                                                                        .customCurrentLimit(
+                                                                                                        17)
+                                                                                        .customWatchdog(
+                                                                                                        2))
+                                                                        .andThen(UtilityCommands
+                                                                                        .pivotArm(180, armSubsystem)
+                                                                                        .andThen(new RotateToDegree(
+                                                                                                        turretSubsystem,
+                                                                                                        armSubsystem, 0,
+                                                                                                        2))
+                                                                                        .alongWith(new DriveStraightByGyro(
+                                                                                                        5.1, 5,
+                                                                                                        swerveSubsystem)))
+                                                                        .andThen(UtilityCommands.scoreCubeHighAuto2(
+                                                                                        extenderSubsystem,
+                                                                                        turretSubsystem, armSubsystem,
+                                                                                        grabberSubsystem,
+                                                                                        swerveSubsystem))));
+
+                        autoSendable.addOption("Drive Test", new DriveByGyro(
+                                        new Translation2d(-4.632, 0.646), 3, swerveSubsystem)
+                                        .configureYTolerence(0.13));
 
                         // armSubsystem,
                         // grabberSubsystem, swerveSubsystem)
@@ -288,9 +339,9 @@ public class RobotContainer {
                 /**
                  * Reset the turret encoder to the robot's legal position.
                  */
+                swerveSubsystem.resetOdometry(new Pose2d());
                 turretSubsystem.setEncoderPositions(91.43);
                 swerveSubsystem.zeroHeading();
-                swerveSubsystem.resetOdometry(new Pose2d());
 
                 return autoSendable.getSelected();
         }

@@ -27,6 +27,8 @@ public class RotateToDegree extends CommandBase {
   private ArmSubsystem armSubsystem;
   private double angleTolerence;
   private Watchdog watchdog;
+
+  // Revert to 2.5 if rotate issue not fixed.
   private final double WATCHDOG_TIMEOUT = 2.5;
   private boolean resetMotor;
   private double resetPosition;
@@ -67,7 +69,6 @@ public class RotateToDegree extends CommandBase {
     sparkMax.getPIDController().setI(0);
     sparkMax.getPIDController().setD(0);
     watchdog.reset();
-    watchdog.enable();
 
     if (resetMotor) {
       this.turretSubsystem.setEncoderPositions(resetPosition);
@@ -112,11 +113,11 @@ public class RotateToDegree extends CommandBase {
     boolean hasMetTarget = difference <= angleTolerence;
 
     if (hasMetTarget) {
-      Telemetry.logData("--- Rotate To Degree Terminated ---", "difference: " + difference, getClass());
+      Telemetry.logData("--- Rotate To Degree Terminated [met target] ---", "difference: " + difference, getClass());
     }
 
     if (watchdogExpired) {
-      Telemetry.logData("--- Rotate To Degree ---", "difference: " + difference, getClass());
+      Telemetry.logData("--- Rotate To Degree [watchdog] ---", "difference: " + difference, getClass());
     }
 
     if (isFinished) {

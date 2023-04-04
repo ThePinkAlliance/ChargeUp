@@ -56,6 +56,12 @@ public class SwerveModule {
         resetEncoders();
     }
 
+    public SwerveModule configurekI(double kI) {
+        turningPidController.setI(kI);
+
+        return this;
+    }
+
     /**
      * Returns the drive wheel position in meters.
      */
