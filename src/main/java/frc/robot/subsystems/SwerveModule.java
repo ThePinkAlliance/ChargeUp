@@ -137,6 +137,10 @@ public class SwerveModule {
         turningMotor.set(ControlMode.PercentOutput, output);
     }
 
+    public double getSteerError() {
+        return this.turningPidController.getPositionError();
+    }
+
     public void stop() {
         driveMotor.set(ControlMode.PercentOutput, 0);
         turningMotor.set(ControlMode.PercentOutput, 0);

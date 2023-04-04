@@ -171,6 +171,11 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Front Left Angle", frontLeft.getPosition().angle.getRadians());
         SmartDashboard.putNumber("Front Right Angle", frontRight.getPosition().angle.getRadians());
 
+        SmartDashboard.putNumber("Back Left Error", backLeft.getSteerError());
+        SmartDashboard.putNumber("Back Right Error", backRight.getSteerError());
+        SmartDashboard.putNumber("Front Left Error", frontLeft.getSteerError());
+        SmartDashboard.putNumber("Front Right Error", frontRight.getSteerError());
+
         SmartDashboard.putNumber("Base Pitch", getPitch());
         SmartDashboard.putNumber("Base Heading", gyro.getYaw());
 
