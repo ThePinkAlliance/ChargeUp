@@ -77,7 +77,7 @@ public class DockAuto extends CommandBase {
     }
 
     if (didReachDock) {
-      double gain = 0.059;
+      double gain = 0.062; // .059 comp
       double power = gain * currentPitch;
 
       /* Power ceiling and floor */

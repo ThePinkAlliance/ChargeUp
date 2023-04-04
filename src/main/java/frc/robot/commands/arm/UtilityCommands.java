@@ -39,7 +39,8 @@ public class UtilityCommands {
       ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
     return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0)
         .andThen(UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicks(82, extenderSubsystem))
-            .andThen(new GrabberOpen(grabberSubsystem, 1).powerIntake(-.3))
+            .andThen(
+                new GrabberOpen(grabberSubsystem, Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER).powerIntake(-.3))
             .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)));
   }
 

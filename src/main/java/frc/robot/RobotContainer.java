@@ -228,11 +228,6 @@ public class RobotContainer {
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonRightBumper)
                                 .onTrue(UtilityCommands.pivotArm(125, armSubsystem));
 
-                new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05).onTrue(UtilityCommands.deliverCubeHigh(
-                                extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
-                new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05).onTrue(UtilityCommands.deliverCubeMid(
-                                extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
-
                 // Tower Y - deliver cone high
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonY).onTrue(
                                 UtilityCommands.deliverConeHigh(armSubsystem, extenderSubsystem));
@@ -251,11 +246,10 @@ public class RobotContainer {
                                                 Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER).powerIntake(0.2));
 
                 // Tower Triggers 0 and 180
-                new POVButton(towerJoystick, 270)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
-
-                new POVButton(towerJoystick, 90)
-                                .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
+                new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05).onTrue(
+                                new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
+                new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05).onTrue(
+                                new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
 
                 new Trigger(() -> driverJoystick.getRawAxis(3) > 0.05).onTrue(new InstantCommand(() -> {
                         Constants.DriveConstants.kTeleDriveSpeedReduction = 0.4;
@@ -280,12 +274,14 @@ public class RobotContainer {
 
         public void configureTele() {
                 swerveSubsystem.setGyroHeading(180);
+                swerveSubsystem.resetOdometry(new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
         }
 
         public Command getAutonomousCommand() {
                 /**
                  * Reset the turret encoder to the robot's legal position.
                  */
+                swerveSubsystem.resetOdometry(new Pose2d());
                 turretSubsystem.setEncoderPositions(91.43);
                 swerveSubsystem.zeroHeading();
 
