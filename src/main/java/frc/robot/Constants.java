@@ -66,7 +66,10 @@ public final class Constants {
                  * These values where determined by lining up all the wheels and recording the
                  * outputed positions.
                  */
-                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -1.018;// -0.84; // 2.93, 1.99;
+                public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -1.018 - 0.174 - 0.0540000000;// -0.84;
+                                                                                                                   // //
+                                                                                                                   // 2.93,
+                // 1.99;
                 public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 1.194;// 1.187;
                 public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -1.665;// -1.569;// 1.57;
                 public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -1.679; // -1.661; // 1.47;
@@ -79,7 +82,7 @@ public final class Constants {
                 public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond
                                 / 2.8;
                 public static double kTeleDriveSpeedReduction = .4;
-                public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 24;
+                public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 300;
                 public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.5;
         }
 
