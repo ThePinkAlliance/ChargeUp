@@ -128,9 +128,6 @@ public class RobotContainer {
                                                                                         0,
                                                                                         2, 37, 3.0))));
 
-                        autoSendable.addOption("Balence",
-                                        ScoreHighCenterAndLeaveCommunity.balanceStation(swerveSubsystem));
-
                         autoSendable.addOption("Score Cone High, Leave Community Left Balance",
                                         UtilityCommands
                                                         .deliverConeHighAuto(armSubsystem, extenderSubsystem,
@@ -148,7 +145,7 @@ public class RobotContainer {
                                                                                         0,
                                                                                         2, 37, 3.0))));
 
-                        autoSendable.addOption("2 Piece Test", UtilityCommands
+                        autoSendable.addOption("Score Cone High, Leave and Pickup Cube", UtilityCommands
                                         .deliverConeHighAuto2(armSubsystem, extenderSubsystem,
                                                         turretSubsystem, grabberSubsystem)
                                         .andThen(
@@ -187,10 +184,6 @@ public class RobotContainer {
                                                                                                         turretSubsystem,
                                                                                                         armSubsystem, 0,
                                                                                                         0)))));
-
-                        autoSendable.addOption("Drive Test", new DriveByGyro(
-                                        new Translation2d(-4.632, 0.646), 3, swerveSubsystem)
-                                        .configureYTolerence(0.13));
 
                         // armSubsystem,
                         // grabberSubsystem, swerveSubsystem)
