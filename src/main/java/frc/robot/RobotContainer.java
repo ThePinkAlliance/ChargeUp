@@ -53,6 +53,7 @@ import frc.robot.commands.arm.turret.RotateBasedOnExternalSensor;
 import frc.robot.commands.arm.turret.RotateToDegree;
 import frc.robot.commands.drive.DriveByGyro;
 import frc.robot.commands.drive.DriveStraightByGyro;
+import frc.robot.commands.drive.DriveStraightByGyroSpeed;
 import frc.robot.commands.drive.DriveStraightByGyroStrafeLocked;
 import frc.robot.commands.drive.StrafeByGyro;
 import frc.robot.commands.drive.SwerveJoystickCmd;
@@ -150,12 +151,9 @@ public class RobotContainer {
                         autoSendable.addOption("2 Piece Test", UtilityCommands
                                         .deliverConeHighAuto2(armSubsystem, extenderSubsystem,
                                                         turretSubsystem, grabberSubsystem)
-                                        .andThen(UtilityCommands
-                                                        .stow(armSubsystem, turretSubsystem,
-                                                                        extenderSubsystem))
                                         .andThen(
 
-                                                        new DriveStraightByGyro(-4.65, 6,
+                                                        new DriveStraightByGyro(-4.65, 3,
                                                                         swerveSubsystem).configureTolerence(.09)
                                                                         .alongWith(new RotateToDegree(turretSubsystem,
                                                                                         armSubsystem, 85, 180))
@@ -182,21 +180,13 @@ public class RobotContainer {
                                                                                         .customCurrentLimit(
                                                                                                         17)
                                                                                         .customWatchdog(
-                                                                                                        2))
+                                                                                                        4))
                                                                         .andThen(UtilityCommands
                                                                                         .pivotArm(180, armSubsystem)
                                                                                         .andThen(new RotateToDegree(
                                                                                                         turretSubsystem,
                                                                                                         armSubsystem, 0,
-                                                                                                        2))
-                                                                                        .alongWith(new DriveStraightByGyro(
-                                                                                                        5.1, 5,
-                                                                                                        swerveSubsystem)))
-                                                                        .andThen(UtilityCommands.scoreCubeHighAuto2(
-                                                                                        extenderSubsystem,
-                                                                                        turretSubsystem, armSubsystem,
-                                                                                        grabberSubsystem,
-                                                                                        swerveSubsystem))));
+                                                                                                        0)))));
 
                         autoSendable.addOption("Drive Test", new DriveByGyro(
                                         new Translation2d(-4.632, 0.646), 3, swerveSubsystem)

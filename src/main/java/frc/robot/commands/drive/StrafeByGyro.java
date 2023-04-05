@@ -112,6 +112,7 @@ public class StrafeByGyro extends CommandBase {
     if (doStop) {
       swerveSubsystem
           .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
+      swerveSubsystem.setAllHeadings(0);
     }
   }
 
