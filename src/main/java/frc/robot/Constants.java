@@ -162,7 +162,7 @@ public final class Constants {
                 private static double ACCEL_MULTIPLER = 2.5;
 
                 // kP was .22
-                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.22, 0, 0, 0.3, 0, 1);
+                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.205, 0, 0, 0.3, 0, 1);
                 public static final GainsFX POSITION_GAINS_FX = new GainsFX(0.1, 0, 0, 0.3, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864 * VELOCITY_MULTIPLER;
                 /**

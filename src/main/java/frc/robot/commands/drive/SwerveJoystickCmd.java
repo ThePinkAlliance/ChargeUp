@@ -37,7 +37,7 @@ public class SwerveJoystickCmd extends CommandBase {
 
         @Override
         public void initialize() {
-
+                swerveSubsystem.configureDriveRamp(0);
         }
 
         @Override
@@ -82,12 +82,6 @@ public class SwerveJoystickCmd extends CommandBase {
 
                 // 5. Convert chassis speeds to individual module states
                 SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-
-                if (slowdown.get()) {
-                        swerveSubsystem.configureDriveRamp(1.5);
-                } else {
-                        swerveSubsystem.configureDriveRamp(.9);
-                }
 
                 // 6. Output each module states to wheels
                 swerveSubsystem.setModuleStates(moduleStates);

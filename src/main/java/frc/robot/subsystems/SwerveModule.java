@@ -50,16 +50,10 @@ public class SwerveModule {
         turningMotor.configAllSettings(steerConfig);
 
         driveMotor.setInverted(driveMotorReversed);
-        turningPidController = new PIDController(ModuleConstants.kPTurning, 1.5, 0);
+        turningPidController = new PIDController(ModuleConstants.kPTurning, .3, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
         resetEncoders();
-    }
-
-    public SwerveModule configurekI(double kI) {
-        turningPidController.setI(kI);
-
-        return this;
     }
 
     /**

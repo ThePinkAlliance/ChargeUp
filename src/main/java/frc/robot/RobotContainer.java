@@ -145,8 +145,8 @@ public class RobotContainer {
                                                                                         0,
                                                                                         2, 37, 3.0))));
 
-                        autoSendable.addOption("Score Cone High, Leave and Pickup Cube", UtilityCommands
-                                        .deliverConeHighAuto2(armSubsystem, extenderSubsystem,
+                        autoSendable.addOption("Blue Score Cone High, Leave and Pickup Cube", UtilityCommands
+                                        .deliverConeHighAutoBlue(armSubsystem, extenderSubsystem,
                                                         turretSubsystem, grabberSubsystem)
                                         .andThen(
 
@@ -185,8 +185,47 @@ public class RobotContainer {
                                                                                                         armSubsystem, 0,
                                                                                                         0)))));
 
-                        // armSubsystem,
-                        // grabberSubsystem, swerveSubsystem)
+                        // Untested
+                        autoSendable.addOption("Red Score Cone High, Leave and Pickup Cube", UtilityCommands
+                                        .deliverConeHighAutoRed(armSubsystem, extenderSubsystem,
+                                                        turretSubsystem, grabberSubsystem)
+                                        .andThen(
+
+                                                        new DriveStraightByGyro(-4.65, 3,
+                                                                        swerveSubsystem).configureTolerence(.09)
+                                                                        .alongWith(new RotateToDegree(turretSubsystem,
+                                                                                        armSubsystem, 85, 180))
+                                                                        .andThen(new StrafeByGyro(
+                                                                                        -0.658, 3, swerveSubsystem))
+                                                                        .andThen(() -> swerveSubsystem
+                                                                                        .setModuleStates(
+                                                                                                        Constants.DriveConstants.kDriveKinematics
+                                                                                                                        .toSwerveModuleStates(
+                                                                                                                                        new ChassisSpeeds())))
+
+                                                                        .andThen(new CommandGrabberTerminateCurrent(
+                                                                                        -.7, -13,
+                                                                                        grabberSubsystem)
+                                                                                        .customCurrentLimit(15)
+                                                                                        .customWatchdog(1)
+                                                                                        .customFilterSize(60)
+                                                                                        .alongWith(UtilityCommands
+                                                                                                        .pivotArm(84,
+                                                                                                                        armSubsystem)))
+                                                                        .andThen(new CommandGrabberTerminateCurrent(
+                                                                                        -.7, -16,
+                                                                                        grabberSubsystem)
+                                                                                        .customCurrentLimit(
+                                                                                                        17)
+                                                                                        .customWatchdog(
+                                                                                                        4))
+                                                                        .andThen(UtilityCommands
+                                                                                        .pivotArm(180, armSubsystem)
+                                                                                        .andThen(new RotateToDegree(
+                                                                                                        turretSubsystem,
+                                                                                                        armSubsystem, 0,
+                                                                                                        0)))));
+
                         autoSendable.addOption("Score Cube High, Leave Community Center Balance",
                                         UtilityCommands
                                                         .scoreCubeHighAuto(extenderSubsystem, turretSubsystem,
@@ -198,6 +237,19 @@ public class RobotContainer {
 
                                                         .andThen(ScoreHighCenterAndLeaveCommunity
                                                                         .balanceStation(swerveSubsystem)));
+
+                        autoSendable.addOption("Auto Center Score", UtilityCommands.scoreCubeHighAuto(extenderSubsystem,
+                                        turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
+
+                        autoSendable.addOption("Auto Balence", ScoreHighCenterAndLeaveCommunity
+                                        .leaveCommunityCenter(swerveSubsystem,
+                                                        armSubsystem)
+
+                                        .andThen(ScoreHighCenterAndLeaveCommunity
+                                                        .balanceStation(swerveSubsystem)));
+
+                        autoSendable.addOption("Score Cube Test", UtilityCommands.scoreCubeHighAuto(extenderSubsystem,
+                                        turretSubsystem, armSubsystem, grabberSubsystem, swerveSubsystem));
 
                         autoSendable.addOption("Score Cone High, Leave Community Left or Right",
                                         UtilityCommands
@@ -244,12 +296,14 @@ public class RobotContainer {
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonStart)
                                 .onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
+                // Base Left Bumper - Collect cone station.
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonLeftBumper).onTrue(
                                 UtilityCommands.collectStationDeployCone(armSubsystem, turretSubsystem,
                                                 grabberSubsystem, extenderSubsystem))
                                 .onFalse(UtilityCommands.collectStationStowCone(armSubsystem, turretSubsystem,
                                                 grabberSubsystem, extenderSubsystem));
 
+                // Base Right Bumper - Pickup off ground.
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonRightBumper)
                                 .onTrue(UtilityCommands.pivotArm(83.5, armSubsystem).alongWith(
                                                 new CommandGrabberTerminateCurrent(-.7, -2, grabberSubsystem)
@@ -262,11 +316,15 @@ public class RobotContainer {
                                                 .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem,
                                                                 extenderSubsystem)));
 
+                // Tower Right Bumper - Score Low
                 new JoystickButton(towerJoystick, Constants.OIConstants.kButtonRightBumper)
                                 .onTrue(UtilityCommands.pivotArm(125, armSubsystem));
 
+                // Tower Left Trigger - Turret Rotate 180
                 new Trigger(() -> towerJoystick.getRawAxis(2) > 0.05)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 180));
+
+                // Tower Right Trigger - Turret Rotate 0
                 new Trigger(() -> towerJoystick.getRawAxis(3) > 0.05)
                                 .onTrue(new RotateToDegree(turretSubsystem, armSubsystem, 120, 0));
 
@@ -297,15 +355,6 @@ public class RobotContainer {
                                 .onTrue(UtilityCommands.deliverCubeMid(
                                                 extenderSubsystem, turretSubsystem, armSubsystem, grabberSubsystem,
                                                 swerveSubsystem));
-
-                // new JoystickButton(towerJoystick, Constants.OIConstants.kButtonLeftBumper)
-                // .onTrue(new
-                // CommandGrabber(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER,
-                // Constants.GrabberConstants.GRASP_OPEN_POSITION,
-                // grabberSubsystem).customWatchdog(6))
-                // .onFalse(new CommandGrabberTerminateCurrent(-0.7,
-                // Constants.GrabberConstants.GRASP_CLOSED_POSITION,
-                // grabberSubsystem).customWatchdog(1.4));
         }
 
         public void onDisabledInit() {
@@ -323,7 +372,6 @@ public class RobotContainer {
                  * Reset the turret encoder to the robot's legal position.
                  */
                 swerveSubsystem.resetOdometry(new Pose2d());
-                turretSubsystem.setEncoderPositions(91.43);
                 swerveSubsystem.zeroHeading();
 
                 return autoSendable.getSelected();

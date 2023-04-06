@@ -41,9 +41,11 @@ public class UtilityCommands {
 
   public static Command scoreCubeHighAuto(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
       ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, SwerveSubsystem swerveSubsystem) {
-    return UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicks(82, extenderSubsystem))
-        .andThen(new GrabberOpen(grabberSubsystem, 1).powerIntake(-.3))
-        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
+    return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0)
+        .andThen(UtilityCommands.pivotArm(125, armSubsystem).alongWith(new ExtendTicks(82, extenderSubsystem))
+            .andThen(
+                new GrabberOpen(grabberSubsystem, Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER).powerIntake(-.3))
+            .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem)));
   }
 
   public static Command scoreCubeHighAuto2(ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem,
@@ -67,7 +69,7 @@ public class UtilityCommands {
   public static Command collectStationDeployCone(ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem,
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
-    return UtilityCommands.pivotArm(148, armSubsystem).alongWith(
+    return UtilityCommands.pivotArm(145, armSubsystem).alongWith(
         new CommandGrabberTerminateCurrent(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER, 0, grabberSubsystem)
             .customWatchdog(10).customCurrentLimit(20).noKill());
   }
@@ -87,7 +89,7 @@ public class UtilityCommands {
 
   public static Command deliverConeMid(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem) {
-    return UtilityCommands.pivotArm(127, armSubsystem).alongWith(new ExtendTicks(38, extenderSubsystem));
+    return UtilityCommands.pivotArm(129.5, armSubsystem).alongWith(new ExtendTicks(31, extenderSubsystem));
   }
 
   public static Command deliverConeHighAuto(ArmSubsystem armSubsystem,
@@ -99,14 +101,24 @@ public class UtilityCommands {
         .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 
-  public static Command deliverConeHighAuto2(ArmSubsystem armSubsystem,
+  public static Command deliverConeHighAutoBlue(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem, GrabberSubsystem grabberSubsystem) {
     return new RotateToDegree(turretSubsystem, armSubsystem, 90, -5).andThen(
         UtilityCommands.pivotArm(130, armSubsystem).alongWith(
             new ExtendTicks(108, extenderSubsystem)))
         .andThen(new GrabberOpen(grabberSubsystem,
             Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER))
-        .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
+        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
+  }
+
+  public static Command deliverConeHighAutoRed(ArmSubsystem armSubsystem,
+      ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem, GrabberSubsystem grabberSubsystem) {
+    return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0).andThen(
+        UtilityCommands.pivotArm(130, armSubsystem).alongWith(
+            new ExtendTicks(108, extenderSubsystem)))
+        .andThen(new GrabberOpen(grabberSubsystem,
+            Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER))
+        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 
   public static Command stow(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem,
