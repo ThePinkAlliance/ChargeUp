@@ -20,11 +20,11 @@ public class ScoreHighCenterAndLeaveCommunity {
    */
   public static Command leaveCommunityCenter(SwerveSubsystem swerveSubsystem, ArmSubsystem armSubsystem) {
     return UtilityCommands.pivotArm(200, armSubsystem)
-        .alongWith(new DriveStraightByGyro(-2, 2.2, false, swerveSubsystem))
+        .alongWith(new DriveStraightByGyro(-2, 3, false, swerveSubsystem))
         .andThen(
             UtilityCommands.pivotArm(160, armSubsystem).alongWith(new DriveByGyroInfinity(-1.8, -8, 1.8, false,
                 swerveSubsystem)))
-        .andThen(new DriveStraightByGyro(-1.6, 2.2, swerveSubsystem));
+        .andThen(new DriveStraightByGyro(-1.6, 3, swerveSubsystem));
   }
 
   public static Command leaveCommunityRight(SwerveSubsystem swerveSubsystem, ArmSubsystem armSubsystem) {

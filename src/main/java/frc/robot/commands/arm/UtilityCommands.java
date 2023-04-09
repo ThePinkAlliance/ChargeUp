@@ -71,13 +71,13 @@ public class UtilityCommands {
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
     return UtilityCommands.pivotArm(145, armSubsystem).alongWith(
         new CommandGrabberTerminateCurrent(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER, 0, grabberSubsystem)
-            .customWatchdog(10).customCurrentLimit(20).noKill());
+            .customWatchdog(10).customCurrentLimit(22).noKill());
   }
 
   public static Command collectStationStowCone(ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem,
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
-    return new CommandGrabberTerminateCurrent(-.7, -16, grabberSubsystem).customCurrentLimit(10).customWatchdog(3)
+    return new CommandGrabberTerminateCurrent(-.7, -16, grabberSubsystem).customCurrentLimit(14).customWatchdog(3)
         .andThen(new StowReversedExtendNoTurret(armSubsystem, extenderSubsystem));
   }
 
@@ -97,8 +97,9 @@ public class UtilityCommands {
     return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0).andThen(
         UtilityCommands.pivotArm(130, armSubsystem).alongWith(
             new ExtendTicks(108, extenderSubsystem)))
-        .andThen(new GrabberOpen(grabberSubsystem, 1))
-        .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
+        .andThen(new GrabberOpen(grabberSubsystem,
+            Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER))
+        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 
   public static Command deliverConeHighAutoBlue(ArmSubsystem armSubsystem,

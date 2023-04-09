@@ -336,6 +336,11 @@
           ]
         },
         {
+          "axis": [
+            {
+              "autoFit": true
+            }
+          ],
           "height": 200,
           "series": [
             {

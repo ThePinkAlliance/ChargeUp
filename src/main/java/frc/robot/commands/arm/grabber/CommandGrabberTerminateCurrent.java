@@ -101,7 +101,9 @@ public class CommandGrabberTerminateCurrent extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    this.grabberSubsystem.setIntakeSpeed(0);
+    if (!noKill) {
+      this.grabberSubsystem.setIntakeSpeed(0);
+    }
     // this.grabberSubsystem.disableGrasp();
 
     currentTimer.stop();

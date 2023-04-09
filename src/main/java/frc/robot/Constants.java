@@ -67,7 +67,7 @@ public final class Constants {
                  * outputed positions.
                  */
                 public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 1.90; // 1.9036
-                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.92; // 1.9236
+                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.90; // -1.904
                 public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.56; // 1.5615
                 public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.49; // 1.49563
 

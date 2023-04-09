@@ -77,8 +77,8 @@ public class DockAuto extends CommandBase {
           Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(APPROACH_SPEED, 0, 0)));
     }
 
-    if (didReachDock && stablizeTimer.hasElapsed(.4)) {
-      double gain = 0.059; // Comp 0.059
+    if (didReachDock && stablizeTimer.hasElapsed(.6)) {
+      double gain = 0.057; // Comp 0.059
       double power = gain * currentPitch;
 
       /* Power ceiling and floor */
