@@ -55,6 +55,12 @@ public class StrafeByGyro extends CommandBase {
     return this;
   }
 
+  public StrafeByGyro customTolerence(double tol) {
+    this.yController.setTolerance(tol);
+
+    return this;
+  }
+
   public StrafeByGyro(double distance, double speed, boolean doStop, SwerveSubsystem swerveSubsystem) {
     this(distance, speed, swerveSubsystem);
 
@@ -106,6 +112,7 @@ public class StrafeByGyro extends CommandBase {
     if (doStop) {
       swerveSubsystem
           .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
+      swerveSubsystem.setAllHeadings(0);
     }
   }
 

@@ -70,7 +70,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
   @Override
   public void initialize() {
     this.isFinished = false;
-    armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity, 27);
+    armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity);
     initialAngle = armSubsystem.getArmPitch();
     pivotMotor.setSelectedSensorPosition(0);
     double desiredPosition = (desiredAngle - initialAngle) / angleFactor;

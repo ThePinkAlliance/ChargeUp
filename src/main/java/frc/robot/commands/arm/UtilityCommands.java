@@ -27,6 +27,10 @@ import frc.robot.subsystems.arm.TurretSubsystem;
 public class UtilityCommands {
 
   public static Command pivotArm(double angle, ArmSubsystem armSubsystem) {
+    if (angle < 72) {
+      throw new UnknownError("Invalid pitch angle");
+    }
+
     return new PivotToDegreeMagicNew(angle,
         Constants.ArmConstants.MAX_CRUISE_VELOCITY,
         Constants.ArmConstants.MAX_ACCELERATION, 3,
@@ -57,27 +61,27 @@ public class UtilityCommands {
   public static Command collectStationDeployCone(ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem,
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
-    return UtilityCommands.pivotArm(148, armSubsystem).alongWith(
+    return UtilityCommands.pivotArm(145, armSubsystem).alongWith(
         new CommandGrabberTerminateCurrent(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER, 0, grabberSubsystem)
-            .customWatchdog(10).customCurrentLimit(20).noKill());
+            .customWatchdog(10).customCurrentLimit(22).noKill());
   }
 
   public static Command collectStationStowCone(ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem,
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
-    return new CommandGrabberTerminateCurrent(-.7, -16, grabberSubsystem).customCurrentLimit(10).customWatchdog(3)
+    return new CommandGrabberTerminateCurrent(-.7, -16, grabberSubsystem).customCurrentLimit(14).customWatchdog(3)
         .andThen(new StowReversedExtendNoTurret(armSubsystem, extenderSubsystem));
   }
 
   public static Command deliverConeHigh(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem) {
     // Comp: 132.5, 107
-    return UtilityCommands.pivotArm(129, armSubsystem).alongWith(new ExtendTicks(110, extenderSubsystem));
+    return UtilityCommands.pivotArm(129, armSubsystem).alongWith(new ExtendTicks(108, extenderSubsystem));
   }
 
   public static Command deliverConeMid(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem) {
-    return UtilityCommands.pivotArm(127, armSubsystem).alongWith(new ExtendTicks(38, extenderSubsystem));
+    return UtilityCommands.pivotArm(129.5, armSubsystem).alongWith(new ExtendTicks(31, extenderSubsystem));
   }
 
   public static Command deliverConeHighAuto(ArmSubsystem armSubsystem,
@@ -85,8 +89,29 @@ public class UtilityCommands {
     return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0).andThen(
         UtilityCommands.pivotArm(130, armSubsystem).alongWith(
             new ExtendTicks(108, extenderSubsystem)))
-        .andThen(new GrabberOpen(grabberSubsystem, 1))
-        .andThen(stow(armSubsystem, turretSubsystem, extenderSubsystem));
+        .andThen(new GrabberOpen(grabberSubsystem,
+            Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER))
+        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
+  }
+
+  public static Command deliverConeHighAutoBlue(ArmSubsystem armSubsystem,
+      ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem, GrabberSubsystem grabberSubsystem) {
+    return new RotateToDegree(turretSubsystem, armSubsystem, 90, -5).andThen(
+        UtilityCommands.pivotArm(130, armSubsystem).alongWith(
+            new ExtendTicks(108, extenderSubsystem)))
+        .andThen(new GrabberOpen(grabberSubsystem,
+            Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER))
+        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
+  }
+
+  public static Command deliverConeHighAutoRed(ArmSubsystem armSubsystem,
+      ExtenderSubsystem extenderSubsystem, TurretSubsystem turretSubsystem, GrabberSubsystem grabberSubsystem) {
+    return new RotateToDegree(turretSubsystem, armSubsystem, 90, 0).andThen(
+        UtilityCommands.pivotArm(130, armSubsystem).alongWith(
+            new ExtendTicks(108, extenderSubsystem)))
+        .andThen(new GrabberOpen(grabberSubsystem,
+            Constants.GrabberConstants.GRABBER_GRASP_OPEN_POWER))
+        .andThen(UtilityCommands.stow(armSubsystem, turretSubsystem, extenderSubsystem));
   }
 
   public static Command stow(ArmSubsystem armSubsystem, TurretSubsystem turretSubsystem,

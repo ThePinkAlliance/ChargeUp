@@ -21,6 +21,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.SwerveController;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
@@ -71,7 +72,15 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d currentPose2d = new Pose2d();
 
     public SwerveSubsystem() {
-        zeroHeading();
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            zeroHeading();
+            resetOdometry(new Pose2d());
+        }).start();
 
         SmartDashboard.putData(field2d);
     }
@@ -163,6 +172,11 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Front Left Angle", frontLeft.getPosition().angle.getRadians());
         SmartDashboard.putNumber("Front Right Angle", frontRight.getPosition().angle.getRadians());
 
+        SmartDashboard.putNumber("Back Left Error", backLeft.getSteerError());
+        SmartDashboard.putNumber("Back Right Error", backRight.getSteerError());
+        SmartDashboard.putNumber("Front Left Error", frontLeft.getSteerError());
+        SmartDashboard.putNumber("Front Right Error", frontRight.getSteerError());
+
         SmartDashboard.putNumber("Base Pitch", getPitch());
         SmartDashboard.putNumber("Base Heading", gyro.getYaw());
 
@@ -190,6 +204,13 @@ public class SwerveSubsystem extends SubsystemBase {
                 RobotContainer.thetaController,
                 this::setModuleStates,
                 this);
+    }
+
+    public void configureDriveRamp(double ramp) {
+        this.backLeft.configureDriveRampRate(ramp);
+        this.backRight.configureDriveRampRate(ramp);
+        this.frontLeft.configureDriveRampRate(ramp);
+        this.frontRight.configureDriveRampRate(ramp);
     }
 
     public void move(double vx, double vy, double radsPerSecond) {

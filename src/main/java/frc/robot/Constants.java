@@ -67,7 +67,7 @@ public final class Constants {
                  * outputed positions.
                  */
                 public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 1.90; // 1.9036
-                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.92; // 1.9236
+                public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -1.90; // -1.904
                 public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 1.56; // 1.5615
                 public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 1.49; // 1.49563
 
@@ -78,7 +78,7 @@ public final class Constants {
                 public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 1; // 0.96
                 public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond
                                 / 2.8;
-                public static double kTeleDriveSpeedReduction = 1;
+                public static double kTeleDriveSpeedReduction = .4;
                 public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 2.5;
                 public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.5;
         }
@@ -143,7 +143,7 @@ public final class Constants {
 
                 public static final int kDriverFieldOrientedButtonIdx = 1;
 
-                public static final double kDeadband = 0.08;
+                public static final double kDeadband = 0.05;
 
                 public static final int kButtonStart = 8;
                 public static final int kButtonBack = 7;
@@ -161,7 +161,8 @@ public final class Constants {
                 private static double VELOCITY_MULTIPLER = 1.2;
                 private static double ACCEL_MULTIPLER = 2.5;
 
-                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.22, 0, 0, 0.3, 0, 1);
+                // kP was .22
+                public static final GainsFX MOTIONM_GAINS_FX = new GainsFX(0.205, 0, 0, 0.3, 0, 1);
                 public static final GainsFX POSITION_GAINS_FX = new GainsFX(0.1, 0, 0, 0.3, 0, 1);
                 public static final double MAX_CRUISE_VELOCITY = 36864 * VELOCITY_MULTIPLER;
                 /**

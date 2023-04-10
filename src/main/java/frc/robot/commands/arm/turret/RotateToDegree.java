@@ -27,9 +27,9 @@ public class RotateToDegree extends CommandBase {
   private ArmSubsystem armSubsystem;
   private double angleTolerence;
   private Watchdog watchdog;
+
+  // Revert to 2.5 if rotate issue not fixed.
   private final double WATCHDOG_TIMEOUT = 2.5;
-  private boolean resetMotor;
-  private double resetPosition;
 
   /** Creates a new RotateToDegree. */
   public RotateToDegree(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, double safetyPivotAngle,
@@ -38,9 +38,7 @@ public class RotateToDegree extends CommandBase {
     this.turretSubsystem = turretSubsystem;
     this.armSubsystem = armSubsystem;
     this.desiredAngle = desiredAngle;
-    this.resetMotor = false;
-    this.resetPosition = 0;
-    this.angleTolerence = .05;
+    this.angleTolerence = .065;
     this.safetyPivotAngle = safetyPivotAngle;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       // empty on purpose, end() will handle safing the subsystem
@@ -49,13 +47,6 @@ public class RotateToDegree extends CommandBase {
 
     // Do not require armSubsystem: its only here to get information
     addRequirements(turretSubsystem);
-  }
-
-  public RotateToDegree withReset(double resetPosition) {
-    this.resetMotor = true;
-    this.resetPosition = resetPosition;
-
-    return this;
   }
 
   // Called when the command is initially scheduled.
@@ -67,11 +58,6 @@ public class RotateToDegree extends CommandBase {
     sparkMax.getPIDController().setI(0);
     sparkMax.getPIDController().setD(0);
     watchdog.reset();
-    watchdog.enable();
-
-    if (resetMotor) {
-      this.turretSubsystem.setEncoderPositions(resetPosition);
-    }
 
     double currentAngle = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double desiredPosRadians = desiredAngle * (Math.PI / 180);
@@ -112,11 +98,11 @@ public class RotateToDegree extends CommandBase {
     boolean hasMetTarget = difference <= angleTolerence;
 
     if (hasMetTarget) {
-      Telemetry.logData("--- Rotate To Degree Terminated ---", "difference: " + difference, getClass());
+      Telemetry.logData("--- Rotate To Degree Terminated [met target] ---", "difference: " + difference, getClass());
     }
 
     if (watchdogExpired) {
-      Telemetry.logData("--- Rotate To Degree ---", "difference: " + difference, getClass());
+      Telemetry.logData("--- Rotate To Degree [watchdog] ---", "difference: " + difference, getClass());
     }
 
     if (isFinished) {

@@ -14,10 +14,11 @@ import frc.robot.Constants;
 import frc.robot.Telemetry;
 import frc.robot.subsystems.SwerveSubsystem;
 
-public class DriveStraightByGyro extends CommandBase {
+public class DriveStraightByGyroStrafeLocked extends CommandBase {
   SwerveSubsystem swerveSubsystem;
   PIDController thetaController;
   PIDController xController;
+  PIDController yController;
 
   double distance;
   double startingTime;
@@ -26,17 +27,19 @@ public class DriveStraightByGyro extends CommandBase {
   boolean doStop;
 
   /** Creates a new DriveStraightByGyro. */
-  public DriveStraightByGyro(double distance, double speed, SwerveSubsystem swerveSubsystem) {
+  public DriveStraightByGyroStrafeLocked(double distance, double speed, SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.swerveSubsystem = swerveSubsystem;
-    this.thetaController = new PIDController(.4, 0.6, 0);
-    this.xController = new PIDController(4, 0, 0.5);
+    this.thetaController = new PIDController(.5, 0.05, 0);
+    this.xController = new PIDController(4, 0, 0.025);
+    this.yController = new PIDController(4, 0, 0.025);
 
     /*
      * The controller needs an I gain later.
      */
     this.xController.setTolerance(0.155);
+    this.yController.setTolerance(0.155);
 
     /*
      * Continuous input was not enabled during our tests at slf this could be one
@@ -53,13 +56,14 @@ public class DriveStraightByGyro extends CommandBase {
     addRequirements(swerveSubsystem);
   }
 
-  public DriveStraightByGyro(double distance, double speed, boolean doStop, SwerveSubsystem swerveSubsystem) {
+  public DriveStraightByGyroStrafeLocked(double distance, double speed, boolean doStop,
+      SwerveSubsystem swerveSubsystem) {
     this(distance, speed, swerveSubsystem);
 
     this.doStop = doStop;
   }
 
-  public DriveStraightByGyro configureTolerence(double tol) {
+  public DriveStraightByGyroStrafeLocked configureTolerence(double tol) {
     this.xController.setTolerance(tol);
 
     return this;
@@ -69,6 +73,7 @@ public class DriveStraightByGyro extends CommandBase {
   @Override
   public void initialize() {
     double xLocation = swerveSubsystem.getEstimatedPose().getX();
+    double yLocation = swerveSubsystem.getEstimatedPose().getY();
     double xLocationTarget = distance + xLocation;
 
     SmartDashboard.putNumber("Starting Position", xLocation);
@@ -79,6 +84,7 @@ public class DriveStraightByGyro extends CommandBase {
     this.startingTime = Timer.getFPGATimestamp();
 
     this.xController.setSetpoint(xLocationTarget);
+    this.yController.setSetpoint(yLocation);
     this.thetaController.setSetpoint(swerveSubsystem.getYaw());
     this.startingHeading = swerveSubsystem.getHeading();
   }
@@ -87,15 +93,18 @@ public class DriveStraightByGyro extends CommandBase {
   @Override
   public void execute() {
     double xLocation = swerveSubsystem.getEstimatedPose().getX();
+    double yLocation = swerveSubsystem.getEstimatedPose().getY();
     double angle = swerveSubsystem.getYaw();
     double calculatedTheta = thetaController.calculate(angle);
     double calculatedX = xController.calculate(xLocation);
+    double calculatedY = xController.calculate(yLocation);
     double thetaEffort = MathUtil.clamp(calculatedTheta, -0.5, 0.5);
     double xEffort = MathUtil.clamp(calculatedX, -speed, speed);
+    double yEffort = MathUtil.clamp(calculatedY, -speed, speed);
 
     swerveSubsystem.setModuleStates(
         Constants.DriveConstants.kDriveKinematics
-            .toSwerveModuleStates(new ChassisSpeeds(xEffort, 0, thetaEffort)));
+            .toSwerveModuleStates(new ChassisSpeeds(xEffort, yEffort, thetaEffort)));
 
     SmartDashboard.putNumber("thetaEffort", thetaEffort);
     SmartDashboard.putNumber("Theta Diff", thetaController.getPositionError());
@@ -113,7 +122,6 @@ public class DriveStraightByGyro extends CommandBase {
     if (doStop) {
       swerveSubsystem
           .setModuleStates(Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds()));
-      swerveSubsystem.setAllHeadings(0);
     }
   }
 
@@ -124,7 +132,7 @@ public class DriveStraightByGyro extends CommandBase {
 
     if (finished) {
       Telemetry.logData("---- DriveStraightByGyro ----", "Finished At: " + this.xController.getPositionError(),
-          DriveStraightByGyro.class);
+          DriveStraightByGyroStrafeLocked.class);
     }
 
     return finished;

@@ -24,6 +24,8 @@ public class CommandGrabberTerminateCurrent extends CommandBase {
   private boolean noKill;
   private Timer currentTimer;
   private double currentLimit;
+  private int filterSize;
+  private double currentTime;
 
   public CommandGrabberTerminateCurrent(double intakeSpeed, double graspRotations, GrabberSubsystem grabberSubsystem) {
     this.intakeSpeed = intakeSpeed;
@@ -31,6 +33,8 @@ public class CommandGrabberTerminateCurrent extends CommandBase {
     this.grabberSubsystem = grabberSubsystem;
     this.currentTimer = new Timer();
     this.noKill = false;
+    this.currentTime = .2;
+    this.filterSize = 25;
     this.currentLimit = Constants.GrabberConstants.BETTER_GRABBER_INTAKE_CURRENT_LIMIT;
 
     this.watchdog = new Watchdog(2, () -> {
@@ -43,6 +47,12 @@ public class CommandGrabberTerminateCurrent extends CommandBase {
 
   public CommandGrabberTerminateCurrent noKill() {
     this.noKill = true;
+
+    return this;
+  }
+
+  public CommandGrabberTerminateCurrent customCurrentTime(double time) {
+    this.currentTime = time;
 
     return this;
   }
@@ -62,10 +72,16 @@ public class CommandGrabberTerminateCurrent extends CommandBase {
     return this;
   }
 
+  public CommandGrabberTerminateCurrent customFilterSize(int size) {
+    this.filterSize = size;
+
+    return this;
+  }
+
   @Override
   public void initialize() {
     this.currentTimer.reset();
-    this.medianFilter = new MedianFilter(25);
+    this.medianFilter = new MedianFilter(filterSize);
 
     this.grabberSubsystem.setIntakeSpeed(intakeSpeed);
     this.grabberSubsystem.setGraspRotations(graspRotations);
@@ -85,7 +101,9 @@ public class CommandGrabberTerminateCurrent extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    this.grabberSubsystem.setIntakeSpeed(0);
+    if (!noKill) {
+      this.grabberSubsystem.setIntakeSpeed(0);
+    }
     // this.grabberSubsystem.disableGrasp();
 
     currentTimer.stop();
@@ -107,7 +125,7 @@ public class CommandGrabberTerminateCurrent extends CommandBase {
       currentTimer.start();
     }
 
-    if (currentTimer.hasElapsed(.2)) {
+    if (currentTimer.hasElapsed(currentTime)) {
       return true;
     }
 

@@ -64,20 +64,21 @@ public class DockAuto extends CommandBase {
   @Override
   public void execute() {
     double currentPitch = swerveSubsystem.getPitch();
-    double approachPitchThreshold = 12;
+    double approachPitchThreshold = 14;
     double pitchSettle = 5.5; // 12
     // 14 might be too high.
     if (currentPitch >= approachPitchThreshold && !didReachDock) {
       didReachDock = true;
 
       watchdog.reset();
+      stablizeTimer.start();
     } else if (!didReachDock) {
       this.swerveSubsystem.setModuleStates(
           Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(APPROACH_SPEED, 0, 0)));
     }
 
-    if (didReachDock) {
-      double gain = 0.062; // .059 comp
+    if (didReachDock && stablizeTimer.hasElapsed(.6)) {
+      double gain = 0.057; // Comp 0.059
       double power = gain * currentPitch;
 
       /* Power ceiling and floor */
@@ -93,17 +94,9 @@ public class DockAuto extends CommandBase {
        */
 
       if (Math.abs(currentPitch) < pitchSettle) {
-        // this.stablizeTimer.start();
         power = 0;
         isFinished = true;
       }
-      // else {
-      // stablizeTimer.stop();
-      // stablizeTimer.reset();
-      // }
-
-      // if (stablizeTimer.hasElapsed(.3)) {
-      // }
 
       swerveSubsystem.setModuleStates(
           Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(power, 0, 0)));

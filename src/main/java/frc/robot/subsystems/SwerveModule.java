@@ -50,7 +50,7 @@ public class SwerveModule {
         turningMotor.configAllSettings(steerConfig);
 
         driveMotor.setInverted(driveMotorReversed);
-        turningPidController = new PIDController(ModuleConstants.kPTurning, 1.5, 0);
+        turningPidController = new PIDController(ModuleConstants.kPTurning, .3, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
         resetEncoders();
@@ -135,6 +135,14 @@ public class SwerveModule {
 
         double output = turningPidController.calculate(getTurningPosition(), state.angle.getRadians());
         turningMotor.set(ControlMode.PercentOutput, output);
+    }
+
+    public void configureDriveRampRate(double ramp) {
+        this.driveMotor.configOpenloopRamp(ramp);
+    }
+
+    public double getSteerError() {
+        return this.turningPidController.getPositionError();
     }
 
     public void stop() {

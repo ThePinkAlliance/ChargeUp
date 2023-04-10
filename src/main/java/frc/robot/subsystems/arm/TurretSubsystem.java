@@ -30,6 +30,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     this.neoFaker = new Faker();
 
+    setEncoderPositions(91.43);
+
     this.powerLimit = 1;
   }
 
