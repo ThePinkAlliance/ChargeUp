@@ -6,7 +6,6 @@ package frc.robot.commands.arm.turret;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -59,7 +58,6 @@ public class RotateToDegree extends CommandBase {
     sparkMax.getPIDController().setD(0);
     watchdog.reset();
 
-    double currentAngle = this.turretSubsystem.getTurretAngle() * (Math.PI / 180);
     double desiredPosRadians = desiredAngle * (Math.PI / 180);
     double desiredRotations = desiredPosRadians * (Constants.TurretConstants.FULL_MOTOR_ROTATIONS / (2 * Math.PI));
     System.out.println("armSubSystem.getArmPitch() " + armSubsystem.getArmPitch());

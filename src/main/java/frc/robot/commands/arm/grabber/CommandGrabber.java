@@ -17,8 +17,6 @@ public class CommandGrabber extends CommandBase {
   private double graspRotations;
   private Watchdog watchdog;
 
-  private boolean doNotKill;
-
   public CommandGrabber(double intakeSpeed, double graspRotations, GrabberSubsystem grabberSubsystem) {
     this.intakeSpeed = intakeSpeed;
     this.graspRotations = graspRotations;

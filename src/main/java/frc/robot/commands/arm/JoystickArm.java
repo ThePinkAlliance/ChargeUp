@@ -6,12 +6,9 @@ package frc.robot.commands.arm;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Telemetry;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
@@ -70,7 +67,7 @@ public class JoystickArm extends CommandBase {
               || this.armSubsystem.getArmPitch() < ANGLE_CEILING && Math.signum(input) == 1)) {
         input = input * Math.abs(input);
         this.armSubsystem.commandPivot(input);
-      
+
       } else {
         this.armSubsystem.commandPivot(0);
       }

@@ -38,7 +38,8 @@ public class RotateBasedOnExternalSensor extends CommandBase {
   private final double WATCHDOG_TIMEOUT = 0.5;
 
   /** Creates a new RotateBasedOnExternalSensor. */
-  public RotateBasedOnExternalSensor(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem, CameraSubsystem cameraSubsystem, double safetyPivotAngle, PipelineType pType) {
+  public RotateBasedOnExternalSensor(TurretSubsystem turretSubsystem, ArmSubsystem armSubsystem,
+      CameraSubsystem cameraSubsystem, double safetyPivotAngle, PipelineType pType) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.turretSubsystem = turretSubsystem;
     this.armSubsystem = armSubsystem;
@@ -59,10 +60,10 @@ public class RotateBasedOnExternalSensor extends CommandBase {
   public void initialize() {
     isFinished = false;
     cameraSubsystem.setPipeline(pType);
-    //may need wait here
+    // may need wait here
     startingPosition = turretSubsystem.getTurretPosition();
     error = getAngleErrorFromRetro();
-    desiredRotations = (-error * 350)/360;
+    desiredRotations = (-error * 350) / 360;
     desiredPosition = startingPosition + desiredRotations;
     Telemetry.logData("Starting Position:", startingPosition, RotateBasedOnExternalSensor.class);
     Telemetry.logData("Desired Rotations:", desiredRotations, RotateBasedOnExternalSensor.class);
@@ -85,13 +86,17 @@ public class RotateBasedOnExternalSensor extends CommandBase {
   @Override
   public void execute() {
     /*
-    System.out.println("armSubSystem.getArmPitch() " + armSubsystem.getArmPitch());
-    if (armSubsystem.getArmPitch() > safetyPivotAngle) {
-      Telemetry.logData("Commanding: ", desiredRotations, RotateBasedOnExternalSensor.class);
-      sparkMax.getPIDController().setReference(desiredRotations, ControlType.kPosition);
-    } else {
-      isFinished = true;
-    }*/
+     * System.out.println("armSubSystem.getArmPitch() " +
+     * armSubsystem.getArmPitch());
+     * if (armSubsystem.getArmPitch() > safetyPivotAngle) {
+     * Telemetry.logData("Commanding: ", desiredRotations,
+     * RotateBasedOnExternalSensor.class);
+     * sparkMax.getPIDController().setReference(desiredRotations,
+     * ControlType.kPosition);
+     * } else {
+     * isFinished = true;
+     * }
+     */
     Telemetry.logData("Turret Target Angle", desiredRotations, RotateBasedOnExternalSensor.class);
   }
 
@@ -104,13 +109,13 @@ public class RotateBasedOnExternalSensor extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    
+
     double difference = Math.abs(turretSubsystem.getTurretPosition() - desiredPosition);
     boolean toleranceMet = (difference <= Constants.TurretConstants.ANGLE_TOLERANCE_FOR_EXTERNAL_SENSOR);
     Telemetry.logData("Current Difference", difference, RotateBasedOnExternalSensor.class);
     Telemetry.logData("isFinished", isFinished, RotateBasedOnExternalSensor.class);
     Telemetry.logData("toleranceMet", toleranceMet, RotateBasedOnExternalSensor.class);
-    
+
     return toleranceMet || isFinished || watchdog.isExpired();
   }
 
@@ -119,17 +124,17 @@ public class RotateBasedOnExternalSensor extends CommandBase {
     CameraData camResult = cameraSubsystem.getTarget();
     double error = 0.0;
     if (camResult.pipelineType == PipelineType.REFLECTIVE_HIGH) {
-        if (camResult.hasTargets()) {
-            Telemetry.logData("Has Targets", camResult.getTargets().get(0), getClass());
-            TargetData target = camResult.getTargets().get(0);
-            double x = camResult.getTargets().get(0).targetXAngle;
-            double y = camResult.getTargets().get(0).targetYAngle;
-            Telemetry.logData("VX", x, getClass());
-            Telemetry.logData("VY", y, getClass());
-            error = x;
-        }   
+      if (camResult.hasTargets()) {
+        Telemetry.logData("Has Targets", camResult.getTargets().get(0), getClass());
+        TargetData target = camResult.getTargets().get(0);
+        double x = camResult.getTargets().get(0).targetXAngle;
+        double y = camResult.getTargets().get(0).targetYAngle;
+        Telemetry.logData("VX", x, getClass());
+        Telemetry.logData("VY", y, getClass());
+        error = x;
+      }
     }
     return error;
-}
-  
+  }
+
 }

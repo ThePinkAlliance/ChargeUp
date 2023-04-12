@@ -1,60 +1,30 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.util.List;
-import java.util.function.Supplier;
-
-import com.ctre.phoenix.Util;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.spline.Spline.ControlVector;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryParameterizer;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.StowReversedExtend;
-import frc.robot.commands.arm.JoystickArm;
 import frc.robot.commands.arm.JoystickArmExtend;
 import frc.robot.commands.arm.UtilityCommands;
-import frc.robot.commands.arm.extend.ExtendTicks;
-import frc.robot.commands.arm.extend.ExtendTicksPlus;
-import frc.robot.commands.arm.grabber.CommandGrabber;
 import frc.robot.commands.arm.grabber.CommandGrabberTerminateCurrent;
-import frc.robot.commands.arm.grabber.GrabberCollect;
 import frc.robot.commands.arm.grabber.GrabberOpen;
 import frc.robot.commands.arm.grabber.JoystickGrabber;
-import frc.robot.commands.arm.pivot.PivotToDegreeMagicNew;
 import frc.robot.commands.arm.turret.JoystickTurret;
-import frc.robot.commands.arm.turret.RotateBasedOnExternalSensor;
 import frc.robot.commands.arm.turret.RotateToDegree;
-import frc.robot.commands.drive.DriveByGyro;
 import frc.robot.commands.drive.DriveStraightByGyro;
-import frc.robot.commands.drive.DriveStraightByGyroSpeed;
-import frc.robot.commands.drive.DriveStraightByGyroStrafeLocked;
 import frc.robot.commands.drive.StrafeByGyro;
 import frc.robot.commands.drive.SwerveJoystickCmd;
 
@@ -67,9 +37,7 @@ import frc.robot.subsystems.CameraSubsystem.CameraType;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ExtenderSubsystem;
 import frc.robot.subsystems.arm.GrabberSubsystem;
-import frc.robot.subsystems.arm.ManipulatorSubsystem;
 import frc.robot.subsystems.arm.TurretSubsystem;
-import frc.robot.subsystems.camera.CameraInterface.PipelineType;
 import frc.robot.subsystems.scoring.ScoringSubsystem;
 
 public class RobotContainer {

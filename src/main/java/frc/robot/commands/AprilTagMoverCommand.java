@@ -2,10 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Telemetry;
@@ -48,7 +46,8 @@ public class AprilTagMoverCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (reachedTarget || (joystick != null && joystick.getRawButton(Constants.OIConstants.kButtonX) == false) ? true : false) {
+        if (reachedTarget || (joystick != null && joystick.getRawButton(Constants.OIConstants.kButtonX) == false) ? true
+                : false) {
             System.out.println("AprilTagMoveCommand: finished");
             Telemetry.logData("isFinished", true, AprilTagMoverCommand.class);
             return true;
@@ -56,7 +55,6 @@ public class AprilTagMoverCommand extends CommandBase {
             return false;
         }
     }
-
 
     private void driveCloserToTarget_NoRetro() {
 
@@ -67,19 +65,18 @@ public class AprilTagMoverCommand extends CommandBase {
             Telemetry.logData("Has Targets", camResult.getTargets().get(0), AprilTagMoverCommand.class);
             if (camResult.hasTargets()) {
                 TargetData target = camResult.getTargets().get(0);
-                //if (target.targetDistance > 1)
-                //    translation = -0.6;
-                //else if (target.targetDistance < .45)
+                // if (target.targetDistance > 1)
+                // translation = -0.6;
+                // else if (target.targetDistance < .45)
                 if (target.targetDistance > .88) {
                     translation = 0.6;
                     sustainedReach.stop();
                     sustainedReach.reset();
-                }
-                else {
+                } else {
                     translation = 0.0;
                     sustainedReach.start();
                     if (sustainedReach.hasElapsed(0.3))
-                       reachedTarget = true;
+                        reachedTarget = true;
                 }
                 double x = camResult.getTargets().get(0).targetXAngle;
                 if (x > 2.0)
@@ -88,11 +85,12 @@ public class AprilTagMoverCommand extends CommandBase {
                     yAxisTranslation = 0.5;
                 else
                     yAxisTranslation = 0.5;
-                
+
                 Telemetry.logData("VX", translation, AprilTagMoverCommand.class);
                 Telemetry.logData("VY", yAxisTranslation, AprilTagMoverCommand.class);
-                Telemetry.logData("#Targets = ", camResult.getTargets().size(), AprilTagMoverCommand.class );
-                Telemetry.logData("Distance Meters = ", camResult.getTargets().get(0).targetDistance,AprilTagMoverCommand.class);
+                Telemetry.logData("#Targets = ", camResult.getTargets().size(), AprilTagMoverCommand.class);
+                Telemetry.logData("Distance Meters = ", camResult.getTargets().get(0).targetDistance,
+                        AprilTagMoverCommand.class);
                 Telemetry.logData("Angle Offset", x, AprilTagMoverCommand.class);
             }
 
