@@ -10,9 +10,9 @@ import frc.robot.subsystems.arm.ExtenderSubsystem;
 import frc.robot.Telemetry;
 
 public class ExtendTicksPlus extends CommandBase {
-  ExtenderSubsystem extenderSubsystem;
-  double desiredRotations;
-  Watchdog watchdog;
+  private ExtenderSubsystem extenderSubsystem;
+  private double desiredRotations;
+  private Watchdog watchdog;
   private final double WATCHDOG_TIMEOUT = 3.0;
   private double lastMin;
   private double lastMax;

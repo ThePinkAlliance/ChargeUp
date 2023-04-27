@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.GrabberSubsystem;
 
 public class JoystickGrabber extends CommandBase {
-  GrabberSubsystem grabberSubsystem;
-  Supplier<Double> intake;
-  Supplier<Double> grasp;
+  private GrabberSubsystem grabberSubsystem;
+  private Supplier<Double> intake;
+  private Supplier<Double> grasp;
 
   /** Creates a new JoystickGrabber. */
   public JoystickGrabber(Supplier<Double> intake, Supplier<Double> grasp, GrabberSubsystem grabberSubsystem) {

@@ -26,11 +26,9 @@ public class PivotToDegreeMagicNew extends CommandBase {
   private double desiredAngle;
   private ArmSubsystem armSubsystem;
   private TalonFX pivotMotor;
-  private Supplier<Boolean> safeToContinue;
 
   private double initialAngle;
 
-  private boolean isFinished;
   private double startingTime;
   private Watchdog watchdog;
 
@@ -39,14 +37,12 @@ public class PivotToDegreeMagicNew extends CommandBase {
       ArmSubsystem armSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.desiredAngle = desiredAngle;
-    this.safeToContinue = safeToContinue;
     this.armSubsystem = armSubsystem;
     this.pivotMotor = armSubsystem.getPivotTalon();
     this.angleFactor = 0.0006103967 * 1.05; // 0.945
     this.smoothingIntensity = 0;
     this.acceleration = 2000;
     this.cruiseVelocity = 2040;
-    this.isFinished = false;
     this.initialAngle = 0;
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       // empty on purpose, end() will handle safing the subsystem
@@ -69,7 +65,6 @@ public class PivotToDegreeMagicNew extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.isFinished = false;
     armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity);
     initialAngle = armSubsystem.getArmPitch();
     pivotMotor.setSelectedSensorPosition(0);
