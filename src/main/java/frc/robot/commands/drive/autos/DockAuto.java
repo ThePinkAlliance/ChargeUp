@@ -23,6 +23,7 @@ public class DockAuto extends CommandBase {
   private final double MAX_ANGLE;
   private final double APPROACH_SPEED;
   private final Timer stablizeTimer;
+  private double settleTime = 0;
 
   private final Watchdog watchdog;
 
@@ -81,21 +82,19 @@ public class DockAuto extends CommandBase {
       double gain = 0.057; // Comp 0.059
       double power = gain * currentPitch;
 
-      /* Power ceiling and floor */
-      /*
-       * if (Math.abs(currentPitch) > MAX_ANGLE) {
-       * power = Math.copySign((MAX_POWER_METERS / MAX_ANGLE) * MAX_ANGLE,
-       * currentPitch);
-       * } else if (Math.abs(currentPitch) < pitchFloor) {
-       * power = 0;
-       * 
-       * isFinished = true;
-       * }
-       */
-
       if (Math.abs(currentPitch) < pitchSettle) {
-        power = 0;
-        isFinished = true;
+        /*
+         * Note: Thia will only work if the auto is not disturbed during balencing,
+         * Adding a condition to reset the timer would be a good idea.
+         */
+        if (settleTime == 0) {
+          settleTime = Timer.getFPGATimestamp();
+        }
+
+        if (Math.abs(Timer.getFPGATimestamp() - settleTime) > 3) {
+          power = 0;
+          isFinished = true;
+        }
       }
 
       swerveSubsystem.setModuleStates(

@@ -87,10 +87,19 @@ public class TurretSubsystem extends SubsystemBase {
 }
 
 class Faker {
+  private final double rotPerSec;
+
   private double currentPosition = 0;
   private double currentPower = 0;
-  private double rotPerSec = 366 / 60;
   private double powerLimit = 1;
+
+  public Faker() {
+    this(366);
+  }
+
+  public Faker(double full_rot_ticks) {
+    this.rotPerSec = full_rot_ticks / 60;
+  }
 
   public void setPower(double p) {
     if (p > Math.copySign(powerLimit, 1)) {
