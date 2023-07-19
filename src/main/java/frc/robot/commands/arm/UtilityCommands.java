@@ -120,4 +120,8 @@ public class UtilityCommands {
             extenderSubsystem))
         .andThen(new RotateToDegree(turretSubsystem, armSubsystem, 90, 0));
   }
+
+  public static Command stowPitch(ArmSubsystem armSubsystem) {
+    return pivotArm(Constants.ArmConstants.COLLECT_STOW, armSubsystem);
+  }
 }
