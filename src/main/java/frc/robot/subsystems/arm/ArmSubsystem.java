@@ -39,7 +39,6 @@ public class ArmSubsystem extends SubsystemBase {
   public ArmSubsystem(int pivotMotorId, int canCoderId, double pivotOffset, double powerLimitPivot) {
 
     this.ledController = new Spark(0);
-
     this.pivotMotor = new TalonFX(pivotMotorId);
     this.canCoder = new CANCoder(canCoderId);
     this.pivotOffset = pivotOffset;
