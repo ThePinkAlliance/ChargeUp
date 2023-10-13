@@ -65,6 +65,14 @@ public class PivotToDegreeMagicNew extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    double angleDiff = (desiredAngle - initialAngle);
+
+    SmartDashboard.putNumber("angleDiff", angleDiff);
+
+    if (angleDiff < 3) {
+      smoothingIntensity = 0;
+    }
+
     armSubsystem.configureTalonFX_MotionMagic(cruiseVelocity, acceleration, smoothingIntensity);
     initialAngle = armSubsystem.getArmPitch();
     pivotMotor.setSelectedSensorPosition(0);
@@ -74,7 +82,6 @@ public class PivotToDegreeMagicNew extends CommandBase {
     watchdog.enable();
 
     System.out.println("---- Pivot Init ----");
-
     startingTime = Timer.getFPGATimestamp();
   }
 
@@ -96,6 +103,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
     Telemetry.logData("Angle Difference", desiredAngle - initialAngle, getClass());
 
     SmartDashboard.putNumber("Target Angle Pitch", desiredAngle);
+    SmartDashboard.putNumber("Target Pitch", pivotMotor.getClosedLoopTarget());
     SmartDashboard.putNumber("Error Pitch", pivotMotor.getClosedLoopError());
 
     watchdog.disable();

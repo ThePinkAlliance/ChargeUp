@@ -60,20 +60,20 @@ public class UtilityCommands {
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
     return UtilityCommands.pivotArm(145, armSubsystem).alongWith(
         new CommandGrabberTerminateCurrent(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER, 0, grabberSubsystem)
-            .customWatchdog(10).customCurrentLimit(22).noKill());
+            .customWatchdog(10).customCurrentLimit(11).noKill());
   }
 
   public static Command collectStationStowCone(ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem,
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
-    return new CommandGrabberTerminateCurrent(-.7, -16, grabberSubsystem).customCurrentLimit(14).customWatchdog(3)
+    return new CommandGrabberTerminateCurrent(-.7, -16, grabberSubsystem).customCurrentLimit(14).customWatchdog(2)
         .andThen(new StowReversedExtendNoTurret(armSubsystem, extenderSubsystem));
   }
 
   public static Command deliverConeHigh(ArmSubsystem armSubsystem,
       ExtenderSubsystem extenderSubsystem) {
     // Comp: 132.5, 107
-    return UtilityCommands.pivotArm(129, armSubsystem).alongWith(new ExtendTicks(108, extenderSubsystem));
+    return UtilityCommands.pivotArm(132.5, armSubsystem).alongWith(new ExtendTicks(108, extenderSubsystem));
   }
 
   public static Command deliverConeMid(ArmSubsystem armSubsystem,

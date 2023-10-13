@@ -67,6 +67,8 @@ public class RobotContainer {
         public RobotContainer() {
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
+                swerveSubsystem.calibrate();
+
                 configureControllerBindings();
 
                 SmartDashboard.putData("Auto Chooser", autoSendable);
@@ -273,7 +275,7 @@ public class RobotContainer {
 
                 // Base Right Bumper - Pickup off ground.
                 new JoystickButton(driverJoystick, Constants.OIConstants.kButtonRightBumper)
-                                .onTrue(UtilityCommands.pivotArm(83.5, armSubsystem).alongWith(
+                                .onTrue(UtilityCommands.pivotArm(83.5 - 1.5, armSubsystem).alongWith(
                                                 new CommandGrabberTerminateCurrent(-.7, -2, grabberSubsystem)
                                                                 .customCurrentLimit(10).customWatchdog(
                                                                                 3)))

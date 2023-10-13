@@ -21,7 +21,6 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.SwerveController;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ModuleConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
@@ -100,6 +99,10 @@ public class SwerveSubsystem extends SubsystemBase {
     public List<SwerveModulePosition> getPositions() {
         return List.of(frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(),
                 backRight.getPosition());
+    }
+
+    public void calibrate() {
+        gyro.calibrate();
     }
 
     public Rotation2d getRotation2d() {
