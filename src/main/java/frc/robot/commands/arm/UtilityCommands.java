@@ -58,7 +58,7 @@ public class UtilityCommands {
   public static Command collectStationDeployCone(ArmSubsystem armSubsystem,
       TurretSubsystem turretSubsystem,
       GrabberSubsystem grabberSubsystem, ExtenderSubsystem extenderSubsystem) {
-    return UtilityCommands.pivotArm(145, armSubsystem).alongWith(
+    return UtilityCommands.pivotArm(145 + 1.5, armSubsystem).alongWith(
         new CommandGrabberTerminateCurrent(-Constants.GrabberConstants.GRABBER_GRASP_CLOSE_POWER, 0, grabberSubsystem)
             .customWatchdog(10).customCurrentLimit(11).noKill());
   }
