@@ -38,7 +38,8 @@ public class JoystickTurret extends CommandBase {
   public void execute() {
     double input = Math.abs(inputSupplier.get()) > 0.05 ? inputSupplier.get() * -1 : 0;
 
-    if (armSubsystem.getArmPitch() >= minimumAngle) {
+    if (armSubsystem.getArmPitch() >= minimumAngle && ((input > 0)
+        || (input < 0 && turretSubsystem.getTurretAngle() > 0))) {
       this.turretSubsystem.powerTurret(input);
     } else {
       this.turretSubsystem.powerTurret(0);
@@ -46,7 +47,6 @@ public class JoystickTurret extends CommandBase {
 
     SmartDashboard.putNumber("Turret Angle", turretSubsystem.getTurretAngle());
     SmartDashboard.putNumber("Turret Position", turretSubsystem.getTurretPosition());
-  
   }
 
   // Called once the command ends or is interrupted.

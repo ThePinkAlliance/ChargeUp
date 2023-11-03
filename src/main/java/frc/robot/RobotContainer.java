@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -266,6 +267,7 @@ public class RobotContainer {
                 swerveSubsystem.resetOdometry(new Pose2d());
                 swerveSubsystem.zeroHeading();
 
-                return autoSendable.getSelected();
+                // return autoSendable.getSelected();
+                return Commands.print("None");
         }
 }
