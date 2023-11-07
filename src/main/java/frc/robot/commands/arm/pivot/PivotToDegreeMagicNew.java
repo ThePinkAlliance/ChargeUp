@@ -47,6 +47,7 @@ public class PivotToDegreeMagicNew extends CommandBase {
     this.watchdog = new Watchdog(WATCHDOG_TIMEOUT, () -> {
       // empty on purpose, end() will handle safing the subsystem
     });
+    this.pivotMotor.setInverted(true);
 
     addRequirements(armSubsystem);
   }

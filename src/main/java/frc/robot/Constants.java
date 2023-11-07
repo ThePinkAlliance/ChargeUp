@@ -75,7 +75,7 @@ public final class Constants {
                 public static final double kPhysicalMaxSpeedMetersPerSecond = 6;
                 public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
-                public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond *  0.96;
+                public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.96;
                 public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond
                                 / 2.8;
                 public static double kTeleDriveSpeedReduction = .4;
@@ -174,7 +174,7 @@ public final class Constants {
                  * decelerate without surpassing it's target setpoint.
                  */
                 public static final double MAX_ACCELERATION = 6064 * ACCEL_MULTIPLER;
-                public static final double PITCH_FLOOR_ABSOLUTE = 131.66;
+                public static final double PITCH_FLOOR_ABSOLUTE = 45;
                 public static final double PITCH_FLOOR_OFFSET = 71.11 - 9.58;
                 public static final double POWER_LIMIT_PIVOT = 1;
 
